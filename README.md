@@ -1,0 +1,2 @@
+# Airport_Bunches_Of_Fun
+Derived from the concept of Candy Crush and Bejeweled, Airport Bunches of Fun has players match groups of identical icons to reach score goals and proceed to higher levels. Airport Bunches of Fun is a score-based game, so players compete for the highest score, but no player loses. Players gain points for matching groups of similar icons. The more icons popped with one click, the greater their value. Once the timer runs out, players may record their two-letter initials with their score.
