@@ -98,11 +98,11 @@ game.gameController = {
             game.playTimeBoard.displayTimer();
         }
 
-        // Update the evaluate tester
+        // Evaluate the board with enforced load balancing
         if (game.evaluateBoard.evalReady(dt)) {
             // DEBUG TESTER
             if (!game.startShapeTester) {
-                game.shapeTester.testReady();
+                // game.shapeTester.testReady();
                 game.startShapeTester = true;
                 
                 game.evaluateBoard.Evaluate();

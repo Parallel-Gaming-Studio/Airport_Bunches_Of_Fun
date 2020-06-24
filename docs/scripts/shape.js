@@ -174,7 +174,7 @@ class Shape extends movingEntity {
 	/*---------------------moveShapeToLocation----------------------------\
 	| - Move the supplied shape to the specified destination, limited by
 	|   the distance between adjacent squares' center points
-	| - arg types: Shape | Vector2D
+	| - arg types: Vector2D
 	\--------------------------------------------------------------------*/
 	moveShapeToLocation(myDestination) {
 		try {
@@ -240,7 +240,10 @@ class Shape extends movingEntity {
 								// Add both squares to the evaluate list
 								game.playGrid.evaluateList.push(this.attachedSquare, this.lastAttachedSquare);
 
-								console.log(`\n\n\n<Shape>[MoveShapeToLocation]\nCHECK HERE\n\n\n`);
+								// Add both shapes to the entities evaluate list
+								game.gameEntities.evaluateList.push(this, this.lastAttachedSquare.attachedShape);
+
+								console.log(`\n\n\n<Shape>[MoveShapeToLocation]\nCHECK HERE\n\n\nEval List Length: ${game.playGrid.evaluateList.length}`);
 
 								// Update swapped shape's attributes
 								game.startSquare.attachedShape.updateAttributes();
@@ -284,11 +287,50 @@ class Shape extends movingEntity {
 		}
 	}
 
+	/*---------------------returnToLastLocation---------------------------\
+	| - Return the shape to its original location
+	\--------------------------------------------------------------------*/
+	returnToLastPosition(Callback) {
+		try {
+			console.log(`<Shape>[ReturnToLastLocation]\nMoving ${this.domElement.id} from square ${this.attachedSquare} to square ${this.lastAttachedSquare}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
+
+			// Set this shape as moving
+			this.isMoving = true;
+
+			// Move this shape to a higher z-index, then animate to its destination
+			$(`#${this.domElement.id}`).css("z-index", "21").animate({
+				top: `${this.lastAttachedSquare.top + Math.abs(this.toCenter.y - this.lastAttachedSquare.toCenter.y)}px`,
+				left: `${this.lastAttachedSquare.left + Math.abs(this.toCenter.x - this.lastAttachedSquare.toCenter.x)}px`
+			},1000, "swing", ()=>{
+
+				// Update the attached square
+				this.attachedSquare = this.lastAttachedSquare;
+
+				// Since it's moved to its original position, clear the last attached square
+				this.lastAttachedSquare = "undefined";
+				
+				// Return this shape to its original z-index
+				$(`#${this.domElement.id}`).css("z-index", "20");
+
+				// Update this shape's attributes
+				this.updateAttributes();
+
+				// Remove this shape's moving flag
+				this.isMoving = false;
+
+				// Return the Callback if it's requested
+				if (Callback !== "undefined") return Callback;
+			});
+		} catch (e) {
+			console.log(`<Shape>[ReturnToLastLocation]\nNo shape to move...`)
+		}
+	}
+
 	/*---------------------popShape---------------------------------------\
 	| - Pops the shape, removes it from its attached square
 	| - arg types: Vector2D
 	\--------------------------------------------------------------------*/
-	popShape() {
+	popShape(Callback) {
 		console.log(`<Shape>[PopShape]\nID: ${this.id}`);
 		// Set this shape as moving
 		this.isMoving = true;
@@ -309,7 +351,8 @@ class Shape extends movingEntity {
 			// Enable the popped flag
 			this.popped = true;
 
-			game.gameEntities.removeEntity(this);
+			// Return the Callback if it's requested
+			if (Callback !== "undefined") return Callback;
 		});
 	}
 	

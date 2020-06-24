@@ -114,6 +114,26 @@ game.playGrid = {
 
         // console.log(`<Game>[PlayGrid:Evaluate:Outer]\nIn Progress: ${this.evalInProgress}\nEval List: ${this.evaluateList.length}\nEnti List: ${game.gameEntities.evaluateList.length}`);
         if (!this.evalInProgress) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // THIS LOOP HAS THE ISSUE - RE-EVALUATE
+
+
+
+
+
             for (var i = this.evaluateList.length - 1; i > 0; i--) {
                 // game.gameEntities.evaluateList.length == 0 && 
                 if (game.gameEntities.evaluateList.length == 0) {
@@ -146,35 +166,34 @@ game.playGrid = {
 
                     //console.log(`<Game>[PlayGrid:Evaluate:Inner]\nIn Progress: ${this.evalInProgress}\nEval List: ${this.evaluateList.length}\nEnti List: ${game.gameEntities.evaluateList.length}`);
                     // return;
+                } else {
+                    game.gameEntities.updateEntities();
                 }
             }
         } else {
-            // console.log(`<Game>[PlayGrid:Evaluate]\nIn Progress: ${this.evalInProgress}\nPop List: ${this.popList.length}`);
+            // Check for shapes ready to be popped
             if (this.popList.length > 0) {
                 for (var i = this.popList.length-1; i >= 0; i--) {
-                    // !this.popList[i].attachedShape.isMoving &&
+                    // If a shape was set to pop, but has not finished its pop animation
                     if (!this.popList[i].attachedShape.popped) {
                         try {
+                            // Pop the shape and remove from the entities list
                             this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
                         } catch (e) {
                             // Skip
                         }
                     } else {
-                        // console.log(`\n\n\n<Game>[PlayGrid:Evaluate]\nDELETING shape ${this.popList[i].attachedShape.id}\n\n\n`);
                         game.gameEntities.removeEntity(this.popList[i]);
-                        var arg = this.popList[i];
-                        delete this.popList[this.popList.findIndex((arg)=>{ return arg; })];
-                        //return;
                     }
                 }
 
                 this.popList = [];
-                // if (!...this.popList.attachedShape.isMoving) this.popShapes(...this.popList);
                 // Since the list is not empty, return
                 return;
             }
         }
 
+        console.log(`\n\n\n<Game>[PlayGrid:Evaluate:Final]\nCHECK HERE\n\n\nInitial Update Complete`);
         // Cancel the initial update flag
         if (game.evaluateBoard.initialUpdate) game.evaluateBoard.initialUpdate = false;
 
