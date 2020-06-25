@@ -150,7 +150,7 @@ class Shape extends movingEntity {
 
 	/*---------------------forceMoveToLocation----------------------------\
 	| - Move this shape to the specified destination
-	| - arg types: Shape | Vector2D
+	| - arg types: Vector2D
 	\--------------------------------------------------------------------*/
 	forceMoveToLocation(pos) {
 		try {

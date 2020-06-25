@@ -312,17 +312,35 @@ game.evaluateBoard = {
 	Evaluate: function() {
 
 		if (this.initialUpdate) {
+			// Wait for all the grids, regulators, and shapes before evaluating
 			if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81) {
-				console.log(`<Gameplay>[EvaluateBoard:Evaluate] Initial Updates`);
+				
+				// Evaluate the entire board
+				if (!game.playGrid.evaluateBoard()) {
+					// Pop any shapes registered as matches
+					if (game.playGrid.popList.length > 0) {
+						game.playGrid.popShapes();
+					} else {
+						// Finish the initial update
+						this.initialUpdate = false;
+					}
+				}
 
-				game.playGrid.evaluate();
 				// this.initialUpdate = false;
+
+				//console.log(`<Gameplay>[EvaluateBoard:Evaluate] Initial Updates\nHmm: ${hmm}`);
 			}
-			return;
 		} else {
 			console.log(`<Gameplay>[EvaluateBoard:Evaluate] Live`);
-			game.gameEntities.updateEntities();
-			game.playGrid.evaluate();
+			
+			game.playGrid.evaluateBoard();
+			if (game.playGrid.popList.length > 0) {
+				game.playGrid.popShapes();
+			} else if (game.gameEntities.evaluateList.length > 0) {
+				game.gameEntities.updateEntities();
+			} else {
+				
+			}
 		}
 	}
 };

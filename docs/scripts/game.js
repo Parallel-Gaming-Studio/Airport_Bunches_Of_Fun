@@ -109,6 +109,39 @@ game.playGrid = {
             game.regulators.removeRegulator(this.squares.pop().regulator);
 		}
     },
+    evaluateBoard: function() {
+        // Container to hold the grid being tested
+        var gridTest;
+        // Container to store all the positive matches
+        var updateList = [];
+
+        // If no grids to evaluate, cancel evalInProgress
+        if (this.evaluateList.length < 1 ) { return this.evalInProgress = false; }
+
+        // Set the board evaluation in progress
+        this.evalInProgress = true;
+
+        // Pop the last grid into the container, forcing the process to start
+        // from the lower right corner of the grid
+        gridTest = this.evaluateList.pop();
+
+        // Evaluate the grid square for matching neighbors and store them for later
+        updateList = [...gridTest.testMatches()];
+
+        if (updateList.length > 2) {
+            // Combine the updateList with the popList
+            updateList.concat(this.popList);
+
+            // Use a Set to remove duplicate values
+            const updateSet = new Set(updateList);
+
+            // Fill the popList with matches
+            this.popList = [...updateSet];
+        }
+        // Return the eval progress status
+        return this.evalInProgress;
+    },
+    evaluateSelected: function() {},
     evaluate: function() {
         var updateList = [];
 
@@ -199,6 +232,32 @@ game.playGrid = {
 
         // Cancel the evalInProgress flag
         this.evalInProgress = false;
+    },
+    popShapes: function() {
+        // Container to hold 
+        // Check for shapes ready to be popped, ensuring the evaluate list is empty
+        if (this.popList.length > 0 && this.evaluateList.length < 1) {
+            
+            console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length-1].attachedShape}\n\n`);
+            
+            for (var i = this.popList.length-1; i >= 0; i--) {
+                // If a shape was set to pop, but has not finished its pop animation
+                if (!this.popList[i].attachedShape.popped) {
+                    try {
+                        // Pop the shape and remove from the entities list
+                        this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
+                    } catch (e) {
+                        // Skip
+                    }
+                } else {
+                    game.gameEntities.removeEntity(this.popList[i]);
+                }
+            }
+
+            console.log(`\n\nAfter\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length-1].attachedShape}\n\n`);
+
+            this.popList = [];
+        }
     }
 };
 // Spawn Squares

@@ -52,11 +52,12 @@ class GridSquare {
     }
     draw() {
         // Draw the background
-        // engine.context.fillStyle = "rgb(232,247,248)";
+        engine.context.fillStyle = "rgb(232,247,248)";
         engine.context.fillStyle = "rgba(232,247,248,0.40)";
         engine.context.fillRect(this.left, this.top, this.width, this.height);
         // Draw the border
-        // engine.context.strokeStyle = "rgb(111, 192, 203)";
+        engine.context.beginPath();
+        engine.context.strokeStyle = "rgb(111, 192, 203)";
         engine.context.strokeStyle = "rgba(111, 192, 203, 0.99)";
         engine.context.lineWidth = 1;
         engine.context.moveTo(this.left, this.top);
@@ -66,11 +67,11 @@ class GridSquare {
         engine.context.lineTo(this.left, this.top);
         engine.context.stroke();
         // Draw the center point
-        engine.context.beginPath();
+        /* engine.context.beginPath();
         engine.context.strokeStyle = "#FF0000";
         engine.context.lineWidth = 2.5;
         engine.context.arc(this.center.x, this.center.y, 5, 0, degsToRads(360));
-        engine.context.stroke();
+        engine.context.stroke(); */
     }
 	// Check or set the square's occupation
 	occupiedOn() { this.occupied = true; }
@@ -249,10 +250,13 @@ class GridSquare {
         if (this.matchesVertical.length > 1) this.matchesCombined.push(...this.matchesVertical);
         
         // If other shapes match this shape, add this shape to the array
-        // if (this.matchesCombined.length > 1) this.matchesCombined.push(this);
-        
+        if (this.matchesCombined.length > 1) this.matchesCombined.push(this);
+            
         const matchesSet = new Set(this.matchesCombined);
-        // console.log(`<Scene_Play>[GridSquare:TestMatches]\nID: ${this.id} found ${this.matchesCombined.length} matches: ${matchesSet}`);
+
+        this.matchesCombined = [...matchesSet];
+
+        // console.log(`<Scene_Play>[GridSquare:TestMatches]\nID: ${this.id} found ${this.matchesCombined.length} matches: ${this.matchesCombined}`);
         return matchesSet;
     }
     // Test top links for matches
@@ -347,11 +351,11 @@ class SpawnSquare {
         engine.context.lineTo(this.left, this.top);
         engine.context.stroke();
         // Draw the center point
-        engine.context.beginPath();
+        /* engine.context.beginPath();
         engine.context.strokeStyle = "#00FFBB";
         engine.context.lineWidth = 2.5;
         engine.context.arc(this.center.x, this.center.y, 5, 0, degsToRads(360));
-        engine.context.stroke();
+        engine.context.stroke(); */
     }
 };
 
