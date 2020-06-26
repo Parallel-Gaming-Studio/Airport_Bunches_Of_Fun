@@ -232,6 +232,7 @@ class GridSquare {
         this.matchesCombined = [this];
         this.matchesVertical = [];
         this.matchesHorizontal = [];
+        let sponsorsList = [];
 		// Vertical
         this.testTopMatches();
         // console.log(`<Scene_Play>[GridSquare:TestMatches:Top]\nID: ${this.id}. Matches: ${this.matchesVertical.length}.`);
@@ -253,7 +254,36 @@ class GridSquare {
         if (this.matchesVertical.length > 1) this.matchesCombined.push(...this.matchesVertical);
         
         // If other shapes match this shape, add this shape to the array
-        if (this.matchesCombined.length > 1) this.matchesCombined.push(this);
+        if (this.matchesCombined.length > 1) {
+            this.matchesCombined.push(this);
+            for (var i = 0; i < this.matchesCombined.length; i++) {
+                if (this.matchesCombined[i].checkForSponsor()) {
+                    let color = getSponsorColor(this.matchesCombined[i].type);
+                    switch(color) {
+                        case "blue":
+                            // Add blue sponsors effect
+                            break;
+                        case "darkblue":
+                            // Add darkblue sponsors effect
+                            break;
+                        case "purple":
+                            // Add purple sponsors effect
+                            break;
+                        case "pink":
+                            // Add pink sponsors effect
+                            break;
+                        case "orange":
+                            // Add orange sponsors effect
+                            break;
+                        case "green":
+                            // Add green sponsors effect
+                            break;
+                        case "UNKNOWN COLOR":
+                            break;
+                    }
+                }
+            }
+        }
         
         const matchesSet = new Set(this.matchesCombined);
 
@@ -300,10 +330,35 @@ class GridSquare {
 			current = current.linkRight;
 		}
     }
+    // Add blue sponsors effect
+    blueSponsorsEffect() {}
+    // Add darkblue sponsors effect
+    darkBlueSponsorsEffect() {}
+    // Add purple sponsors effect
+    purpleSponsorsEffect() {}
+    // Add pink sponsors effect
+    pinkSponsorsEffect() {}
+    // Add orange sponsors effect
+    orangeSponsorsEffect() {}
+    // Add green sponsors effect
+    greenSponsorsEffect() {}
     // Check whether target's attached shape type matches this grid's attached shape type
     checkShapeType(target) {
         // console.log(`<Scene_Play>[GridSquare:CheckShapeType]\nID: ${this.id}\nThis: ${this.attachedShape.type}\nTarget: ${target.attachedShape.type}`);
-        return this.attachedShape.type == target.attachedShape.type;
+        return this.attachedShape.type == target.attachedShape.type || this.checkForSponsor(target);
+    }
+    // Check whether the shape is a sponsor
+    checkForSponsor(target) {
+        // try {
+            // console.log(`\n\nSponsor? ${isSponsorType(this.attachedShape.type)}\n\n`);
+            if (isSponsorType(this.attachedShape.type)) {
+                // console.log(`\n\nLooking for sponsor of color ${getSponsorColor(this.attachedShape.type)}\n\n`);
+                return true;
+            }
+        // } catch (e) {}
+        
+        // Not a sponsor
+        return false;
     }
 	// Display a string for this square
 	toString() {

@@ -187,7 +187,7 @@ class Shape extends movingEntity {
 			$(`#${this.domElement.id}`).css("z-index", "21").animate({
 				top: `${myDestination.y - this.toCenter.y}px`,
 				left: `${myDestination.x - this.toCenter.x}px`
-			},1000, "swing", ()=>{
+			},500, "swing", ()=>{
 				console.log(`<Shape>[MoveShapeToLocation]\nFinished moving ${this.domElement.id}`);
 				// this.updateAttributes();
 
@@ -197,7 +197,8 @@ class Shape extends movingEntity {
 					$(`#${this.domElement.id}`).animate({
 						top: `${game.startSquare.top + Math.abs(this.toCenter.y - game.startSquare.toCenter.y)}px`,
 						left: `${game.startSquare.left + Math.abs(this.toCenter.x - game.startSquare.toCenter.x)}px`
-					}, 1000, "swing", ()=>{
+					}, 300, "swing", ()=>{
+
 						// Release the selected shape
 						game.selectedShape = null;
 						// Release any selected squares
@@ -209,7 +210,8 @@ class Shape extends movingEntity {
 					$(`#${this.domElement.id}`).animate({
 						top: `${game.destinationSquare.top + Math.abs(this.toCenter.y - game.destinationSquare.toCenter.y)}px`,
 						left: `${game.destinationSquare.left + Math.abs(this.toCenter.x - game.destinationSquare.toCenter.x)}px`
-					}, 1000, "swing", () => {
+					}, 500, "swing", () => {
+
 						// Set the previously attached square (gives to swapping shape)
 						this.lastAttachedSquare = this.attachedSquare;
 						
@@ -301,7 +303,7 @@ class Shape extends movingEntity {
 			$(`#${this.domElement.id}`).css("z-index", "21").animate({
 				top: `${this.lastAttachedSquare.top + Math.abs(this.toCenter.y - this.lastAttachedSquare.toCenter.y)}px`,
 				left: `${this.lastAttachedSquare.left + Math.abs(this.toCenter.x - this.lastAttachedSquare.toCenter.x)}px`
-			},1000, "swing", ()=>{
+			},500, "swing", ()=>{
 
 				// Update the attached square
 				this.attachedSquare = this.lastAttachedSquare;

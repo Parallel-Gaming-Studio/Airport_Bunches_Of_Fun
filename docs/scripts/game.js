@@ -281,19 +281,21 @@ game.playGrid = {
             console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
 
             for (var i = this.popList.length - 1; i >= 0; i--) {
-                // If a shape was set to pop, but has not finished its pop animation
-                if (!this.popList[i].attachedShape.popped) {
+                try {
+                    // If a shape was set to pop, but has not finished its pop animation
+                    if (!this.popList[i].attachedShape.popped) {
 
-                    try {
-                        // Pop the shape and remove from the entities list
-                        // this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
-                        this.popList[i].attachedShape.popShape();
-                    } catch (e) {
-                        // Skip
+                        //try {
+                            // Pop the shape and remove from the entities list
+                            // this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
+                            this.popList[i].attachedShape.popShape();
+                        // } catch (e) {
+                            // Skip
+                        //}
+                    } else {
+                        game.gameEntities.removeEntity(this.popList[i]);
                     }
-                } else {
-                    game.gameEntities.removeEntity(this.popList[i]);
-                }
+                } catch (e) {}
             }
 
             console.log(`\n\nAfter\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
@@ -310,14 +312,22 @@ game.gameEntities = {
     evaluateList: [],
     addEntity: function (newEntity) { this.entities.unshift(newEntity); },
     removeEntity: function (delEntity) {
-        // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nBefore ${this.entities.length}`);
+        console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nBefore ${this.entities.length}\nRemoving ${delEntity.id}`);
+        let tempList = [];
         for (var i = 0; i < this.entities.length; i++) {
-            if (delEntity == this.entities[i]) {
-                this.entities.splice(i, 1);
-                break;
+            if (delEntity != this.entities[i]) {
+                tempList.push(this.entities[i]);
+                //this.entities.splice(i, 1);
+                //break;
             }
         }
-        // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nAfter ${this.entities.length}`);
+
+        // Remove the div element
+        delEntity.destroyDiv();
+
+        this.entities = [...tempList];
+
+        console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nAfter ${this.entities.length}`);
     },
     clearEntities: function () { this.entities = []; },
     drawEntities: function () {
@@ -329,24 +339,26 @@ game.gameEntities = {
     },
     updateEntities: function (dt) {
         var movingFound = false;
-        // console.log(`<Game>[GameEntities:UpdateEntities]\nList Size: ${this.evaluateList.length}`);
-        for (var i = 0; i < this.evaluateList.length; i++) {
-            if (this.evaluateList[i].lastAttachedSquare !== "undefined" && this.evaluateList[i].isMoving) {
-                movingFound = true;
-                break;
-            }
-        }
-
-        if (!movingFound && game.playGrid.evaluateList.length == 0) {
+        try {
+            // console.log(`<Game>[GameEntities:UpdateEntities]\nList Size: ${this.evaluateList.length}`);
             for (var i = 0; i < this.evaluateList.length; i++) {
-                // console.log(`<Game>[GameEntities:UpdateEntities]\nShape ID: ${this.evaluateList[i].id}`);
-                if (this.evaluateList[i].lastAttachedSquare !== "undefined" && !this.evaluateList[i].isMoving) {
-                    this.evaluateList[i].returnToLastPosition();
+                if (this.evaluateList[i].lastAttachedSquare !== "undefined" && this.evaluateList[i].isMoving) {
+                    movingFound = true;
+                    break;
                 }
             }
 
-            this.evaluateList = [];
-        }
+            if (!movingFound && game.playGrid.evaluateList.length == 0) {
+                for (var i = 0; i < this.evaluateList.length; i++) {
+                    // console.log(`<Game>[GameEntities:UpdateEntities]\nShape ID: ${this.evaluateList[i].id}`);
+                    if (this.evaluateList[i].lastAttachedSquare !== "undefined" && !this.evaluateList[i].isMoving) {
+                        this.evaluateList[i].returnToLastPosition();
+                    }
+                }
+
+                this.evaluateList = [];
+            }
+        } catch (e) {}
 
         // this.evaluateList = [];
     },

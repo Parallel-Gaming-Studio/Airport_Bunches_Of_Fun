@@ -102,7 +102,7 @@ game.gameController = {
 		// game.evaluateBoard.Evaluate();
 		// game.gameEntities.updateEntities(dt);
 
-        // if (!game.evaluateBoard.initialUpdate) {
+        //if ((game.startSquare == null || game.destinationSquare == null) || (game.startSquare == "undefined" || game.destinationSquare == "undefined")) {
             // Touch Events
             for (var i = 0; i < game.touch.length; i++) {
                 if (engine.input.pressed(game.touch[i])) {
@@ -134,7 +134,7 @@ game.gameController = {
                 game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
                 game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
             }
-        // }
+        //}
 		
         // DEBUG
         // Toggle next state

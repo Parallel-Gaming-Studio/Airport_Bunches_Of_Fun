@@ -238,3 +238,145 @@ function getTypeByName(w) {
     }
     return s;
 }
+
+/*---------------------isSponsorType----------------------------------\
+| - Returns if the type is a sponsor
+\--------------------------------------------------------------------*/
+function isSponsorType(w) {
+    var s;
+    
+    switch(w) {
+        case typeEnum.type_gem_sponsor_argo_tea:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_auntie_annes:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_brookstone:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_bsmooth:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_burrito_beach:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_chicago_sports:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_cnn:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_coach:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_dunkin_donuts:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_duty_free_store:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_field:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_hudson:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_mac:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_nuts_on_clark:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_rocky_mountain_chocolate_factory:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_sarahs_candies:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_shoe_hospital:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_spirit_of_the_red_horse:
+            s = true;
+            break;
+        case typeEnum.type_gem_sponsor_talie:
+            s = true;
+            break;
+        default:
+            s = false;
+            break;
+    }
+    return s;
+}
+
+/*---------------------getSponsorColor--------------------------------\
+| - Returns the sponsor's color
+\--------------------------------------------------------------------*/
+function getSponsorColor(w) {
+    var s;
+    
+    switch(w) {
+        case typeEnum.type_gem_sponsor_argo_tea:
+            s = "purple";
+            break;
+        case typeEnum.type_gem_sponsor_auntie_annes:
+            s = "pink";
+            break;
+        case typeEnum.type_gem_sponsor_brookstone:
+            s = "blue";
+            break;
+        case typeEnum.type_gem_sponsor_bsmooth:
+            s = "green";
+            break;
+        case typeEnum.type_gem_sponsor_burrito_beach:
+            s = "orange";
+            break;
+        case typeEnum.type_gem_sponsor_chicago_sports:
+            s = "darkblue";
+            break;
+        case typeEnum.type_gem_sponsor_cnn:
+            s = "orange";
+            break;
+        case typeEnum.type_gem_sponsor_coach:
+            s = "darkblue";
+            break;
+        case typeEnum.type_gem_sponsor_dunkin_donuts:
+            s = "pink";
+            break;
+        case typeEnum.type_gem_sponsor_duty_free_store:
+            s = "blue";
+            break;
+        case typeEnum.type_gem_sponsor_field:
+            s = "green";
+            break;
+        case typeEnum.type_gem_sponsor_hudson:
+            s = "purple";
+            break;
+        case typeEnum.type_gem_sponsor_mac:
+            s = "darkblue";
+            break;
+        case typeEnum.type_gem_sponsor_nuts_on_clark:
+            s = "green";
+            break;
+        case typeEnum.type_gem_sponsor_rocky_mountain_chocolate_factory:
+            s = "orange";
+            break;
+        case typeEnum.type_gem_sponsor_sarahs_candies:
+            s = "blue";
+            break;
+        case typeEnum.type_gem_sponsor_shoe_hospital:
+            s = "pink";
+            break;
+        case typeEnum.type_gem_sponsor_spirit_of_the_red_horse:
+            s = "purple";
+            break;
+        case typeEnum.type_gem_sponsor_talie:
+            s = "purple";
+            break;
+        default:
+            s = "UNKNOWN COLOR";
+            break;
+    }
+    return s;
+}

@@ -267,6 +267,14 @@ game.evaluateBoard = {
 		
 		var newShape;
 		var getShape = randInt(0, (game.shapesList.length-1));
+
+		// Reduce the change of a sponsor shape
+		if (getShape == 7) {
+			if (randInt(0, 100) > 10) {	// 10% chance to keep the sponsor
+				getShape = randInt(0, (game.shapesList.length-1));
+			}
+		}
+
 		// console.log(`Length of shapes: ${game.shapesList.length}\nPull shape ${getShape}\nLocation ${location}`);
 		switch(getShape) {
 			case 0:	// Circle
@@ -339,6 +347,17 @@ game.evaluateBoard = {
 
 		} else {
 			game.regulators.update();
+
+			if (game.gameEntities.entities.length > 81) {
+				for (items in game.gameEntities.entities) {
+					if (!items.attachedSquare) {
+						// game.playGrid.popList.push(items);
+						game.gameEntities.removeEntity(items);
+					}
+				}
+				console.log("FOUND EXCESS");
+				// game.playGrid.popShapes();
+			}
 		}
 
 		/* if (this.initialUpdate) {
@@ -490,6 +509,11 @@ game.selectDestinationSquare = function(pos) {
 	try {
 		game.destinationSquare = game.getSquareAtPosition(pos);
 		console.log(`Selected square ${game.destinationSquare.id}`);
+		// Check if the destination square is the same as the start square - SPONSORS test
+		/* if (game.destinationSquare == game.startSquare) {
+			console.log(`Same Square!`);
+			// game.destinationSquare.checkForSponsor(game.destinationSquare);
+		} */
 	} catch (e) {
 		console.log("No square selected");
 		game.destinationSquare = null;
