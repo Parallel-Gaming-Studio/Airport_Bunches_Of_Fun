@@ -215,8 +215,10 @@ game.shapeTester = {
 game.evaluateBoard = {
 	openSquares: [],
 	initialUpdate: true,
+	evaluating: false,
+	gridShifted: false,
 	timeSinceUpdate: 0.0,
-	timeBetweenUpdates: 0.5,
+	timeBetweenUpdates: 0.05,
 
 	evalReady: function(dt) {
 		// During the initial update, return true
@@ -311,7 +313,35 @@ game.evaluateBoard = {
 	// Perform board evaluation
 	Evaluate: function() {
 
-		if (this.initialUpdate) {
+		if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81 && !this.evaluating) {
+			// Evaluate entities
+			if (game.gameEntities.evaluateList.length > 0 && game.destinationSquare == null) {
+				game.gameEntities.updateEntities();
+				this.evaluating = true;
+				game.playGrid.evaluateBoard();
+			}
+			// Evaluate pops
+			if (game.playGrid.popList.length > 0) {
+				game.playGrid.popShapes();
+			}
+			// Evaluate board
+			if (game.playGrid.evaluateList.length > 0 && game.gameEntities.evaluateList.length == 0) {
+				this.evaluating = true;
+				game.playGrid.evaluateBoard();
+			}
+			// React to grid updates, evaluating the entire board
+			if (this.gridShifted) {
+				this.gridShifted = false;
+				game.playGrid.evaluateList.push(...game.playGrid.squares);
+			}
+			// Update regulators
+			game.regulators.update();
+
+		} else {
+			game.regulators.update();
+		}
+
+		/* if (this.initialUpdate) {
 			// Wait for all the grids, regulators, and shapes before evaluating
 			if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81) {
 				
@@ -341,7 +371,7 @@ game.evaluateBoard = {
 			} else {
 				
 			}
-		}
+		} */
 	}
 };
 

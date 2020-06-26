@@ -97,59 +97,44 @@ game.gameController = {
         if (!game.playTimeBoard.timer._timerExpired) {
             game.playTimeBoard.displayTimer();
         }
-
-        // Evaluate the board with enforced load balancing
-        if (game.evaluateBoard.evalReady(dt)) {
-            // DEBUG TESTER
-            if (!game.startShapeTester) {
-                // game.shapeTester.testReady();
-                game.startShapeTester = true;
-                
-                game.evaluateBoard.Evaluate();
-            } else {
-                // Updated Regulated Items
-                game.regulators.update();
-                // Evaluate the board
-                game.evaluateBoard.Evaluate();
-            }
-            // DEBUG TESTER
-        }
 		
 		// Evaluate the playing field for open spaces
 		// game.evaluateBoard.Evaluate();
 		// game.gameEntities.updateEntities(dt);
 
-		// Touch Events
-		for (var i = 0; i < game.touch.length; i++) {
-			if (engine.input.pressed(game.touch[i])) {
-                for (var j = 0; j < Object.keys(engine.input.activeTouches).length; j++) {
-                    var touchInfo = engine.input.getTouch(j);
-					if (touchInfo.type == "START") {
-                        // Perform actions when start is pressed
-						game.selectShape(new Vector2D(touchInfo.x, touchInfo.y));
-						game.selectStartSquare(new Vector2D(touchInfo.x, touchInfo.y));
-					} else if (touchInfo.type == "END") {
-                        // Perform actions when end is pressed
-						game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y));
-						game.releaseSelectedShape(new Vector2D(touchInfo.x, touchInfo.y));
-					}
-				}
-			}
-		}
-		
-		// Mouse Events
-		if (engine.input.pressed(game.mouse[0])) {
-			// Select the shape at the mouse click location
-			// console.log(`Clicked left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
-			game.selectShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-			game.selectStartSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-		}
-		if (engine.input.released(game.mouse[0])) {
-			// Release the shape upon mouse release and move the shape to the release location
-			// console.log(`Released left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
-			game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-			game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-		}
+        // if (!game.evaluateBoard.initialUpdate) {
+            // Touch Events
+            for (var i = 0; i < game.touch.length; i++) {
+                if (engine.input.pressed(game.touch[i])) {
+                    for (var j = 0; j < Object.keys(engine.input.activeTouches).length; j++) {
+                        var touchInfo = engine.input.getTouch(j);
+                        if (touchInfo.type == "START") {
+                            // Perform actions when start is pressed
+                            game.selectShape(new Vector2D(touchInfo.x, touchInfo.y));
+                            game.selectStartSquare(new Vector2D(touchInfo.x, touchInfo.y));
+                        } else if (touchInfo.type == "END") {
+                            // Perform actions when end is pressed
+                            game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y));
+                            game.releaseSelectedShape(new Vector2D(touchInfo.x, touchInfo.y));
+                        }
+                    }
+                }
+            }
+            
+            // Mouse Events
+            if (engine.input.pressed(game.mouse[0])) {
+                // Select the shape at the mouse click location
+                // console.log(`Clicked left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
+                game.selectShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+                game.selectStartSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+            }
+            if (engine.input.released(game.mouse[0])) {
+                // Release the shape upon mouse release and move the shape to the release location
+                // console.log(`Released left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
+                game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+                game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+            }
+        // }
 		
         // DEBUG
         // Toggle next state
@@ -164,6 +149,27 @@ game.gameController = {
                 // Redraw all elements
                 game.drawOnce();
             }
+        }
+
+        // Evaluate the board with enforced load balancing
+        if (game.evaluateBoard.evalReady(dt)) {
+            // Updated Regulated Items
+            game.regulators.update();
+            // Evaluate the board
+            game.evaluateBoard.Evaluate();
+            // DEBUG TESTER
+            /* if (!game.startShapeTester) {
+                // game.shapeTester.testReady();
+                game.startShapeTester = true;
+                
+                game.evaluateBoard.Evaluate();
+            } else {
+                // Updated Regulated Items
+                game.regulators.update();
+                // Evaluate the board
+                game.evaluateBoard.Evaluate();
+            } */
+            // DEBUG TESTER
         }
     },
     gsEnd: function (dt) {
@@ -352,7 +358,7 @@ game.drawOnce = function () {
             // Playing Field
 			this.playFieldBackground.draw();
             this.playFieldGrid.draw();
-			// this.gameEntities.drawEntities();
+			this.gameEntities.drawEntities();
 
             // Display buttons
             this.menuButton.adjustStyle();

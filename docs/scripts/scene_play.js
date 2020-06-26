@@ -29,7 +29,7 @@ class GridSquare {
 		// Occupying shape
 		this.attachedShape = "undefined";
 		// Regulator
-		this.regulator = new Regulator(1500, this);
+		this.regulator = new Regulator(15, this);
 		// Store the matching shapes
 		this.matchesVertical = [];
         this.matchesHorizontal = [];
@@ -77,7 +77,8 @@ class GridSquare {
 	occupiedOn() { this.occupied = true; }
 	occupiedOff() { this.occupied = false; }
 	occupiedIsOn() { return this.occupied == true; }
-	occupiedIsOff() { return this.occupied == false; }
+    occupiedIsOff() { return this.occupied == false; }
+    getSquare() { return this; }
 	getShape() { return this.attachedShape; }
 	setShape(shape) { this.attachedShape = shape; }
 	removeShape() { this.attachedShape = "undefined"; }
@@ -112,7 +113,7 @@ class GridSquare {
 		}
 		
 		// Update links array
-		this.linksArray = [this.linkTop, this.linkBottom, this.linkLeft, this.linkRight];
+        this.linksArray = [this.linkTop, this.linkBottom, this.linkLeft, this.linkRight];
 	}
 	// Perform updates
 	update() {
@@ -121,15 +122,21 @@ class GridSquare {
 
 		// Check if this grid is attached with a shape
 		if (this.getShape() == "undefined") {
-			console.log(`Grid ${this.id} (${this.gridRow},${this.gridColumn}) is empty. Requesting new shape.`);
+			// console.log(`Grid ${this.id} (${this.gridRow},${this.gridColumn}) is empty. Requesting new shape.`);
 			// Search top links for the next available shape
 			var current = this;
-			while (current.linkTop !== "undefined" && current.linkTop.getShape() == "undefined") {
-				current = current.linkTop;
+			while (current.linkTop !== "undefined") {
+                if (current.linkTop.getShape() !== "undefined") {
+                    // console.log(`Grid linkTop(${current.id}->${current.linkTop.id}): ${current.linkTop.getShape()}`);
+                    current = current.linkTop;
+                    break;
+                } else {
+                    current = current.linkTop;
+                }
 			}
 			// If no shapes exist, request a shape spawn
 			if (current.attachedShape == "undefined") {
-				console.log(`No shapes found. Generating a new one in spawn ${game.playSpawnSquares[this.gridColumn].id} at ${game.playSpawnSquares[this.gridColumn].center}...`);
+				// console.log(`No shapes found. Generating a new one in spawn ${game.playSpawnSquares[this.gridColumn].id} at ${game.playSpawnSquares[this.gridColumn].center}...`);
 				// Spawn
 				var spawnShape = game.evaluateBoard.GenerateShape(game.playSpawnSquares[this.gridColumn].center);
 				
@@ -141,24 +148,20 @@ class GridSquare {
                     spawnShape.attachedSquare = this;
 				} else {
 					// Wait
-					console.log(`Grid ${this.id} shape request failed.`);
+					// console.log(`Grid ${this.id} shape request failed.`);
 				}
 			} else {
 				// Assign the shape to this square
-                // this.setShape(current.attachedShape);
                 this.attachedShape = current.attachedShape;
 				// Unassign the shape from its previous location
-                // current.removeShape();
                 current.attachedShape = "undefined";
 				// Notify the shape of the new attachment
 				this.attachedShape.attachedSquare = this;
             }
-            try {
-                // Move the assigned shape to this square
-                this.attachedShape.forceMoveToLocation(this.center);
-            } catch (e) {
-                // If the shape was not created, wait until the next spawn request to try again
-            }
+            // Move the assigned shape to this square
+            this.attachedShape.forceMoveToLocation(this.center);
+            // Notify the board evaluator that the grid has changed
+            game.evaluateBoard.gridShifted = true;
 		}
 	}
 	// Determine if the target equals any neighboring grid squares
@@ -251,13 +254,19 @@ class GridSquare {
         
         // If other shapes match this shape, add this shape to the array
         if (this.matchesCombined.length > 1) this.matchesCombined.push(this);
-            
+        
         const matchesSet = new Set(this.matchesCombined);
 
         this.matchesCombined = [...matchesSet];
 
-        // console.log(`<Scene_Play>[GridSquare:TestMatches]\nID: ${this.id} found ${this.matchesCombined.length} matches: ${this.matchesCombined}`);
-        return matchesSet;
+        if (this.matchesCombined.length > 2) {
+            /* for (let item of matchesSet) {
+                console.log(`Test Matches found: ${item.id}`);
+            } */
+            return matchesSet;
+        }
+        // console.log(`<Scene_Play>[GridSquare:TestMatches]\nID: ${this.id} found ${this.matchesCombined.length} matches: ${this.matchesCombined}\nLinks: ${this.linksArray}`);
+        return "undefined";
     }
     // Test top links for matches
 	testTopMatches() {
@@ -313,10 +322,10 @@ class GridSquare {
 class SpawnSquare {
     constructor(_id, top, left, width, height, _div) {
         this.id = _id;
-        this.top = top;
         this.left = left;
         this.width = width;
         this.height = height;
+        this.top = 0 - this.height;
         this.right = left + width;
         this.bottom = top + height;
         this.center = new Vector2D((left + width / 2), (top + height / 2));
@@ -328,7 +337,7 @@ class SpawnSquare {
     setPosition(newTop, newLeft) {
 		this.width = game.playFieldGrid.gridWidth;
 		this.height = game.playFieldGrid.gridHeight;
-		this.top = newTop + this.height/40;
+		this.top = 0 - this.height;
         this.left = newLeft + game.playFieldGrid.posX;
         this.right = this.left + this.width;
         this.bottom = this.top + this.height;
@@ -774,7 +783,7 @@ game.playFieldGrid = {
 		this.spawnDiv.style.position = "absolute";
         this.spawnDiv.style.display = "block";
         this.spawnDiv.style.left = this.posX.toString() + "px";
-        this.spawnDiv.style.top = "0px";
+        this.spawnDiv.style.top = (-this.gridHeight - 15 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) + "px";
         this.spawnDiv.style.width = this.width + "px";
         this.spawnDiv.style.height = this.gridHeight + 2 + "px";
         this.spawnDiv.style.zIndex = 3;
@@ -816,18 +825,18 @@ game.playFieldGrid = {
 			}
 			
 			if (row == 0) {
-				spawnBuilder += spawnPrefix + i + '" class="spawn-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;">&nbsp;['+row.toFixed(0)+','+col.toFixed(0)+']</div>';
+				spawnBuilder += spawnPrefix + i + '" class="spawn-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;"></div>';
 				
 				game.playFieldGrid.spawnArray.push("spawnGridDiv" + i);
 				
 				var spawnSquare = new SpawnSquare(`${i}`, 0, this.spawnDiv.style.offsetLeft, this.gridWidth, this.gridHeight, this.spawnArray[i]);
 			}
 			
-            gridBuilder += divPrefix + i + '" class="gem-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;">['+row.toFixed(0)+','+col.toFixed(0)+']&nbsp;</div>';
+            gridBuilder += divPrefix + i + '" class="gem-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;"></div>';
 
 			game.playFieldGrid.gridArray.push("gemGridDiv" + i);
 			
-			var gridSquare = new GridSquare(`${i}`, 0, 0, this.gridWidth, this.gridHeight, col.toFixed(0), this.gridArray[i]);
+            var gridSquare = new GridSquare(`${i}`, 0, 0, this.gridWidth, this.gridHeight, col.toFixed(0), this.gridArray[i]);
         };
 		
 		// Close the spawn container
@@ -851,11 +860,11 @@ game.playFieldGrid = {
         }
     },
 	adjustSpawn: function () {
-		// Update Spawn Square Objects
+        // Update Spawn Square Objects
 		var z = document.getElementsByClassName("spawn-container");
         for (var i = 0; i < z.length; i++) {
             var dom = z[i];
-            game.playSpawnSquares[i].setPosition(0, dom.offsetLeft);
+            game.playSpawnSquares[i].setPosition(-this.gridHeight, dom.offsetLeft);
             game.playSpawnSquares[i].draw();
         }
 	}

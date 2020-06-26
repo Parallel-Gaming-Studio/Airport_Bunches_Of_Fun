@@ -243,7 +243,7 @@ class Shape extends movingEntity {
 								// Add both shapes to the entities evaluate list
 								game.gameEntities.evaluateList.push(this, this.lastAttachedSquare.attachedShape);
 
-								console.log(`\n\n\n<Shape>[MoveShapeToLocation]\nCHECK HERE\n\n\nEval List Length: ${game.playGrid.evaluateList.length}`);
+								// console.log(`\n\n\n<Shape>[MoveShapeToLocation]\nCHECK HERE\n\n\nEval List Length: ${game.playGrid.evaluateList.length}`);
 
 								// Update swapped shape's attributes
 								game.startSquare.attachedShape.updateAttributes();
@@ -292,7 +292,7 @@ class Shape extends movingEntity {
 	\--------------------------------------------------------------------*/
 	returnToLastPosition(Callback) {
 		try {
-			console.log(`<Shape>[ReturnToLastLocation]\nMoving ${this.domElement.id} from square ${this.attachedSquare} to square ${this.lastAttachedSquare}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
+			console.log(`<Shape>[ReturnToLastLocation]\nMoving ${this.domElement.id} from square ${this.attachedSquare.id} to square ${this.lastAttachedSquare.id}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
 
 			// Set this shape as moving
 			this.isMoving = true;
@@ -308,6 +308,9 @@ class Shape extends movingEntity {
 
 				// Since it's moved to its original position, clear the last attached square
 				this.lastAttachedSquare = "undefined";
+
+				// Inform the new square of the change
+				this.attachedSquare.attachedShape = this;
 				
 				// Return this shape to its original z-index
 				$(`#${this.domElement.id}`).css("z-index", "20");
@@ -342,6 +345,17 @@ class Shape extends movingEntity {
 			left: "0px",
 			opacity: "0.0"
 		}, 500, ()=>{
+			// Clear previous attachments, if any - Prevents swapping back to old position
+			if (this.lastAttachedSquare !== "undefined") {
+				// Check neighboring, swapped shape
+				if (this.lastAttachedSquare.attachedShape !== "undefined") {
+					this.lastAttachedSquare.attachedShape.lastAttachedSquare = "undefined";
+				}
+
+				// Clear this shape's last attachment
+				this.lastAttachedSquare = "undefined";
+			}
+
 			// Remove from the square's shape attachment
 			this.attachedSquare.removeShape();
 
@@ -350,6 +364,9 @@ class Shape extends movingEntity {
 
 			// Enable the popped flag
 			this.popped = true;
+
+			// Remove this shape
+			game.gameEntities.removeEntity(this);
 
 			// Return the Callback if it's requested
 			if (Callback !== "undefined") return Callback;

@@ -41,7 +41,7 @@ for (var i = 0; i < game.mouse.length; i++) {
 // Touch bindings
 game.touch = ['START', 'MOVE', 'END', 'LEAVE', 'CANCEL'];
 for (var i = 0; i < game.touch.length; i++) {
-	engine.input.bind(engine.touch[game.touch[i]], game.touch[i]);
+    engine.input.bind(engine.touch[game.touch[i]], game.touch[i]);
 }
 
 // Declare Game Variables
@@ -63,30 +63,30 @@ game.nextSponsor = ""; // Next sponsor
 game.sponsorId = ""; // Current sponsor's ID
 // Regulators
 game.regulators = {
-	regList: [],
-	regIndex: -1,
-	addRegulator: function (reg) {
-		this.regList.unshift(reg);
-		if (this.lastIndex < 0) this.lastIndex = 0;
-	},
-	removeRegulator: function(reg) {
-		for (var i = 0; i < this.regList.length; i++) {
-			if (reg == this.regList[i]) {
-				this.regList.splice(i, 1);
-				break;
-			}
-		}
-	},
-	update: function() {
-		this.regIndex++;
-		if (this.regIndex >= 0 && this.regList.length > 0) {
-			if (this.regIndex >= this.regList.length) this.regIndex = 0;
+    regList: [],
+    regIndex: -1,
+    addRegulator: function (reg) {
+        this.regList.unshift(reg);
+        if (this.lastIndex < 0) this.lastIndex = 0;
+    },
+    removeRegulator: function (reg) {
+        for (var i = 0; i < this.regList.length; i++) {
+            if (reg == this.regList[i]) {
+                this.regList.splice(i, 1);
+                break;
+            }
+        }
+    },
+    update: function () {
+        this.regIndex++;
+        if (this.regIndex >= 0 && this.regList.length > 0) {
+            if (this.regIndex >= this.regList.length) this.regIndex = 0;
             if (this.regList[this.regIndex].isReady()) {
                 this.regList[this.regIndex].owner.update();
                 // console.log(`Updating ${this.regList[this.regIndex].owner.id}`);
             }
-		}
-	}
+        }
+    }
 };
 // Grid Squares
 game.playGrid = {
@@ -94,29 +94,77 @@ game.playGrid = {
     evaluateList: [],
     popList: [],
     evalInProgress: false,
-	addSquare: function(newSquare) {
-        this.squares.push(newSquare);
-        this.evaluateList.push(newSquare);
+    addSquare: function (newSquare) {
+        this.squares.push(newSquare.getSquare());
+        this.evaluateList.push(newSquare.getSquare());
     },
-	linkSquares: function() {
-		for (var i = 0; i < this.squares.length; i++) {
-			this.squares[i].buildLinks();
-		}
-	},
-	clearGrid: function() {
-		while (this.squares.length > 0) {
+    linkSquares: function () {
+        for (var i = 0; i < this.squares.length; i++) {
+            this.squares[i].buildLinks();
+        }
+    },
+    clearGrid: function () {
+        while (this.squares.length > 0) {
             // console.log(`<Game>[PlayGrid:ClearGrid] Reg Count\nBefore ${game.regulators.regList.length}`);
             game.regulators.removeRegulator(this.squares.pop().regulator);
-		}
+        }
     },
-    evaluateBoard: function() {
+    evaluateBoard: function () {
         // Container to hold the grid being tested
         var gridTest;
         // Container to store all the positive matches
         var updateList = [];
 
+        console.log(`Evaluating\nEvaluate List Size: ${this.evaluateList.length}\n`);
+
+        for (var i = 0; i < this.evaluateList.length; i++) {
+            // Store matches
+            let tester = this.evaluateList[i].testMatches();
+            
+            if (tester !== "undefined") {
+                updateList.push(...this.evaluateList[i].testMatches());
+            }
+            
+        }
+
+        this.evaluateList = [];
+
+        const matchesSet = new Set(updateList);
+
+        if (updateList.length > 0) {
+            for (let item of matchesSet) {
+                console.log(`Matches found: ${item.id}`);
+            }
+        }
+
+        this.popList = [...matchesSet];
+
+        console.log(`Evaluating\nPop List Size: ${this.popList.length}\n`);
+
+        game.evaluateBoard.evaluating = false;
+
+        // Fill the evaluate list if this is not the initial evaluation
+        /*if (!game.evaluateBoard.initialUpdate) {
+            /*for (var i = 0; i < game.playGrid.squares.length; i++) {
+                if (game.playGrid.squares[i].attachedShape !== "undefined") {
+                    if (game.playGrid.squares[i].attachedShape.lastAttachedSquare !== "undefined") {
+                        game.playGrid.evaluateList.push(game.playGrid.squares[i]);
+                    }
+                }
+            }
+            this.evaluateList = [...this.squares];
+        }
+
+        if (this.evaluateList.length == 0 && this.popList.length == 0 && game.gameEntities.evaluateList.length == 0) {
+            console.log("Refreshing evaluate list");
+            this.evaluateList.push(...this.squares);
+        }
+
         // If no grids to evaluate, cancel evalInProgress
-        if (this.evaluateList.length < 1 ) { return this.evalInProgress = false; }
+        if (this.evaluateList.length < 1 && this.popList.length == 0 && game.gameEntities.evaluateList.length == 0) {
+            this.evaluateList = this.squares;
+            return this.evalInProgress = false;
+        }
 
         // Set the board evaluation in progress
         this.evalInProgress = true;
@@ -139,22 +187,14 @@ game.playGrid = {
             this.popList = [...updateSet];
         }
         // Return the eval progress status
-        return this.evalInProgress;
+        return this.evalInProgress;*/
     },
-    evaluateSelected: function() {},
-    evaluate: function() {
+    evaluateSelected: function () { },
+    evaluate: function () {
         var updateList = [];
 
         // console.log(`<Game>[PlayGrid:Evaluate:Outer]\nIn Progress: ${this.evalInProgress}\nEval List: ${this.evaluateList.length}\nEnti List: ${game.gameEntities.evaluateList.length}`);
         if (!this.evalInProgress) {
-
-
-
-
-
-
-
-
 
 
 
@@ -183,7 +223,7 @@ game.playGrid = {
                     // console.log(`<Game>[PlayGrid:Evaluate]\nUpdate List: ${updateList.length}`);
 
                     if (updateList.length > 1) {
-                        
+
                         // Notify of an evaluation in progress
                         this.evalInProgress = true;
                         // Remove duplicate values
@@ -206,12 +246,12 @@ game.playGrid = {
         } else {
             // Check for shapes ready to be popped
             if (this.popList.length > 0) {
-                for (var i = this.popList.length-1; i >= 0; i--) {
+                for (var i = this.popList.length - 1; i >= 0; i--) {
                     // If a shape was set to pop, but has not finished its pop animation
                     if (!this.popList[i].attachedShape.popped) {
                         try {
                             // Pop the shape and remove from the entities list
-                            this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
+                            this.popList[i].attachedShape.popShape(() => { game.gameEntities.removeEntity(this.popList[i]); });
                         } catch (e) {
                             // Skip
                         }
@@ -233,19 +273,21 @@ game.playGrid = {
         // Cancel the evalInProgress flag
         this.evalInProgress = false;
     },
-    popShapes: function() {
+    popShapes: function () {
         // Container to hold 
         // Check for shapes ready to be popped, ensuring the evaluate list is empty
         if (this.popList.length > 0 && this.evaluateList.length < 1) {
-            
-            console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length-1].attachedShape}\n\n`);
-            
-            for (var i = this.popList.length-1; i >= 0; i--) {
+
+            console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
+
+            for (var i = this.popList.length - 1; i >= 0; i--) {
                 // If a shape was set to pop, but has not finished its pop animation
                 if (!this.popList[i].attachedShape.popped) {
+
                     try {
                         // Pop the shape and remove from the entities list
-                        this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
+                        // this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
+                        this.popList[i].attachedShape.popShape();
                     } catch (e) {
                         // Skip
                     }
@@ -254,7 +296,7 @@ game.playGrid = {
                 }
             }
 
-            console.log(`\n\nAfter\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length-1].attachedShape}\n\n`);
+            console.log(`\n\nAfter\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
 
             this.popList = [];
         }
@@ -266,35 +308,49 @@ game.playSpawnSquares = [];
 game.gameEntities = {
     entities: [],
     evaluateList: [],
-	addEntity: function(newEntity) { this.entities.unshift(newEntity); },
-	removeEntity: function(delEntity) {
-		// console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nBefore ${this.entities.length}`);
+    addEntity: function (newEntity) { this.entities.unshift(newEntity); },
+    removeEntity: function (delEntity) {
+        // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nBefore ${this.entities.length}`);
         for (var i = 0; i < this.entities.length; i++) {
-			if (delEntity == this.entities[i]) {
-				this.entities.splice(i, 1);
-				break;
-			}
+            if (delEntity == this.entities[i]) {
+                this.entities.splice(i, 1);
+                break;
+            }
         }
         // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nAfter ${this.entities.length}`);
-	},
-	clearEntities: function() { this.entities = []; },
-	drawEntities: function() {
-		for(var i = 0; i < this.entities.length; i++) { 
-			// console.log(`${this.entities[i].isAlive()} ${this.entities.length}`);
-			//if (this.entities[i].isAlive())
-			this.entities[i].draw(); 
-		}
-	 },
-	updateEntities: function(dt) {
-        console.log(`<Game>[GameEntities:UpdateEntities]\nList Size: ${this.evaluateList.length}`);
-        for(var i = 0; i < this.evaluateList.length; i++) {
-            console.log(`<Game>[GameEntities:UpdateEntities]\nList Size: ${this.evaluateList[i].id}`);
-			if (this.evaluateList[i].lastAttachedSquare !== "undefined" && !this.evaluateList[i].isMoving) {
-                this.evaluateList[i].returnToLastPosition();
+    },
+    clearEntities: function () { this.entities = []; },
+    drawEntities: function () {
+        for (var i = 0; i < this.entities.length; i++) {
+            // console.log(`${this.entities[i].isAlive()} ${this.entities.length}`);
+            //if (this.entities[i].isAlive())
+            this.entities[i].draw();
+        }
+    },
+    updateEntities: function (dt) {
+        var movingFound = false;
+        // console.log(`<Game>[GameEntities:UpdateEntities]\nList Size: ${this.evaluateList.length}`);
+        for (var i = 0; i < this.evaluateList.length; i++) {
+            if (this.evaluateList[i].lastAttachedSquare !== "undefined" && this.evaluateList[i].isMoving) {
+                movingFound = true;
+                break;
             }
-		}
-	},
-	toString: function() { for(var i = this.entities.length-1; i >= 0; i--) { console.log(`Entity Info:\nID: ${this.entities[i].ID()}\nType: ${this.entities[i].entityType()}\nTagged: ${this.entities[i].isTagged()}`); } }
+        }
+
+        if (!movingFound && game.playGrid.evaluateList.length == 0) {
+            for (var i = 0; i < this.evaluateList.length; i++) {
+                // console.log(`<Game>[GameEntities:UpdateEntities]\nShape ID: ${this.evaluateList[i].id}`);
+                if (this.evaluateList[i].lastAttachedSquare !== "undefined" && !this.evaluateList[i].isMoving) {
+                    this.evaluateList[i].returnToLastPosition();
+                }
+            }
+
+            this.evaluateList = [];
+        }
+
+        // this.evaluateList = [];
+    },
+    toString: function () { for (var i = this.entities.length - 1; i >= 0; i--) { console.log(`Entity Info:\nID: ${this.entities[i].ID()}\nType: ${this.entities[i].entityType()}\nTagged: ${this.entities[i].isTagged()}`); } }
 }
 
 // Shapes
@@ -321,13 +377,13 @@ game.player = {
     score: 0,
     initials: "ZZ",
     timeTotal: 0,   // Time in seconds
-	// Reset player object variables
+    // Reset player object variables
     reset: function () {
         this.score = 0;
         this.initials = "";
         this.timeTotal = 0;
-		// Reset global score
-		game.score = 0;
+        // Reset global score
+        game.score = 0;
     }
 };
 
@@ -336,42 +392,42 @@ game.player = {
  *** DO NOT UNCOMMENT THE GTAG() FUNCTIONS BEFORE DEPLOYMENT ***/
 game.google = {
     load: function () {
-		// Inform Google of Start Scene landing
+        // Inform Google of Start Scene landing
         // gtag('event', 'screen_view', {'screen_name': 'Menu'});
 
         // DEBUG ONLY:
         console.log("<GoogleAnalytics:load>");
     },
     start: function () {
-		// Inform Google of Play Scene landing
+        // Inform Google of Play Scene landing
         // gtag('event', 'screen_view', {'screen_name': 'Start'});
 
         // DEBUG ONLY:
         console.log("<GoogleAnalytics:start>");
     },
     finish: function () {
-		// Inform Google when player submits their initials (complete play through)
+        // Inform Google when player submits their initials (complete play through)
         // gtag('event', 'screen_view', {'screen_name': 'Finish'});
 
         // DEBUG ONLY:
         console.log("<GoogleAnalytics:finish>");
     },
     quit: function () {
-		// Inform Google of a player quitting the game
+        // Inform Google of a player quitting the game
         // gtag('event', 'screen_view', {'screen_name': 'Quit'});
 
         // DEBUG ONLY:
         console.log("<GoogleAnalytics:quit>");
     },
     timeOut: function () {
-		// Inform Google of a game timeout (inactivity)
+        // Inform Google of a game timeout (inactivity)
         // gtag('event', 'screen_view', {'screen_name': 'TimeOut'});
 
         // DEBUG ONLY:
         console.log("<GoogleAnalytics:timeOut>");
     },
     leaderboard: function () {
-		// Inform Google of players going straight to the leaderboard (from Start Scene)
+        // Inform Google of players going straight to the leaderboard (from Start Scene)
         // gtag('event', 'screen_view', {'screen_name': 'Leaderboard'});
 
         // DEBUG ONLY:
@@ -387,21 +443,21 @@ game.google = {
 // Display an interactive overlay after a period of inactivity
 // - Return to landing page upon a lack of interaction
 game.timeoutOverlay = {
-	// Handle to overlay
+    // Handle to overlay
     div: document.getElementById("timeoutOverlay"),
-	// Handle to header message
+    // Handle to header message
     divHeader: document.getElementById("timeoutHeader"),
-	// Handle to instructions message
+    // Handle to instructions message
     divInstructions: document.getElementById("timeoutInstructions"),
-	// Handle to timer
+    // Handle to timer
     divTimer: document.getElementById("timeoutTimer"),
-	// Declare variables
+    // Declare variables
     initialTime: null,
     finalTime: null,
     currentTime: null,
     initialTimerExpired: false,
     finalTimerExpired: false,
-	// Initialize overlay
+    // Initialize overlay
     init: function () {
         // Hide the overlay
         this.hideOverlay();
@@ -414,18 +470,18 @@ game.timeoutOverlay = {
         // Initialize all variables
         this.resetTimer();
     },
-	// Show the overlay and its children
+    // Show the overlay and its children
     showOverlay: function () {
         this.div.style.display = "block";
         this.divHeader.style.display = "block";
         this.divInstructions.style.display = "block";
         this.divTimer.style.display = "block";
     },
-	// Hide the overlay and its children
+    // Hide the overlay and its children
     hideOverlay: function () {
         this.div.style.display = "none";
     },
-	// Update the overlay and its timers
+    // Update the overlay and its timers
     update: function (dt) {
         if (this.currentTime != null) {
             // Update the current time
@@ -442,7 +498,7 @@ game.timeoutOverlay = {
             this.expireTimer();
         }
     },
-	// Initialize the primary timer and start its countdown
+    // Initialize the primary timer and start its countdown
     initialTimer: function (dt) {
         // Check whether the time is greater than the limit
         if (this.currentTime >= this.initialTime) {
@@ -454,7 +510,7 @@ game.timeoutOverlay = {
             this.showOverlay();
         }
     },
-	// Display the secondary timer
+    // Display the secondary timer
     finalTimer: function (dt) {
         // Update the time left
         this.divTimer.innerHTML = ". . . " + Math.ceil(this.finalTime - this.currentTime) + " . . .";
@@ -467,31 +523,31 @@ game.timeoutOverlay = {
             this.finalTimerExpired = true;
         }
     },
-	// Update the time counter
+    // Update the time counter
     updateTime: function (dt) {
         this.currentTime += dt;
     },
-	// Refresh the timer upon user interaction
+    // Refresh the timer upon user interaction
     refreshTimer: function () {
         this.resetTimer();
-		// console.log("Timer refreshed");
+        // console.log("Timer refreshed");
     },
-	// Reset the timer
+    // Reset the timer
     resetTimer: function () {
-		// Hide the overlay
+        // Hide the overlay
         this.hideOverlay();
-		// Reinitialize all variables
+        // Reinitialize all variables
         this.initialTime = game.timeoutTime;
         this.finalTime = game.timeoutTime / 10;
         this.currentTime = 0;
         this.initialTimerExpired = false;
         this.finalTimerExpired = false;
     },
-	// Timeout expired
+    // Timeout expired
     expireTimer: function () {
-		// Notify Google a timeout was reached
+        // Notify Google a timeout was reached
         game.google.timeOut();
-		// Redirect to the OHare landing page
+        // Redirect to the OHare landing page
         window.location.replace("http://www.flywithbutchohare.com/");
     }
 };
@@ -502,17 +558,17 @@ game.sponsors = {
     sponsorArray: ['ARGO TEA', 'AUNTIE ANNES', 'BROOKSTONE', 'BSMOOTH', 'BURRITO BEACH', 'CHICAGO SPORTS', 'CNN', 'COACH', 'DUNKIN DONUTS', 'DUTY FREE STORE', 'FIELD', 'HUDSON', 'MAC COSMETICS', 'NUTS ON CLARK', 'ROCKY MOUNTAIN CHOCOLATE', 'SARAHS CANDIES', 'SHOE HOSPITAL', 'SPIRIT OF THE RED HORSE', 'TALIE'],
     sponsor: '',
     sponsorId: '',
-	sponsored: '',
-	sponsoredId: '',
-	sponsoredUpdate: function() {
-		this.sponsored = this.sponsorArray[Math.floor(Math.random() * (this.sponsorArray.length))];
-	},
-    update: function() {
+    sponsored: '',
+    sponsoredId: '',
+    sponsoredUpdate: function () {
+        this.sponsored = this.sponsorArray[Math.floor(Math.random() * (this.sponsorArray.length))];
+    },
+    update: function () {
         this.sponsor = this.sponsorArray[Math.floor(Math.random() * (this.sponsorArray.length))];
         game.sponsor = this.sponsor;
     },
     // Get the sponsor
-    getSponsor: function() {
+    getSponsor: function () {
         switch (this.sponsor) {
             case "ARGO TEA":
                 this.sponsorId = "sponsorArgo";
@@ -577,12 +633,12 @@ game.sponsors = {
         }
         // Update the game's sponsor
         game.sponsorId = this.sponsorId;
-        
+
         // Return the sponsor ID
         return this.sponsorId;
     },
-	// Get the sponsor
-    getSponsored: function() {
+    // Get the sponsor
+    getSponsored: function () {
         this.sponsoredUpdate();
         switch (this.sponsored) {
             case "ARGO TEA":
@@ -646,7 +702,7 @@ game.sponsors = {
                 this.sponsoredId = "__INVALID__";
                 break;
         }
-        
+
         // Return the sponsor ID
         return this.sponsoredId;
     }
@@ -654,8 +710,8 @@ game.sponsors = {
 game.sponsors.update(); // Initialize first sponsor
 
 // Tag nearby shapes
-game.tagShapesWithinViewRange = function(shape, range) {
-	tagNeighbors(shape, game.shapes, range);
+game.tagShapesWithinViewRange = function (shape, range) {
+    tagNeighbors(shape, game.shapes, range);
 }
 
 async function loadScripts() {
