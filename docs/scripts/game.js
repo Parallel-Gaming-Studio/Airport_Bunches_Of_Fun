@@ -323,7 +323,7 @@ game.gameEntities = {
         }
 
         // Remove the div element
-        delEntity.destroyDiv();
+        try { delEntity.destroyDiv(); } catch(e) {}
 
         this.entities = [...tempList];
 

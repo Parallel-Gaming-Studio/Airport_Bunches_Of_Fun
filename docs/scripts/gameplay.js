@@ -509,15 +509,23 @@ game.selectDestinationSquare = function(pos) {
 	try {
 		game.destinationSquare = game.getSquareAtPosition(pos);
 		console.log(`Selected square ${game.destinationSquare.id}`);
+
 		// Check if the destination square is the same as the start square - SPONSORS test
-		/* if (game.destinationSquare == game.startSquare) {
-			console.log(`Same Square!`);
+		if (game.destinationSquare == game.startSquare) {
+			console.log(`Same Square! No action taken.`);
 			// game.destinationSquare.checkForSponsor(game.destinationSquare);
-		} */
+			game.startSquare = null;
+			game.destinationSquare = null;
+			return false;
+		}
+		return true;
 	} catch (e) {
 		console.log("No square selected");
+		game.startSquare = null;
 		game.destinationSquare = null;
 	}
+
+	return false;
 }
 
 /*---------------------releaseSelectedShape---------------------------\

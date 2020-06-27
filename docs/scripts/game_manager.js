@@ -114,8 +114,9 @@ game.gameController = {
                             game.selectStartSquare(new Vector2D(touchInfo.x, touchInfo.y));
                         } else if (touchInfo.type == "END") {
                             // Perform actions when end is pressed
-                            game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y));
-                            game.releaseSelectedShape(new Vector2D(touchInfo.x, touchInfo.y));
+                            if (game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y))) {
+                                game.releaseSelectedShape(new Vector2D(touchInfo.x, touchInfo.y));
+                            }
                         }
                     }
                 }
@@ -131,8 +132,9 @@ game.gameController = {
             if (engine.input.released(game.mouse[0])) {
                 // Release the shape upon mouse release and move the shape to the release location
                 // console.log(`Released left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
-                game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-                game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+                if (game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y))) {
+                    game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+                }
             }
         //}
 		
