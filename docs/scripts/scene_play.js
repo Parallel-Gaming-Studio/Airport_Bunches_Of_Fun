@@ -148,7 +148,8 @@ class GridSquare {
                     spawnShape.attachedSquare = this;
 				} else {
 					// Wait
-					// console.log(`Grid ${this.id} shape request failed.`);
+                    console.log(`Grid ${this.id} shape request failed. Requesting cleanup...`);
+                    game.evaluateBoard.RemoveExcess();
 				}
 			} else {
 				// Assign the shape to this square

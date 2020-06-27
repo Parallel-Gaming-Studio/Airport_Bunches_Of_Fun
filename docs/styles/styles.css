@@ -356,7 +356,8 @@ table td:nth-child(3) {
     background-repeat: no-repeat;
     background-size: cover;
 	pointer-events: none;
-	z-index: 20;
+    z-index: 20;
+    pointer-events: none;
 }
 
 .playSpawn {

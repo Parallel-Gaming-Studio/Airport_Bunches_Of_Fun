@@ -115,7 +115,7 @@ game.playGrid = {
         // Container to store all the positive matches
         var updateList = [];
 
-        console.log(`Evaluating\nEvaluate List Size: ${this.evaluateList.length}\n`);
+        // console.log(`Evaluating\nEvaluate List Size: ${this.evaluateList.length}\n`);
 
         for (var i = 0; i < this.evaluateList.length; i++) {
             // Store matches
@@ -131,15 +131,16 @@ game.playGrid = {
 
         const matchesSet = new Set(updateList);
 
-        if (updateList.length > 0) {
-            for (let item of matchesSet) {
-                console.log(`Matches found: ${item.id}`);
-            }
-        }
-
         this.popList = [...matchesSet];
 
-        console.log(`Evaluating\nPop List Size: ${this.popList.length}\n`);
+        /* if (updateList.length > 0) {
+            for (let item of matchesSet) {
+                // console.log(`Matches found: ${item.id}`);
+                item.attachedShape.lastAttachedSquare = "undefined";
+            }
+        } */
+
+        // console.log(`Evaluating\nPop List Size: ${this.popList.length}\n`);
 
         game.evaluateBoard.evaluating = false;
 
@@ -278,7 +279,15 @@ game.playGrid = {
         // Check for shapes ready to be popped, ensuring the evaluate list is empty
         if (this.popList.length > 0 && this.evaluateList.length < 1) {
 
-            console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
+            // console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
+            /*
+            var tempScore;
+
+            for (var i = 0; i < this.popList.length; i++) {
+                try { tempScore += this.popList[i].points; } catch (e) {}
+            }
+
+            game.player.score += tempScore * this.popList.length; */
 
             for (var i = this.popList.length - 1; i >= 0; i--) {
                 try {
@@ -298,7 +307,7 @@ game.playGrid = {
                 } catch (e) {}
             }
 
-            console.log(`\n\nAfter\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
+            // console.log(`\n\nAfter\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
 
             this.popList = [];
         }
@@ -312,7 +321,7 @@ game.gameEntities = {
     evaluateList: [],
     addEntity: function (newEntity) { this.entities.unshift(newEntity); },
     removeEntity: function (delEntity) {
-        console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nBefore ${this.entities.length}\nRemoving ${delEntity.id}`);
+        // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nBefore ${this.entities.length}\nRemoving ${delEntity.id}`);
         let tempList = [];
         for (var i = 0; i < this.entities.length; i++) {
             if (delEntity != this.entities[i]) {
@@ -362,6 +371,7 @@ game.gameEntities = {
 
         // this.evaluateList = [];
     },
+
     toString: function () { for (var i = this.entities.length - 1; i >= 0; i--) { console.log(`Entity Info:\nID: ${this.entities[i].ID()}\nType: ${this.entities[i].entityType()}\nTagged: ${this.entities[i].isTagged()}`); } }
 }
 

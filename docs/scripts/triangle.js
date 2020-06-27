@@ -12,14 +12,16 @@ class triangle extends Shape {
 		var _width = _targetShape.width;
 		// Height
 		var _height = _targetShape.height;
-		
-		// Initialize parent
-        super(_position, _type, _width, _height);
-		
-		// Define circle's attributes
+		// Points
+        var _points = 120;
+
+        // Initialize parent
+        super(_position, _type, _width, _height, _points);
+
+        // Define circle's attributes
         this.image = _image;
         this.type = _type;
-        this.points = 120;
+        this.points = _points;
 		
 		// Shape Div Builder
 		var _divOpen = `<div id="${this.type}_${this.ID()}" class="gems" style="top:${this.position.y}px;left:${this.position.x}px;width:${this.width}px;height:${this.height}px;background-image: url('${this.image.src}');">`;
