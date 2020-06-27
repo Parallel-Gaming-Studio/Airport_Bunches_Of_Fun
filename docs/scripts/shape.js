@@ -106,15 +106,7 @@ class Shape extends movingEntity {
     }
 	
 	// DEBUG
-	draw() {
-		try {
-			engine.context.beginPath();
-			engine.context.strokeStyle = "#FF0000";
-			engine.context.moveTo(this.center.x, this.center.y);
-			engine.context.lineTo(this.target.x, this.target.y);
-			engine.context.stroke();
-		} catch (e) { }
-	}
+	draw() {}
 	
 	/*---------------------updateAttributes-------------------------------\
 	| - Update necessary attributes
@@ -200,7 +192,7 @@ class Shape extends movingEntity {
 			$(`#${this.domElement.id}`).css("z-index", "21").animate({
 				top: `${myDestination.y - this.toCenter.y}px`,
 				left: `${myDestination.x - this.toCenter.x}px`
-			},500, "swing", ()=>{
+			},400, "swing", ()=>{
 				// console.log(`<Shape>[MoveShapeToLocation]\nFinished moving ${this.domElement.id}`);
 				// this.updateAttributes();
 
@@ -223,7 +215,7 @@ class Shape extends movingEntity {
 					$(`#${this.domElement.id}`).animate({
 						top: `${myDestinationSquare.top + Math.abs(this.toCenter.y - myDestinationSquare.toCenter.y)}px`,
 						left: `${myDestinationSquare.left + Math.abs(this.toCenter.x - myDestinationSquare.toCenter.x)}px`
-					}, 500, "swing", () => {
+					}, 400, "swing", () => {
 
 						// Set the previously attached square (gives to swapping shape)
 						this.lastAttachedSquare = this.attachedSquare;
@@ -246,7 +238,7 @@ class Shape extends movingEntity {
 							$(`#${myDestinationSquare.attachedShape.domElement.id}`).animate({
 								top: `${myStartSquare.top + Math.abs(myStartSquare.attachedShape.toCenter.y - myStartSquare.toCenter.y)}px`,
 								left: `${myStartSquare.left + Math.abs(myStartSquare.attachedShape.toCenter.x - myStartSquare.toCenter.x)}px`
-							}, 1000, "swing", ()=>{
+							}, 400, "swing", ()=>{
 
 
 								// TODO : Evaluate the grid. False? Return to previous positions.
@@ -269,7 +261,7 @@ class Shape extends movingEntity {
 								// Release any selected squares
 								game.releaseSelectedSquare();
 								// Clear the swapped shape's moving flag
-								this.lastAttachedSquare.attachedShape.isMoving = false;
+								try{ this.lastAttachedSquare.attachedShape.isMoving = false; } catch(e) {}
 							});
 						} else {
 							// Set the destination square's attached shape to this shape

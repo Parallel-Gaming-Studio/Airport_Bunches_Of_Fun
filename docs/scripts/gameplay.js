@@ -270,7 +270,7 @@ game.evaluateBoard = {
 
 		// Reduce the change of a sponsor shape
 		if (getShape == 7) {
-			if (randInt(0, 100) > 10) {	// 10% chance to keep the sponsor
+			if (randInt(0, 100) > 5) {	// 5% chance to keep the sponsor
 				getShape = randInt(0, (game.shapesList.length - 1));
 			}
 		}
@@ -320,64 +320,38 @@ game.evaluateBoard = {
 
 	// Remove excess entities
 	RemoveExcess: function () {
-		console.log("Collecting Garbage.");
-		/* var z = document.getElementsByClassName("gems");
-        for (var i = 0; i < z.length; i++) {
-			var str;
-            if (z[i].id.substr(0,9) == "type_gem_") {
-				str = z[i].id.split("_");
-				str.reverse();
-				// console.log(`\n\nExcess div: ${(str[0])}\n\n`);
-				for (var j = 0; j = game.gameEntities.entities.length; j++) {
-					let item = game.gameEntities.entities[j];
-					console.log(`Item test: ${item.id}`);
-					if (item.id == str[0]) {
-
-						if (item.attachedSquare == "undefined") {
-							
-							game.gameEntities.removeEntity(item);
-						}
-					}
-				}
-			}
-		} */
 
 		if (game.gameEntities.entities.length > 81) {
-			for (var j = 0; j = game.gameEntities.entities.length; j++) {
-				let item = game.gameEntities.entities[j];
-				if (typeof item == "undefined") {
-					console.log(`Removing excess ${j}`);
-					delete game.gameEntities.entities[j];
-					
-					var tempArray = [];
-					var z = document.getElementsByClassName("gems");
-					for (var i = 0; i < z.length; i++) {
-						z[i].style.display = "none";
-					}
-					
-					game.gameEntities.drawEntities();
-					
-					for (var i = 0; i < z.length; i++) {
-						if (z[i].style.display == "none") {
-							tempArray.push(z[i]);
-						}
-					}
-
-					while (tempArray.length > 0) {
-						var tempItem = tempArray.pop();
-						tempItem.remove();
-					}
-					break;
-				}
-				/*console.log(`Gem ${item.id} has an attached square ${item.attachedSquare == "undefined" ? "false" : "true"}`);
-				if (item.attachedSquare == "undefined") {
-					// game.playGrid.popList.push(items);
-					console.log(`Removing excess ${item.id}`);
-					game.gameEntities.removeEntity(item);
-				} */
+			// console.log(`Something broke`);
+			var z = document.getElementsByClassName("gems");
+			for (var i = 0; i < z.length; i++) {
+				z[i].style.display = "none";
 			}
-			console.log("FOUND EXCESS");
-			// game.playGrid.popShapes();
+
+			game.gameEntities.entities = [];
+
+			for (var j = 0; j < game.playGrid.squares.length; j++) {
+				if (game.playGrid.squares[j].attachedShape !== "undefined") {
+					game.gameEntities.entities.push(game.playGrid.squares[j].attachedShape);
+				}
+			}
+
+			game.gameEntities.drawEntities();
+
+			var tempArray = [];
+			var x = document.getElementsByClassName("gems");
+			for (var a = 0; a < x.length; a++) {
+				try {
+					var testMe = x[a].style.getPropertyValue('display');
+					// console.log(`My display type is: ${testMe}`);
+					if (testMe == "none") {
+						tempArray.push(x[a]);
+					}
+				} catch (e) {}
+			}
+			while (tempArray.length > 0) {
+				tempArray.pop().remove();
+			}
 		}
 	},
 

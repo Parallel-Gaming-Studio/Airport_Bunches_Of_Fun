@@ -119,12 +119,13 @@ game.playGrid = {
 
         for (var i = 0; i < this.evaluateList.length; i++) {
             // Store matches
+            try {
             let tester = this.evaluateList[i].testMatches();
             
             if (tester !== "undefined") {
                 updateList.push(...this.evaluateList[i].testMatches());
             }
-            
+            } catch (e) {}
         }
 
         this.evaluateList = [];
@@ -144,51 +145,6 @@ game.playGrid = {
 
         game.evaluateBoard.evaluating = false;
 
-        // Fill the evaluate list if this is not the initial evaluation
-        /*if (!game.evaluateBoard.initialUpdate) {
-            /*for (var i = 0; i < game.playGrid.squares.length; i++) {
-                if (game.playGrid.squares[i].attachedShape !== "undefined") {
-                    if (game.playGrid.squares[i].attachedShape.lastAttachedSquare !== "undefined") {
-                        game.playGrid.evaluateList.push(game.playGrid.squares[i]);
-                    }
-                }
-            }
-            this.evaluateList = [...this.squares];
-        }
-
-        if (this.evaluateList.length == 0 && this.popList.length == 0 && game.gameEntities.evaluateList.length == 0) {
-            console.log("Refreshing evaluate list");
-            this.evaluateList.push(...this.squares);
-        }
-
-        // If no grids to evaluate, cancel evalInProgress
-        if (this.evaluateList.length < 1 && this.popList.length == 0 && game.gameEntities.evaluateList.length == 0) {
-            this.evaluateList = this.squares;
-            return this.evalInProgress = false;
-        }
-
-        // Set the board evaluation in progress
-        this.evalInProgress = true;
-
-        // Pop the last grid into the container, forcing the process to start
-        // from the lower right corner of the grid
-        gridTest = this.evaluateList.pop();
-
-        // Evaluate the grid square for matching neighbors and store them for later
-        updateList = [...gridTest.testMatches()];
-
-        if (updateList.length > 2) {
-            // Combine the updateList with the popList
-            updateList.concat(this.popList);
-
-            // Use a Set to remove duplicate values
-            const updateSet = new Set(updateList);
-
-            // Fill the popList with matches
-            this.popList = [...updateSet];
-        }
-        // Return the eval progress status
-        return this.evalInProgress;*/
     },
     evaluateSelected: function () { },
     evaluate: function () {
@@ -328,15 +284,17 @@ game.gameEntities = {
                 tempList.push(this.entities[i]);
                 //this.entities.splice(i, 1);
                 //break;
+            } else {
+                this.entities[i].destroyDiv();
             }
         }
 
         // Remove the div element
-        try { delEntity.destroyDiv(); } catch(e) {}
+        // try { setTimeout(delEntity.destroyDiv(),600); } catch(e) {}
 
         this.entities = [...tempList];
 
-        console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nAfter ${this.entities.length}`);
+        // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nAfter ${this.entities.length}`);
     },
     clearEntities: function () { this.entities = []; },
     drawEntities: function () {

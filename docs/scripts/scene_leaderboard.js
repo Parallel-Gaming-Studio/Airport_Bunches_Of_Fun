@@ -6,7 +6,7 @@
 //   - Images
 game.leaderboardBackground = {
     //Get handle
-    image: document.getElementById("leaderboardBackground"),
+    image: document.getElementById("mainBackground"),
     //Declare object information
     org_width: 1920 * game.scale,
     org_height: 1080 * game.scale,

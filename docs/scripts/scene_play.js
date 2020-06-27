@@ -427,7 +427,7 @@ class SpawnSquare {
 //   - Images
 game.playBackground = {
     // Get handle to image
-    image: document.getElementById("playBackground"),
+    image: document.getElementById("mainBackground"),
     // Declare object transform information
     org_width: 1920 * game.scale,
     org_heigth: 1080 * game.scale,

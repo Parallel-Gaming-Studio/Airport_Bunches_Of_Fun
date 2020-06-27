@@ -25,6 +25,14 @@ game.hideElements = {
             z[i].style.display = "none";
         }
     },
+    // Erase all shape divs
+    wipeShapes: function() {
+        var z = document.getElementsByClassName("gems");
+        var tempArray = [...z];
+        while (tempArray.length > 0) {
+            tempArray.pop().remove();
+        }
+    },
     // Hide canvas drawings
     canvas: function () {
         engine.context.clearRect(0, 0, engine.width, engine.height);
@@ -33,6 +41,7 @@ game.hideElements = {
     hideAll: function () {
         this.images();
         this.canvas();
+        this.wipeShapes();
         // Reset leaderboard table
         game.top10players.hideTable();
         // Reset the grid array
@@ -96,6 +105,15 @@ game.gameController = {
         //Start game timers
         if (!game.playTimeBoard.timer._timerExpired) {
             game.playTimeBoard.displayTimer();
+        } else {
+            // Update game state to End Scene
+            game.currState = game.gameState[2];
+            // Hide all elements
+            game.hideElements.hideAll();
+            // Refresh timeout
+            game.timeoutOverlay.refreshTimer();
+            // Redraw all elements
+            game.drawOnce();
         }
 
         // Evaluate the playing field for open spaces
