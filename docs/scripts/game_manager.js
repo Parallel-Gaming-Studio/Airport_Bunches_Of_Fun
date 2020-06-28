@@ -108,6 +108,8 @@ game.gameController = {
         if (!game.playTimeBoard.timer._timerExpired) {
             game.playTimeBoard.displayTimer();
         } else {
+            // Clear the initials on the End Scene
+            game.endPlayerInitials.clearInitials();
             // Update game state to End Scene
             game.currState = game.gameState[2];
             // Hide all elements
@@ -168,6 +170,8 @@ game.gameController = {
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
+                // Clear the initials on the End Scene
+                game.endPlayerInitials.clearInitials();
                 // Update game state to End Scene
                 game.currState = game.gameState[2];
                 // Hide all elements
@@ -185,19 +189,6 @@ game.gameController = {
             game.regulators.update();
             // Evaluate the board
             game.evaluateBoard.Evaluate();
-            // DEBUG TESTER
-            /* if (!game.startShapeTester) {
-                // game.shapeTester.testReady();
-                game.startShapeTester = true;
-                
-                game.evaluateBoard.Evaluate();
-            } else {
-                // Updated Regulated Items
-                game.regulators.update();
-                // Evaluate the board
-                game.evaluateBoard.Evaluate();
-            } */
-            // DEBUG TESTER
         }
     },
     gsEnd: function (dt) {
@@ -209,9 +200,6 @@ game.gameController = {
         //Pause Play Time
         game.playTimeBoard.playTime.paused = true;
 		
-		// Handle the initials animation
-		game.endPlayerInitials.animateInitials(dt);
-
         // Handle the initials animation
         game.endPlayerInitials.animateInitials(dt);
 
@@ -225,6 +213,8 @@ game.gameController = {
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
+                // Clear the initials on the End Scene
+                game.endPlayerInitials.clearInitials();
                 // Update game state to Leaderboard Scene
                 game.currState = game.gameState[3];
                 // Hide all elements

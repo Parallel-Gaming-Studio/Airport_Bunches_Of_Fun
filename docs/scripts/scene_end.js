@@ -597,6 +597,8 @@ game.endSubmitButton = {
                 console.log(this.responseText);
 
                 // TRANSITION
+                // Clear the initials on the End Scene
+                game.endPlayerInitials.clearInitials();
                 // Change game state to Leaderboard Scene
                 game.currState = game.gameState[3];
                 // Hide all elements
