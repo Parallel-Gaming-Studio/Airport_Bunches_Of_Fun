@@ -104,6 +104,8 @@ game.menuButton = {
 				// All but the Start Scene returns to the Start Scene
 				// Hide all elements
                 game.hideElements.hideAll();
+                // Clear the initials on the End Scene
+                game.endPlayerInitials.clearInitials();
                 // Reset leaderboard table
                 game.top10players.hideTable();
 				// Reset the player object
@@ -165,6 +167,8 @@ game.startButton = {
         game.score = 0;
         // Reset the player object
         game.player.reset();
+        // Clear the initials on the End Scene
+        game.endPlayerInitials.clearInitials();
         // Refresh the timeout timer
 		game.timeoutOverlay.refreshTimer();
         // Set the new game state to Play Scene

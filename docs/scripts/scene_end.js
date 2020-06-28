@@ -8,7 +8,7 @@
 //End_Scene Play background 
 game.endBackground = {
     // Get handle to image
-    image: document.getElementById("endBackground"),
+    image: document.getElementById("mainBackground"),
     // Declare object transform information
     org_width: 1920 * game.scale,
     org_height: 1080 * game.scale,
@@ -329,10 +329,20 @@ game.endPlayerInitials = {
     font_size: 0,
     score: 0,
     initials: "",
+	// Animation variables
+	lastUpdate: 0,
+	toggleUpdate: 0.35,
+	showUpdate: false,
     // Initialize the object
     init: function () {
         // Add event listener to the button
         this.div.addEventListener("click", game.endPlayerInitials.clickMe);
+		// Empty the initials
+        this.initialsValue = "";
+        // Display the empty initials
+        this.div.innerHTML = this.initialsValue;
+		// Reset the last update
+        this.lastUpdate = 0;
     },
     // Adjust the object's transform
     resize: function () {
@@ -378,6 +388,32 @@ game.endPlayerInitials = {
         this.initials = "";
         this.div.innerHTML = this.initials;
     },
+	// Animate the initials value
+	animateInitials: function(dt) {
+		// Update the time since the last update
+		this.lastUpdate += dt;
+		// Update the visible characters after toggleUpdate milliseconds
+		if (this.lastUpdate >= this.toggleUpdate) {
+			// Display/hide an underscore in the initials field
+			if (this.initials.length < 2) {
+				// Display
+				if (!this.showUpdate) {
+					this.initialsValue = this.initials + "_";
+				} else {
+					// Hide
+					this.initialsValue = this.initials;
+				}
+				// Toggle the update
+				this.showUpdate = !this.showUpdate;
+			} else {
+				this.initialsValue = this.initials;
+			}
+			// Reset the last update time
+			this.lastUpdate = 0;
+		}
+		// Write to the div element
+		this.div.innerHTML = this.initialsValue;
+	},
     // Handle user interaction based on game state
     clickMe: function () {
         // Refresh the timeout timer
@@ -561,6 +597,8 @@ game.endSubmitButton = {
                 console.log(this.responseText);
 
                 // TRANSITION
+                // Clear the initials on the End Scene
+                game.endPlayerInitials.clearInitials();
                 // Change game state to Leaderboard Scene
                 game.currState = game.gameState[3];
                 // Hide all elements

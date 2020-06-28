@@ -23,23 +23,23 @@ game.shapeTester = {
 	maxForce: null,	// double
 	width: null,	// double
 	height: null,	// double
-	init: function() {
+	init: function () {
 		this.id = 0;						// int
 		this.pos = new Vector2D(317, 600);	// Vector2D
 		this.radius = 20;					// double
-		this.scale = new Vector2D(1,1);		// Vector2D
+		this.scale = new Vector2D(1, 1);		// Vector2D
 		this.type = typeEnum.type_entity;	// typeEnum
 		this.tag = false;					// boolean
 		this.velocity = new Vector2D();		// Vector2D
 		this.maxSpeed = 10.0;				// double
-		this.heading = new Vector2D(0,1);	// Vector2D
+		this.heading = new Vector2D(0, 1);	// Vector2D
 		this.mass = 1.0;					// double
 		this.turnRate = 2.5;				// double
 		this.maxForce = 5.0;				// double
 		this.width = 20.0;					// double
 		this.height = 20.0;					// double
 	},
-	testReady: function() {
+	testReady: function () {
 		/* // NULL values
 		console.log(`<ShapeTester>[TestReady(NULL):Entity]`);
 		this.testEntity();
@@ -89,7 +89,7 @@ game.shapeTester = {
 		// Display information for each entity
 		game.gameEntities.toString();*/
 	},
-	testEntity: function() {
+	testEntity: function () {
 		// constructor(_id, boundingRadius, position, scale, type, tag)
 		// console.log(`<ShapeTester>[TestEntity]`);
 		if (this.id == null) {
@@ -98,7 +98,7 @@ game.shapeTester = {
 			this.myEntity = new baseGameEntity(this.id, this.radius, this.pos, this.scale, this.type, this.tag);
 		}
 	},
-	testMover: function() {
+	testMover: function () {
 		// constructor(position, radius, velocity, maxSpeed, heading, mass, scale, turnRate, maxForce, type)
 		// console.log(`<ShapeTester>[TestMover]`);
 		if (this.id == null) {
@@ -107,7 +107,7 @@ game.shapeTester = {
 			this.myMover = new movingEntity(this.pos, this.radius, this.velocity, this.maxSpeed, this.heading, this.mass, this.scale, this.turnRate, this.maxForce, typeEnum.type_moving_entity);
 		}
 	},
-	testShape: function() {
+	testShape: function () {
 		// constructor(pos, type, width, height)
 		// console.log(`<ShapeTester>[TestShape]`);
 		if (this.id == null) {
@@ -116,7 +116,7 @@ game.shapeTester = {
 			this.myShape = new Shape(this.pos, typeEnum.type_shape, this.width, this.height);
 		}
 	},
-	testTriangle: function() {
+	testTriangle: function () {
 		// constructor(pos)
 		// console.log(`<ShapeTester>[TestTriangle]`);
 		if (this.id == null) {
@@ -127,7 +127,7 @@ game.shapeTester = {
 			this.counter++;
 		}
 	},
-	testCircle: function() {
+	testCircle: function () {
 		// constructor(pos)
 		// console.log(`<ShapeTester>[TestCircle]`);
 		if (this.id == null) {
@@ -138,7 +138,7 @@ game.shapeTester = {
 			this.counter++;
 		}
 	},
-	testHeart: function() {
+	testHeart: function () {
 		// constructor(pos)
 		// console.log(`<ShapeTester>[TestHeart]`);
 		if (this.id == null) {
@@ -149,7 +149,7 @@ game.shapeTester = {
 			this.counter++;
 		}
 	},
-	testPentagon: function() {
+	testPentagon: function () {
 		// constructor(pos)
 		// console.log(`<ShapeTester>[TestPentagon]`);
 		if (this.id == null) {
@@ -160,7 +160,7 @@ game.shapeTester = {
 			this.counter++;
 		}
 	},
-	testRectangle: function() {
+	testRectangle: function () {
 		// constructor(pos)
 		// console.log(`<ShapeTester>[TestTriangle]`);
 		if (this.id == null) {
@@ -171,7 +171,7 @@ game.shapeTester = {
 			this.counter++;
 		}
 	},
-	testSquare: function() {
+	testSquare: function () {
 		// constructor(pos)
 		// console.log(`<ShapeTester>[TestSquare]`);
 		if (this.id == null) {
@@ -182,7 +182,7 @@ game.shapeTester = {
 			this.counter++;
 		}
 	},
-	testStar: function() {
+	testStar: function () {
 		// constructor(pos)
 		// console.log(`<ShapeTester>[TestStar]`);
 		if (this.id == null) {
@@ -215,10 +215,12 @@ game.shapeTester = {
 game.evaluateBoard = {
 	openSquares: [],
 	initialUpdate: true,
+	evaluating: false,
+	gridShifted: false,
 	timeSinceUpdate: 0.0,
-	timeBetweenUpdates: 0.5,
+	timeBetweenUpdates: 0.05,
 
-	evalReady: function(dt) {
+	evalReady: function (dt) {
 		// During the initial update, return true
 		if (this.initialUpdate) return true;
 
@@ -232,14 +234,14 @@ game.evaluateBoard = {
 			// Return ready
 			return true;
 		}
-		
+
 		// Return not ready
 		return false;
 	},
 
-	FindOpenSquares: function() {
+	FindOpenSquares: function () {
 		// Find open squares from the bottom
-		for (var i = game.playGrid.squares.length-1; i >= 0; i--) {
+		for (var i = game.playGrid.squares.length - 1; i >= 0; i--) {
 			if (!game.playGrid.squares[i].occupied) {
 				this.openSquares.unshift(game.playGrid.squares[i]);
 			}
@@ -247,8 +249,8 @@ game.evaluateBoard = {
 		this.openSquares.unshift(game.playGrid.squares[42]);
 		this.openSquares.unshift(game.playGrid.squares[43]);*/
 	},
-	
-	FillOpenSquares: function() {
+
+	FillOpenSquares: function () {
 		console.log(`Open Squares: ${this.openSquares.length}`);
 		// Fill open squares from the bottom
 		for (var i = 0; i < this.openSquares.length; i++) {
@@ -258,15 +260,23 @@ game.evaluateBoard = {
 		// Clear the list of open squares
 		this.openSquares = [];
 	},
-	
+
 	// Generate random shape
-	GenerateShape: function(location) {
+	GenerateShape: function (location) {
 		// if (game.gameEntities.entities.length >= 81) return "Too many entities";
-		
+
 		var newShape;
-		var getShape = randInt(0, (game.shapesList.length-1));
+		var getShape = randInt(0, (game.shapesList.length - 1));
+
+		// Reduce the change of a sponsor shape
+		if (getShape == 7) {
+			if (randInt(0, 100) > 5) {	// 5% chance to keep the sponsor
+				getShape = randInt(0, (game.shapesList.length - 1));
+			}
+		}
+
 		// console.log(`Length of shapes: ${game.shapesList.length}\nPull shape ${getShape}\nLocation ${location}`);
-		switch(getShape) {
+		switch (getShape) {
 			case 0:	// Circle
 				// console.log(`Chose: ${game.shapesList[0]}`);
 				newShape = new circle(location);
@@ -307,23 +317,109 @@ game.evaluateBoard = {
 
 		return newShape;
 	},
-	
-	// Perform board evaluation
-	Evaluate: function() {
 
-		if (this.initialUpdate) {
-			if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81) {
-				console.log(`<Gameplay>[EvaluateBoard:Evaluate] Initial Updates`);
+	// Remove excess entities
+	RemoveExcess: function () {
 
-				game.playGrid.evaluate();
-				// this.initialUpdate = false;
+		if (game.gameEntities.entities.length > 81) {
+			// console.log(`Something broke`);
+			var z = document.getElementsByClassName("gems");
+			for (var i = 0; i < z.length; i++) {
+				z[i].style.display = "none";
 			}
-			return;
+
+			game.gameEntities.entities = [];
+
+			for (var j = 0; j < game.playGrid.squares.length; j++) {
+				if (game.playGrid.squares[j].attachedShape !== "undefined") {
+					game.gameEntities.entities.push(game.playGrid.squares[j].attachedShape);
+				}
+			}
+
+			game.gameEntities.drawEntities();
+
+			var tempArray = [];
+			var x = document.getElementsByClassName("gems");
+			for (var a = 0; a < x.length; a++) {
+				try {
+					var testMe = x[a].style.getPropertyValue('display');
+					// console.log(`My display type is: ${testMe}`);
+					if (testMe == "none") {
+						tempArray.push(x[a]);
+					}
+				} catch (e) {}
+			}
+			while (tempArray.length > 0) {
+				tempArray.pop().remove();
+			}
+		}
+	},
+
+	// Perform board evaluation
+	Evaluate: function () {
+
+		if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81 && !this.evaluating) {
+			// Evaluate entities
+			if (game.gameEntities.evaluateList.length > 0 && game.destinationSquare == null) {
+				game.gameEntities.updateEntities();
+				this.evaluating = true;
+				game.playGrid.evaluateBoard();
+			}
+			// Evaluate pops
+			if (game.playGrid.popList.length > 0) {
+				game.playGrid.popShapes();
+			}
+			// Evaluate board
+			if (game.playGrid.evaluateList.length > 0 && game.gameEntities.evaluateList.length == 0) {
+				this.evaluating = true;
+				game.playGrid.evaluateBoard();
+			}
+			// React to grid updates, evaluating the entire board
+			if (this.gridShifted) {
+				this.gridShifted = false;
+				game.playGrid.evaluateList.push(...game.playGrid.squares);
+			}
+			// Update regulators
+			game.regulators.update();
+
+		} else {
+			game.regulators.update();
+
+			// Garbage Collector
+			this.RemoveExcess();
+		}
+
+		/* if (this.initialUpdate) {
+			// Wait for all the grids, regulators, and shapes before evaluating
+			if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81) {
+				
+				// Evaluate the entire board
+				if (!game.playGrid.evaluateBoard()) {
+					// Pop any shapes registered as matches
+					if (game.playGrid.popList.length > 0) {
+						game.playGrid.popShapes();
+					} else {
+						// Finish the initial update
+						this.initialUpdate = false;
+					}
+				}
+
+				// this.initialUpdate = false;
+
+				//console.log(`<Gameplay>[EvaluateBoard:Evaluate] Initial Updates\nHmm: ${hmm}`);
+			}
 		} else {
 			console.log(`<Gameplay>[EvaluateBoard:Evaluate] Live`);
-			game.gameEntities.updateEntities();
-			game.playGrid.evaluate();
-		}
+			
+			game.playGrid.evaluateBoard();
+			if (game.playGrid.popList.length > 0) {
+				game.playGrid.popShapes();
+			} else if (game.gameEntities.evaluateList.length > 0) {
+				game.gameEntities.updateEntities();
+			} else {
+				
+			}
+		} */
 	}
 };
 
@@ -332,10 +428,10 @@ game.evaluateBoard = {
 |   field
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
-game.evaluateCursor = function(pos) {
+game.evaluateCursor = function (pos) {
 	// Playing field's bounding pox
 	var grid = game.playFieldGrid;
-	
+
 	if (pos.x > grid.left && pos.x < grid.right && pos.y > grid.top && pos.y < grid.bottom) {
 		//console.log(`<Gameplay>[EvaluateCursor:Passed]\nCursor:\n[${pos.x},${pos.y}]\nGrid:\nX: [${grid.left.toFixed(0)} - ${grid.right.toFixed(0)}] ${pos.x > grid.left && pos.x < grid.right}\nY: [${grid.top.toFixed(0)} - ${grid.bottom.toFixed(0)}] ${pos.y > grid.top && pos.y < grid.bottom}`);
 		return true;
@@ -351,14 +447,14 @@ game.evaluateCursor = function(pos) {
 | - If there is no shape at the position, the method returns NULL.
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
-game.getShapeAtPosition = function(cursorPos) {
+game.getShapeAtPosition = function (cursorPos) {
 	//console.log(`Find shape at ${cursorPos}`);
 	var testEntity;
 	for (var i = 0; i < game.gameEntities.entities.length; i++) {
 		testEntity = game.gameEntities.entities[i];
 		if (vec2DDistance(testEntity.center, cursorPos) < testEntity.bRadius()) {
 			//if (testEntity.isAlive()) {
-				return testEntity;
+			return testEntity;
 			//}
 		}
 	}
@@ -372,14 +468,14 @@ game.getShapeAtPosition = function(cursorPos) {
 | - If there is no square at the position, the method returns NULL.
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
-game.getSquareAtPosition = function(cursorPos) {
-	console.log(`Find square at ${cursorPos}`);
+game.getSquareAtPosition = function (cursorPos) {
+	// console.log(`Find square at ${cursorPos}`);
 	var testSquare;
 	for (var i = 0; i < game.playGrid.squares.length; i++) {
 		testSquare = game.playGrid.squares[i];
-		if (vec2DDistance(testSquare.center, cursorPos) < testSquare.width/2) {
+		if (vec2DDistance(testSquare.center, cursorPos) < testSquare.width / 2) {
 			//if (testSquare.isAlive()) {
-				return testSquare;
+			return testSquare;
 			//}
 		}
 	}
@@ -404,16 +500,19 @@ game.destinationSquare = null;
 |   click.
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
-game.selectShape = function(pos) {
-	if (!game.evaluateCursor(pos)) return;
+game.selectShape = function (pos) {
+	if (!game.evaluateCursor(pos)) return false;
+	if (game.startSquare != null || game.destinationSquare != null) return false;
 	try {
 		game.selectedShape = game.getShapeAtPosition(pos);
-		console.log(`Selected shape ${game.selectedShape.entityType()}`);
-		
+		// console.log(`Selected shape ${game.selectedShape.entityType()}`);
+		return true;
 	} catch (e) {
-		console.log("No shape selected");
+		// console.log("No shape selected");
 		game.selectedShape = null;
+		return false;
 	}
+	return false;
 }
 
 /*---------------------selectStartSquare------------------------------\
@@ -421,13 +520,14 @@ game.selectShape = function(pos) {
 |   click.
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
-game.selectStartSquare = function(pos) {
+game.selectStartSquare = function (pos) {
 	if (!game.evaluateCursor(pos)) return;
+	if (game.startSquare != null || game.destinationSquare != null) return;
 	try {
 		game.startSquare = game.getSquareAtPosition(pos);
-		console.log(`Selected square ${game.startSquare.id}`);
+		// console.log(`Selected square ${game.startSquare.id}`);
 	} catch (e) {
-		console.log("No square selected");
+		// console.log("No square selected");
 		game.startSquare = null;
 	}
 }
@@ -437,22 +537,41 @@ game.selectStartSquare = function(pos) {
 |   release.
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
-game.selectDestinationSquare = function(pos) {
-	if (!game.evaluateCursor(pos)) return;
-	try {
-		game.destinationSquare = game.getSquareAtPosition(pos);
-		console.log(`Selected square ${game.destinationSquare.id}`);
-	} catch (e) {
-		console.log("No square selected");
+game.selectDestinationSquare = function (pos) {
+	if (!game.evaluateCursor(pos)) return false;
+	if (game.startSquare == null && game.destinationSquare != null) {
+		game.destinationSquare = null;
+		return false;
+	} else if (game.startSquare != null && game.destinationSquare != null) {
 		game.destinationSquare = null;
 	}
+	try {
+		game.destinationSquare = game.getSquareAtPosition(pos);
+		// console.log(`Selected square ${game.destinationSquare.id}`);
+
+		// Check if the destination square is the same as the start square - SPONSORS test
+		if (game.destinationSquare == game.startSquare) {
+			// console.log(`Same Square! No action taken.`);
+			// game.destinationSquare.checkForSponsor(game.destinationSquare);
+			game.startSquare = null;
+			game.destinationSquare = null;
+			return false;
+		}
+		return true;
+	} catch (e) {
+		console.log("No square selected");
+		game.startSquare = null;
+		game.destinationSquare = null;
+	}
+
+	return false;
 }
 
 /*---------------------releaseSelectedShape---------------------------\
 | - If a shape is selected, release the selection when the player
 |   releases the mouse.
 \--------------------------------------------------------------------*/
-game.releaseSelectedShape = function(pos) {
+game.releaseSelectedShape = function (pos) {
 	if (game.selectedShape) {
 		game.selectedShape.moveShapeToLocation(pos);
 		// game.selectedShape = null;
@@ -463,7 +582,7 @@ game.releaseSelectedShape = function(pos) {
 | - If a square is selected, release the selection when the shape
 |   actions are complete.
 \--------------------------------------------------------------------*/
-game.releaseSelectedSquare = function() {
+game.releaseSelectedSquare = function () {
 	if (game.startSquare) game.startSquare = null;	// TODO : Add attachments updates
 	if (game.destinationSquare) game.destinationSquare = null;
 }

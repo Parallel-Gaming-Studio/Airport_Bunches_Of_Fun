@@ -3,10 +3,431 @@
 // DEBUG
 // console.log("play_scene.js loaded successfully");
 
+// Classes
+class GridSquare {
+    constructor(_id, top, left, width, height, column, _div) {
+        this.id = _id;
+        this.top = top;
+        this.left = left;
+        this.width = width;
+        this.height = height;
+		this.column = column;
+        this.right = left + width;
+        this.bottom = top + height;
+        this.center = new Vector2D((left + width / 2), (top + height / 2));
+		this.toCenter = vecSubtract(this.center, new Vector2D(this.left, this.top));
+		this.occupied = false;
+		// Location within the playing grid
+		this.gridColumn = null;
+		this.gridRow = null;
+		// Neighbor links
+		this.linkTop = null;
+		this.linkBottom = null;
+		this.linkLeft = null;
+		this.linkRight = null;
+		this.linksArray = [];
+		// Occupying shape
+		this.attachedShape = "undefined";
+		// Regulator
+		this.regulator = new Regulator(15, this);
+		// Store the matching shapes
+		this.matchesVertical = [];
+        this.matchesHorizontal = [];
+        this.matchesCombined = [];
+		// Reference div
+		this.divReference = _div;
+		// Push reference to this square
+        game.playGrid.addSquare(this);
+    }
+    setPosition(newTop, newLeft) {
+        this.top = newTop + game.playFieldGrid.posY;
+        this.left = newLeft + game.playFieldGrid.posX;
+		this.width = game.playFieldGrid.gridWidth;
+		this.height = game.playFieldGrid.gridHeight;
+        this.right = this.left + this.width;
+        this.bottom = this.top + this.height;
+        this.center = new Vector2D((this.left + this.width / 2), (this.top + this.height / 2));
+		this.toCenter = vecSubtract(this.center, new Vector2D(this.left, this.top));
+        this.draw();
+    }
+    draw() {
+        // Draw the background
+        engine.context.fillStyle = "rgb(232,247,248)";
+        engine.context.fillStyle = "rgba(232,247,248,0.40)";
+        engine.context.fillRect(this.left, this.top, this.width, this.height);
+        // Draw the border
+        engine.context.beginPath();
+        engine.context.strokeStyle = "rgb(111, 192, 203)";
+        engine.context.strokeStyle = "rgba(111, 192, 203, 0.99)";
+        engine.context.lineWidth = 1;
+        engine.context.moveTo(this.left, this.top);
+        engine.context.lineTo(this.right, this.top);
+        engine.context.lineTo(this.right, this.bottom);
+        engine.context.lineTo(this.left, this.bottom);
+        engine.context.lineTo(this.left, this.top);
+        engine.context.stroke();
+        // Draw the center point
+        /* engine.context.beginPath();
+        engine.context.strokeStyle = "#FF0000";
+        engine.context.lineWidth = 2.5;
+        engine.context.arc(this.center.x, this.center.y, 5, 0, degsToRads(360));
+        engine.context.stroke(); */
+    }
+	// Check or set the square's occupation
+	occupiedOn() { this.occupied = true; }
+	occupiedOff() { this.occupied = false; }
+	occupiedIsOn() { return this.occupied == true; }
+    occupiedIsOff() { return this.occupied == false; }
+    getSquare() { return this; }
+	getShape() { return this.attachedShape; }
+	setShape(shape) { this.attachedShape = shape; }
+	removeShape() { this.attachedShape = "undefined"; }
+	// Build links to neighboring grid squares
+	buildLinks() {
+		// Coordinates
+		this.gridColumn = this.id % 9;
+		this.gridRow = Math.floor(this.id / 9);
+		
+		// Neighbor links
+		if (this.gridRow == 0) {
+			this.linkTop = "undefined";
+		} else {
+			this.linkTop = game.playGrid.squares[`${parseInt(this.id) - 9}`];
+		}
+		if (this.gridRow == 8) {
+			this.linkBottom = "undefined";
+		} else {
+			this.linkBottom = game.playGrid.squares[`${parseInt(this.id) + 9}`];
+		}
+		
+		if (this.gridColumn == 0) {
+			this.linkLeft = "undefined";
+		} else {
+			this.linkLeft = game.playGrid.squares[`${parseInt(this.id) - 1}`];
+		}
+		
+		if (this.gridColumn == 8) {
+			this.linkRight = "undefined";
+		} else {
+			this.linkRight = game.playGrid.squares[`${parseInt(this.id) + 1}`];
+		}
+		
+		// Update links array
+        this.linksArray = [this.linkTop, this.linkBottom, this.linkLeft, this.linkRight];
+	}
+	// Perform updates
+	update() {
+        // Ensure the regulator is ready
+        // if (!this.regulator.isReady()) return;
+
+		// Check if this grid is attached with a shape
+		if (this.getShape() == "undefined") {
+			// console.log(`Grid ${this.id} (${this.gridRow},${this.gridColumn}) is empty. Requesting new shape.`);
+			// Search top links for the next available shape
+			var current = this;
+			while (current.linkTop !== "undefined") {
+                if (current.linkTop.getShape() !== "undefined") {
+                    // console.log(`Grid linkTop(${current.id}->${current.linkTop.id}): ${current.linkTop.getShape()}`);
+                    current = current.linkTop;
+                    break;
+                } else {
+                    current = current.linkTop;
+                }
+			}
+			// If no shapes exist, request a shape spawn
+			if (current.attachedShape == "undefined") {
+				// console.log(`No shapes found. Generating a new one in spawn ${game.playSpawnSquares[this.gridColumn].id} at ${game.playSpawnSquares[this.gridColumn].center}...`);
+				// Spawn
+				var spawnShape = game.evaluateBoard.GenerateShape(game.playSpawnSquares[this.gridColumn].center);
+				
+				// If the spawn succeeded
+				if (spawnShape !== "Too many entities") {
+					// Attach the new shape
+					this.setShape(spawnShape);
+					// Notify the new shape of the attachment
+                    spawnShape.attachedSquare = this;
+				} else {
+					// Wait
+                    console.log(`Grid ${this.id} shape request failed. Requesting cleanup...`);
+                    game.evaluateBoard.RemoveExcess();
+				}
+			} else {
+				// Assign the shape to this square
+                this.attachedShape = current.attachedShape;
+				// Unassign the shape from its previous location
+                current.attachedShape = "undefined";
+				// Notify the shape of the new attachment
+				this.attachedShape.attachedSquare = this;
+            }
+            // Move the assigned shape to this square
+            this.attachedShape.forceMoveToLocation(this.center);
+            // Notify the board evaluator that the grid has changed
+            game.evaluateBoard.gridShifted = true;
+		}
+	}
+	// Determine if the target equals any neighboring grid squares
+	compareLinks(target) {
+		for (var i = 0; i < this.linksArray.length; i++) {
+			if (this.linksArray[i] !== "undefined") {
+				if (target.id == this.linksArray[i].id) return true;
+			}
+		}
+		return false;
+    }
+    // Search for unempty neighbors
+	testLinks() {
+		// Start the list with this grid
+        this.matchesVertical = [this];
+        this.matchesHorizontal = [this];
+		// Vertical
+		this.testTop();
+		this.testBottom();
+		// Horizontal
+		this.testLeft();
+        this.testRight();
+
+        // Concatenate the arrays
+        var matchesCombined = this.matchesVertical.concat(this.matchesHorizontal);
+        // Remove the duplicate values using a set
+        const matchesSet = new Set(matchesCombined);
+        // Restore the array
+        const matchesRestored = [...matchesSet];
+        
+        console.log(`Matches: ${matchesRestored.length}`);
+	}
+	// Test top links for matches
+	testTop() {
+		var current = this;
+		while (current.linkTop !== "undefined") {
+			this.matchesVertical.push(current.linkTop);
+			current = current.linkTop;
+		}
+	}
+	// Test bottom links for matches
+	testBottom() {
+		var current = this;
+		while (current.linkBottom !== "undefined") {
+			this.matchesVertical.push(current.linkBottom);
+			current = current.linkBottom;
+		}
+	}
+	// Test left links for matches
+	testLeft() {
+		var current = this;
+		while (current.linkLeft !== "undefined") {
+			this.matchesHorizontal.push(current.linkLeft);
+			current = current.linkLeft;
+		}
+	}
+	// Test right links for matches
+	testRight() {
+		var current = this;
+		while (current.linkRight !== "undefined") {
+			this.matchesHorizontal.push(current.linkRight);
+			current = current.linkRight;
+		}
+    }
+    // Search neighbors for matches
+    testMatches() {
+        // Start the list
+        this.matchesCombined = [this];
+        this.matchesVertical = [];
+        this.matchesHorizontal = [];
+        let sponsorsList = [];
+		// Vertical
+        this.testTopMatches();
+        // console.log(`<Scene_Play>[GridSquare:TestMatches:Top]\nID: ${this.id}. Matches: ${this.matchesVertical.length}.`);
+        this.testBottomMatches();
+        // console.log(`<Scene_Play>[GridSquare:TestMatches:Bottom]\nID: ${this.id}. Matches ${this.matchesVertical.length}.`);
+		// Horizontal
+        this.testLeftMatches();
+        // console.log(`<Scene_Play>[GridSquare:TestMatches:Left]\nID: ${this.id}. Matches ${this.matchesHorizontal.length}.`);
+        this.testRightMatches();
+        // console.log(`<Scene_Play>[GridSquare:TestMatches:Right]\nID: ${this.id}. Matches ${this.matchesHorizontal.length}.`);
+
+        // Concatenate the arrays
+        // Remove the duplicate values using a set
+        // const matchesSet = new Set(matchesCombined);
+        // Restore the array
+        // const matchesRestored = [...matchesSet];
+
+        if (this.matchesHorizontal.length > 1) this.matchesCombined.push(...this.matchesHorizontal);
+        if (this.matchesVertical.length > 1) this.matchesCombined.push(...this.matchesVertical);
+        
+        // If other shapes match this shape, add this shape to the array
+        if (this.matchesCombined.length > 1) {
+            this.matchesCombined.push(this);
+            for (var i = 0; i < this.matchesCombined.length; i++) {
+                if (this.matchesCombined[i].checkForSponsor()) {
+                    let color = getSponsorColor(this.matchesCombined[i].type);
+                    switch(color) {
+                        case "blue":
+                            // Add blue sponsors effect
+                            break;
+                        case "darkblue":
+                            // Add darkblue sponsors effect
+                            break;
+                        case "purple":
+                            // Add purple sponsors effect
+                            break;
+                        case "pink":
+                            // Add pink sponsors effect
+                            break;
+                        case "orange":
+                            // Add orange sponsors effect
+                            break;
+                        case "green":
+                            // Add green sponsors effect
+                            break;
+                        case "UNKNOWN COLOR":
+                            break;
+                    }
+                }
+            }
+        }
+        
+        const matchesSet = new Set(this.matchesCombined);
+
+        this.matchesCombined = [...matchesSet];
+
+        if (this.matchesCombined.length > 2) {
+            /* for (let item of matchesSet) {
+                console.log(`Test Matches found: ${item.id}`);
+            } */
+            return matchesSet;
+        }
+        // console.log(`<Scene_Play>[GridSquare:TestMatches]\nID: ${this.id} found ${this.matchesCombined.length} matches: ${this.matchesCombined}\nLinks: ${this.linksArray}`);
+        return "undefined";
+    }
+    // Test top links for matches
+	testTopMatches() {
+		var current = this;
+		while (current.linkTop !== "undefined" && current.checkShapeType(current.linkTop)) {
+			this.matchesVertical.push(current.linkTop);
+			current = current.linkTop;
+		}
+	}
+	// Test bottom links for matches
+	testBottomMatches() {
+		var current = this;
+		while (current.linkBottom !== "undefined" && current.checkShapeType(current.linkBottom)) {
+			this.matchesVertical.push(current.linkBottom);
+			current = current.linkBottom;
+		}
+	}
+	// Test left links for matches
+	testLeftMatches() {
+		var current = this;
+		while (current.linkLeft !== "undefined" && current.checkShapeType(current.linkLeft)) {
+			this.matchesHorizontal.push(current.linkLeft);
+			current = current.linkLeft;
+		}
+	}
+	// Test right links for matches
+	testRightMatches() {
+		var current = this;
+		while (current.linkRight !== "undefined" && current.checkShapeType(current.linkRight)) {
+			this.matchesHorizontal.push(current.linkRight);
+			current = current.linkRight;
+		}
+    }
+    // Add blue sponsors effect
+    blueSponsorsEffect() {}
+    // Add darkblue sponsors effect
+    darkBlueSponsorsEffect() {}
+    // Add purple sponsors effect
+    purpleSponsorsEffect() {}
+    // Add pink sponsors effect
+    pinkSponsorsEffect() {}
+    // Add orange sponsors effect
+    orangeSponsorsEffect() {}
+    // Add green sponsors effect
+    greenSponsorsEffect() {}
+    // Check whether target's attached shape type matches this grid's attached shape type
+    checkShapeType(target) {
+        // console.log(`<Scene_Play>[GridSquare:CheckShapeType]\nID: ${this.id}\nThis: ${this.attachedShape.type}\nTarget: ${target.attachedShape.type}`);
+        return this.attachedShape.type == target.attachedShape.type || this.checkForSponsor(target);
+    }
+    // Check whether the shape is a sponsor
+    checkForSponsor(target) {
+        // try {
+            // console.log(`\n\nSponsor? ${isSponsorType(this.attachedShape.type)}\n\n`);
+            if (isSponsorType(this.attachedShape.type)) {
+                // console.log(`\n\nLooking for sponsor of color ${getSponsorColor(this.attachedShape.type)}\n\n`);
+                return true;
+            }
+        // } catch (e) {}
+        
+        // Not a sponsor
+        return false;
+    }
+	// Display a string for this square
+	toString() {
+		var s = ``;
+		s += `ID: ${this.id} (${this.gridRow},${this.gridColumn})\n`;
+		s += `Links:\n`;
+		s += ` - Top: (${(typeof this.linkTop.gridRow !== "undefined") ? this.linkTop.gridRow : "none"},${(typeof this.linkTop.gridColumn !== "undefined") ? this.linkTop.gridColumn : "none"})\n`;
+		s += ` - Bot: (${(typeof this.linkBottom.gridRow !== "undefined") ? this.linkBottom.gridRow : "none"},${(typeof this.linkBottom.gridColumn !== "undefined") ? this.linkBottom.gridColumn : "none"})\n`;
+		s += ` - Lef: (${(typeof this.linkLeft.gridRow !== "undefined") ? this.linkLeft.gridRow : "none"},${(typeof this.linkLeft.gridColumn !== "undefined") ? this.linkLeft.gridColumn : "none"})\n`;
+		s += ` - Rig: (${(typeof this.linkRight.gridRow !== "undefined") ? this.linkRight.gridRow : "none"},${(typeof this.linkRight.gridColumn !== "undefined") ? this.linkRight.gridColumn : "none"})`;
+		console.log(`${s}`);
+	}
+	
+};
+
+class SpawnSquare {
+    constructor(_id, top, left, width, height, _div) {
+        this.id = _id;
+        this.left = left;
+        this.width = width;
+        this.height = height;
+        this.top = 0 - this.height;
+        this.right = left + width;
+        this.bottom = top + height;
+        this.center = new Vector2D((left + width / 2), (top + height / 2));
+		// Reference div
+		this.divReference = _div;
+		// Push reference to this square
+        game.playSpawnSquares.push(this);
+    }
+    setPosition(newTop, newLeft) {
+		this.width = game.playFieldGrid.gridWidth;
+		this.height = game.playFieldGrid.gridHeight;
+		this.top = 0 - this.height;
+        this.left = newLeft + game.playFieldGrid.posX;
+        this.right = this.left + this.width;
+        this.bottom = this.top + this.height;
+        this.center = new Vector2D((this.left + this.width / 2), (this.top + this.height / 2));
+        this.draw();
+    }
+    draw() {
+        // Draw the background
+        // engine.context.fillStyle = "rgb(232,247,248)";
+        engine.context.fillStyle = "rgba(10,62,66,0.40)";
+        engine.context.fillRect(this.left, this.top, this.width, this.height);
+        // Draw the border
+        // engine.context.strokeStyle = "rgb(111, 192, 203)";
+        engine.context.strokeStyle = "rgba(203,111,185,0.99)";
+        engine.context.lineWidth = 1;
+        engine.context.moveTo(this.left, this.top);
+        engine.context.lineTo(this.right, this.top);
+        engine.context.lineTo(this.right, this.bottom);
+        engine.context.lineTo(this.left, this.bottom);
+        engine.context.lineTo(this.left, this.top);
+        engine.context.stroke();
+        // Draw the center point
+        /* engine.context.beginPath();
+        engine.context.strokeStyle = "#00FFBB";
+        engine.context.lineWidth = 2.5;
+        engine.context.arc(this.center.x, this.center.y, 5, 0, degsToRads(360));
+        engine.context.stroke(); */
+    }
+};
+
 //   - Images
 game.playBackground = {
     // Get handle to image
-    image: document.getElementById("playBackground"),
+    image: document.getElementById("mainBackground"),
     // Declare object transform information
     org_width: 1920 * game.scale,
     org_heigth: 1080 * game.scale,
@@ -346,357 +767,6 @@ game.playSponsorLogo = {
     }
 };
 
-class GridSquare {
-    constructor(_id, top, left, width, height, column, _div) {
-        this.id = _id;
-        this.top = top;
-        this.left = left;
-        this.width = width;
-        this.height = height;
-		this.column = column;
-        this.right = left + width;
-        this.bottom = top + height;
-        this.center = new Vector2D((left + width / 2), (top + height / 2));
-		this.toCenter = vecSubtract(this.center, new Vector2D(this.left, this.top));
-		this.occupied = false;
-		// Location within the playing grid
-		this.gridColumn = null;
-		this.gridRow = null;
-		// Neighbor links
-		this.linkTop = null;
-		this.linkBottom = null;
-		this.linkLeft = null;
-		this.linkRight = null;
-		this.linksArray = [];
-		// Occupying shape
-		this.attachedShape = "undefined";
-		// Regulator
-		this.regulator = new Regulator(1500, this);
-		// Store the matching shapes
-		this.matchesVertical = [];
-        this.matchesHorizontal = [];
-        this.matchesCombined = [];
-		// Reference div
-		this.divReference = _div;
-		// Push reference to this square
-        game.playGrid.addSquare(this);
-    }
-    setPosition(newTop, newLeft) {
-        this.top = newTop + game.playFieldGrid.posY;
-        this.left = newLeft + game.playFieldGrid.posX;
-		this.width = game.playFieldGrid.gridWidth;
-		this.height = game.playFieldGrid.gridHeight;
-        this.right = this.left + this.width;
-        this.bottom = this.top + this.height;
-        this.center = new Vector2D((this.left + this.width / 2), (this.top + this.height / 2));
-		this.toCenter = vecSubtract(this.center, new Vector2D(this.left, this.top));
-        this.draw();
-    }
-    draw() {
-        // Draw the background
-        // engine.context.fillStyle = "rgb(232,247,248)";
-        engine.context.fillStyle = "rgba(232,247,248,0.40)";
-        engine.context.fillRect(this.left, this.top, this.width, this.height);
-        // Draw the border
-        // engine.context.strokeStyle = "rgb(111, 192, 203)";
-        engine.context.strokeStyle = "rgba(111, 192, 203, 0.99)";
-        engine.context.lineWidth = 1;
-        engine.context.moveTo(this.left, this.top);
-        engine.context.lineTo(this.right, this.top);
-        engine.context.lineTo(this.right, this.bottom);
-        engine.context.lineTo(this.left, this.bottom);
-        engine.context.lineTo(this.left, this.top);
-        engine.context.stroke();
-        // Draw the center point
-        engine.context.beginPath();
-        engine.context.strokeStyle = "#FF0000";
-        engine.context.lineWidth = 2.5;
-        engine.context.arc(this.center.x, this.center.y, 5, 0, degsToRads(360));
-        engine.context.stroke();
-    }
-	// Check or set the square's occupation
-	occupiedOn() { this.occupied = true; }
-	occupiedOff() { this.occupied = false; }
-	occupiedIsOn() { return this.occupied == true; }
-	occupiedIsOff() { return this.occupied == false; }
-	getShape() { return this.attachedShape; }
-	setShape(shape) { this.attachedShape = shape; }
-	removeShape() { this.attachedShape = "undefined"; }
-	// Build links to neighboring grid squares
-	buildLinks() {
-		// Coordinates
-		this.gridColumn = this.id % 9;
-		this.gridRow = Math.floor(this.id / 9);
-		
-		// Neighbor links
-		if (this.gridRow == 0) {
-			this.linkTop = "undefined";
-		} else {
-			this.linkTop = game.playGrid.squares[`${parseInt(this.id) - 9}`];
-		}
-		if (this.gridRow == 8) {
-			this.linkBottom = "undefined";
-		} else {
-			this.linkBottom = game.playGrid.squares[`${parseInt(this.id) + 9}`];
-		}
-		
-		if (this.gridColumn == 0) {
-			this.linkLeft = "undefined";
-		} else {
-			this.linkLeft = game.playGrid.squares[`${parseInt(this.id) - 1}`];
-		}
-		
-		if (this.gridColumn == 8) {
-			this.linkRight = "undefined";
-		} else {
-			this.linkRight = game.playGrid.squares[`${parseInt(this.id) + 1}`];
-		}
-		
-		// Update links array
-		this.linksArray = [this.linkTop, this.linkBottom, this.linkLeft, this.linkRight];
-	}
-	// Perform updates
-	update() {
-        // Ensure the regulator is ready
-        // if (!this.regulator.isReady()) return;
-
-		// Check if this grid is attached with a shape
-		if (this.getShape() == "undefined") {
-			console.log(`Grid ${this.id} (${this.gridRow},${this.gridColumn}) is empty. Requesting new shape.`);
-			// Search top links for the next available shape
-			var current = this;
-			while (current.linkTop !== "undefined" && current.linkTop.getShape() == "undefined") {
-				current = current.linkTop;
-			}
-			// If no shapes exist, request a shape spawn
-			if (current.attachedShape == "undefined") {
-				console.log(`No shapes found. Generating a new one in spawn ${game.playSpawnSquares[this.gridColumn].id} at ${game.playSpawnSquares[this.gridColumn].center}...`);
-				// Spawn
-				var spawnShape = game.evaluateBoard.GenerateShape(game.playSpawnSquares[this.gridColumn].center);
-				
-				// If the spawn succeeded
-				if (spawnShape !== "Too many entities") {
-					// Attach the new shape
-					this.setShape(spawnShape);
-					// Notify the new shape of the attachment
-                    spawnShape.attachedSquare = this;
-				} else {
-					// Wait
-					console.log(`Grid ${this.id} shape request failed.`);
-				}
-			} else {
-				// Assign the shape to this square
-                // this.setShape(current.attachedShape);
-                this.attachedShape = current.attachedShape;
-				// Unassign the shape from its previous location
-                // current.removeShape();
-                current.attachedShape = "undefined";
-				// Notify the shape of the new attachment
-				this.attachedShape.attachedSquare = this;
-            }
-            try {
-                // Move the assigned shape to this square
-                this.attachedShape.forceMoveToLocation(this.center);
-            } catch (e) {
-                // If the shape was not created, wait until the next spawn request to try again
-            }
-		}
-	}
-	// Determine if the target equals any neighboring grid squares
-	compareLinks(target) {
-		for (var i = 0; i < this.linksArray.length; i++) {
-			if (this.linksArray[i] !== "undefined") {
-				if (target.id == this.linksArray[i].id) return true;
-			}
-		}
-		return false;
-    }
-    // Search for unempty neighbors
-	testLinks() {
-		// Start the list with this grid
-        this.matchesVertical = [this];
-        this.matchesHorizontal = [this];
-		// Vertical
-		this.testTop();
-		this.testBottom();
-		// Horizontal
-		this.testLeft();
-        this.testRight();
-
-        // Concatenate the arrays
-        var matchesCombined = this.matchesVertical.concat(this.matchesHorizontal);
-        // Remove the duplicate values using a set
-        const matchesSet = new Set(matchesCombined);
-        // Restore the array
-        const matchesRestored = [...matchesSet];
-        
-        console.log(`Matches: ${matchesRestored.length}`);
-	}
-	// Test top links for matches
-	testTop() {
-		var current = this;
-		while (current.linkTop !== "undefined") {
-			this.matchesVertical.push(current.linkTop);
-			current = current.linkTop;
-		}
-	}
-	// Test bottom links for matches
-	testBottom() {
-		var current = this;
-		while (current.linkBottom !== "undefined") {
-			this.matchesVertical.push(current.linkBottom);
-			current = current.linkBottom;
-		}
-	}
-	// Test left links for matches
-	testLeft() {
-		var current = this;
-		while (current.linkLeft !== "undefined") {
-			this.matchesHorizontal.push(current.linkLeft);
-			current = current.linkLeft;
-		}
-	}
-	// Test right links for matches
-	testRight() {
-		var current = this;
-		while (current.linkRight !== "undefined") {
-			this.matchesHorizontal.push(current.linkRight);
-			current = current.linkRight;
-		}
-    }
-    // Search neighbors for matches
-    testMatches() {
-        // Start the list
-        this.matchesCombined = [this];
-        this.matchesVertical = [];
-        this.matchesHorizontal = [];
-		// Vertical
-        this.testTopMatches();
-        // console.log(`<Scene_Play>[GridSquare:TestMatches:Top]\nID: ${this.id}. Matches: ${this.matchesVertical.length}.`);
-        this.testBottomMatches();
-        // console.log(`<Scene_Play>[GridSquare:TestMatches:Bottom]\nID: ${this.id}. Matches ${this.matchesVertical.length}.`);
-		// Horizontal
-        this.testLeftMatches();
-        // console.log(`<Scene_Play>[GridSquare:TestMatches:Left]\nID: ${this.id}. Matches ${this.matchesHorizontal.length}.`);
-        this.testRightMatches();
-        // console.log(`<Scene_Play>[GridSquare:TestMatches:Right]\nID: ${this.id}. Matches ${this.matchesHorizontal.length}.`);
-
-        // Concatenate the arrays
-        // Remove the duplicate values using a set
-        // const matchesSet = new Set(matchesCombined);
-        // Restore the array
-        // const matchesRestored = [...matchesSet];
-
-        if (this.matchesHorizontal.length > 1) this.matchesCombined.push(...this.matchesHorizontal);
-        if (this.matchesVertical.length > 1) this.matchesCombined.push(...this.matchesVertical);
-        
-        // If other shapes match this shape, add this shape to the array
-        // if (this.matchesCombined.length > 1) this.matchesCombined.push(this);
-        
-        const matchesSet = new Set(this.matchesCombined);
-        // console.log(`<Scene_Play>[GridSquare:TestMatches]\nID: ${this.id} found ${this.matchesCombined.length} matches: ${matchesSet}`);
-        return matchesSet;
-    }
-    // Test top links for matches
-	testTopMatches() {
-		var current = this;
-		while (current.linkTop !== "undefined" && current.checkShapeType(current.linkTop)) {
-			this.matchesVertical.push(current.linkTop);
-			current = current.linkTop;
-		}
-	}
-	// Test bottom links for matches
-	testBottomMatches() {
-		var current = this;
-		while (current.linkBottom !== "undefined" && current.checkShapeType(current.linkBottom)) {
-			this.matchesVertical.push(current.linkBottom);
-			current = current.linkBottom;
-		}
-	}
-	// Test left links for matches
-	testLeftMatches() {
-		var current = this;
-		while (current.linkLeft !== "undefined" && current.checkShapeType(current.linkLeft)) {
-			this.matchesHorizontal.push(current.linkLeft);
-			current = current.linkLeft;
-		}
-	}
-	// Test right links for matches
-	testRightMatches() {
-		var current = this;
-		while (current.linkRight !== "undefined" && current.checkShapeType(current.linkRight)) {
-			this.matchesHorizontal.push(current.linkRight);
-			current = current.linkRight;
-		}
-    }
-    // Check whether target's attached shape type matches this grid's attached shape type
-    checkShapeType(target) {
-        // console.log(`<Scene_Play>[GridSquare:CheckShapeType]\nID: ${this.id}\nThis: ${this.attachedShape.type}\nTarget: ${target.attachedShape.type}`);
-        return this.attachedShape.type == target.attachedShape.type;
-    }
-	// Display a string for this square
-	toString() {
-		var s = ``;
-		s += `ID: ${this.id} (${this.gridRow},${this.gridColumn})\n`;
-		s += `Links:\n`;
-		s += ` - Top: (${(typeof this.linkTop.gridRow !== "undefined") ? this.linkTop.gridRow : "none"},${(typeof this.linkTop.gridColumn !== "undefined") ? this.linkTop.gridColumn : "none"})\n`;
-		s += ` - Bot: (${(typeof this.linkBottom.gridRow !== "undefined") ? this.linkBottom.gridRow : "none"},${(typeof this.linkBottom.gridColumn !== "undefined") ? this.linkBottom.gridColumn : "none"})\n`;
-		s += ` - Lef: (${(typeof this.linkLeft.gridRow !== "undefined") ? this.linkLeft.gridRow : "none"},${(typeof this.linkLeft.gridColumn !== "undefined") ? this.linkLeft.gridColumn : "none"})\n`;
-		s += ` - Rig: (${(typeof this.linkRight.gridRow !== "undefined") ? this.linkRight.gridRow : "none"},${(typeof this.linkRight.gridColumn !== "undefined") ? this.linkRight.gridColumn : "none"})`;
-		console.log(`${s}`);
-	}
-	
-};
-
-class SpawnSquare {
-    constructor(_id, top, left, width, height, _div) {
-        this.id = _id;
-        this.top = top;
-        this.left = left;
-        this.width = width;
-        this.height = height;
-        this.right = left + width;
-        this.bottom = top + height;
-        this.center = new Vector2D((left + width / 2), (top + height / 2));
-		// Reference div
-		this.divReference = _div;
-		// Push reference to this square
-        game.playSpawnSquares.push(this);
-    }
-    setPosition(newTop, newLeft) {
-		this.width = game.playFieldGrid.gridWidth;
-		this.height = game.playFieldGrid.gridHeight;
-		this.top = newTop + this.height/40;
-        this.left = newLeft + game.playFieldGrid.posX;
-        this.right = this.left + this.width;
-        this.bottom = this.top + this.height;
-        this.center = new Vector2D((this.left + this.width / 2), (this.top + this.height / 2));
-        this.draw();
-    }
-    draw() {
-        // Draw the background
-        // engine.context.fillStyle = "rgb(232,247,248)";
-        engine.context.fillStyle = "rgba(10,62,66,0.40)";
-        engine.context.fillRect(this.left, this.top, this.width, this.height);
-        // Draw the border
-        // engine.context.strokeStyle = "rgb(111, 192, 203)";
-        engine.context.strokeStyle = "rgba(203,111,185,0.99)";
-        engine.context.lineWidth = 1;
-        engine.context.moveTo(this.left, this.top);
-        engine.context.lineTo(this.right, this.top);
-        engine.context.lineTo(this.right, this.bottom);
-        engine.context.lineTo(this.left, this.bottom);
-        engine.context.lineTo(this.left, this.top);
-        engine.context.stroke();
-        // Draw the center point
-        engine.context.beginPath();
-        engine.context.strokeStyle = "#00FFBB";
-        engine.context.lineWidth = 2.5;
-        engine.context.arc(this.center.x, this.center.y, 5, 0, degsToRads(360));
-        engine.context.stroke();
-    }
-};
-
 game.playFieldGrid = {
     // Get handle to div
     div: document.getElementById("playGrid"),
@@ -769,7 +839,7 @@ game.playFieldGrid = {
 		this.spawnDiv.style.position = "absolute";
         this.spawnDiv.style.display = "block";
         this.spawnDiv.style.left = this.posX.toString() + "px";
-        this.spawnDiv.style.top = "0px";
+        this.spawnDiv.style.top = (-this.gridHeight - 15 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) + "px";
         this.spawnDiv.style.width = this.width + "px";
         this.spawnDiv.style.height = this.gridHeight + 2 + "px";
         this.spawnDiv.style.zIndex = 3;
@@ -811,18 +881,18 @@ game.playFieldGrid = {
 			}
 			
 			if (row == 0) {
-				spawnBuilder += spawnPrefix + i + '" class="spawn-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;">&nbsp;['+row.toFixed(0)+','+col.toFixed(0)+']</div>';
+				spawnBuilder += spawnPrefix + i + '" class="spawn-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;"></div>';
 				
 				game.playFieldGrid.spawnArray.push("spawnGridDiv" + i);
 				
 				var spawnSquare = new SpawnSquare(`${i}`, 0, this.spawnDiv.style.offsetLeft, this.gridWidth, this.gridHeight, this.spawnArray[i]);
 			}
 			
-            gridBuilder += divPrefix + i + '" class="gem-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;">['+row.toFixed(0)+','+col.toFixed(0)+']&nbsp;</div>';
+            gridBuilder += divPrefix + i + '" class="gem-container" style="display:inline-block; width:' + this.gridWidth + 'px;height: ' + this.gridHeight + 'px;margin:0px;"></div>';
 
 			game.playFieldGrid.gridArray.push("gemGridDiv" + i);
 			
-			var gridSquare = new GridSquare(`${i}`, 0, 0, this.gridWidth, this.gridHeight, col.toFixed(0), this.gridArray[i]);
+            var gridSquare = new GridSquare(`${i}`, 0, 0, this.gridWidth, this.gridHeight, col.toFixed(0), this.gridArray[i]);
         };
 		
 		// Close the spawn container
@@ -846,39 +916,17 @@ game.playFieldGrid = {
         }
     },
 	adjustSpawn: function () {
-		// Update Spawn Square Objects
+        // Update Spawn Square Objects
 		var z = document.getElementsByClassName("spawn-container");
         for (var i = 0; i < z.length; i++) {
             var dom = z[i];
-            game.playSpawnSquares[i].setPosition(0, dom.offsetLeft);
+            game.playSpawnSquares[i].setPosition(-this.gridHeight, dom.offsetLeft);
             game.playSpawnSquares[i].draw();
         }
 	}
 };
 
 // - Gems
-game.playBackground = {
-    // Get handle to image
-    image: document.getElementById("playBackground"),
-    // Declare object transform information
-    org_width: 1920 * game.scale,
-    org_heigth: 1080 * game.scale,
-    width: 0,
-    height: 0,
-    posX: 0,
-    posY: 0,
-    // Adjust the object's transform
-    resize: function () {
-        this.width = engine.width;
-        this.height = engine.height;
-    },
-    // Draw the object
-    draw: function () {
-        this.resize();
-        engine.context.drawImage(this.image, this.posX, this.posY, this.width, this.height);
-    }
-};
-
 game.gemTriangle = {
 	// Get handle to image
     image: document.getElementById("gemTriangle"),

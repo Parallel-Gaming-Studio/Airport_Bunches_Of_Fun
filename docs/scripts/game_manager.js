@@ -25,6 +25,14 @@ game.hideElements = {
             z[i].style.display = "none";
         }
     },
+    // Erase all shape divs
+    wipeShapes: function() {
+        var z = document.getElementsByClassName("gems");
+        var tempArray = [...z];
+        while (tempArray.length > 0) {
+            tempArray.pop().remove();
+        }
+    },
     // Hide canvas drawings
     canvas: function () {
         engine.context.clearRect(0, 0, engine.width, engine.height);
@@ -33,30 +41,31 @@ game.hideElements = {
     hideAll: function () {
         this.images();
         this.canvas();
+        this.wipeShapes();
         // Reset leaderboard table
         game.top10players.hideTable();
-		// Reset the grid array
+        // Reset the grid array
         game.playGrid.clearGrid();
-		// Reset the spawn array
-		game.playSpawnSquares = [];
-		// Hide the play field's grid
-		game.playFieldGrid.hideGrid();
-		// Reset all entities
-		game.gameEntities.clearEntities();
+        // Reset the spawn array
+        game.playSpawnSquares = [];
+        // Hide the play field's grid
+        game.playFieldGrid.hideGrid();
+        // Reset all entities
+        game.gameEntities.clearEntities();
     }
 };
 
 // Frame rate display
 game.frameRateDisplay = {
-	div: document.getElementById("frameRate"),
-	draw: function() {
+    div: document.getElementById("frameRate"),
+    draw: function () {
         this.div.style.position = "absolute";
         this.div.style.display = "block";
         this.div.style.zIndex = 111;
-	},
-	update: function(frameRate) {
-		this.div.innerHTML = `<em><strong>${frameRate.toFixed(0)}</strong> FPS</em>`
-	}
+    },
+    update: function (frameRate) {
+        this.div.innerHTML = `<em><strong>${frameRate.toFixed(0)}</strong> FPS</em>`
+    }
 }
 
 // Maintain live game data (timers, scores, etc.)
@@ -70,17 +79,19 @@ game.gameController = {
         //Reset Play time
         game.endPlayerTimeBoard.resetTimer();
 
-		// DEBUG TESTER
+        // DEBUG TESTER
         if (game.startShapeTester) {
             game.startShapeTester = false;
         }
-		// DEBUG TESTER
-		
+        // DEBUG TESTER
+
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
                 // Set the new game state to Play Scene
                 game.currState = game.gameState[1];
+                // Reset the player
+                game.player.reset();
                 // Hide all elements
                 game.hideElements.hideAll();
                 // Refresh timeout
@@ -92,69 +103,75 @@ game.gameController = {
     },
     gsPlay: function (dt) {
         // Play Scene
-        
+
         //Start game timers
         if (!game.playTimeBoard.timer._timerExpired) {
             game.playTimeBoard.displayTimer();
+        } else {
+            // Clear the initials on the End Scene
+            game.endPlayerInitials.clearInitials();
+            // Update game state to End Scene
+            game.currState = game.gameState[2];
+            // Hide all elements
+            game.hideElements.hideAll();
+            // Refresh timeout
+            game.timeoutOverlay.refreshTimer();
+            // Redraw all elements
+            game.drawOnce();
         }
 
-        // Update the evaluate tester
-        if (game.evaluateBoard.evalReady(dt)) {
-            // DEBUG TESTER
-            if (!game.startShapeTester) {
-                game.shapeTester.testReady();
-                game.startShapeTester = true;
-                
-                game.evaluateBoard.Evaluate();
-            } else {
-                // Updated Regulated Items
-                game.regulators.update();
-                // Evaluate the board
-                game.evaluateBoard.Evaluate();
-            }
-            // DEBUG TESTER
-        }
-		
-		// Evaluate the playing field for open spaces
-		// game.evaluateBoard.Evaluate();
-		// game.gameEntities.updateEntities(dt);
+        // Evaluate the playing field for open spaces
+        // game.evaluateBoard.Evaluate();
+        // game.gameEntities.updateEntities(dt);
 
-		// Touch Events
-		for (var i = 0; i < game.touch.length; i++) {
-			if (engine.input.pressed(game.touch[i])) {
+        //if (!game.evaluateBoard.evaluating) {
+        // Touch Events
+        for (var i = 0; i < game.touch.length; i++) {
+            if (engine.input.pressed(game.touch[i])) {
                 for (var j = 0; j < Object.keys(engine.input.activeTouches).length; j++) {
                     var touchInfo = engine.input.getTouch(j);
-					if (touchInfo.type == "START") {
+                    if (touchInfo.type == "START") {
                         // Perform actions when start is pressed
-						game.selectShape(new Vector2D(touchInfo.x, touchInfo.y));
-						game.selectStartSquare(new Vector2D(touchInfo.x, touchInfo.y));
-					} else if (touchInfo.type == "END") {
+                        if (game.selectShape(new Vector2D(touchInfo.x, touchInfo.y))) {
+                            game.selectStartSquare(new Vector2D(touchInfo.x, touchInfo.y));
+                        }
+                        game.timeoutOverlay.refreshTimer();
+                    } else if (touchInfo.type == "END") {
                         // Perform actions when end is pressed
-						game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y));
-						game.releaseSelectedShape(new Vector2D(touchInfo.x, touchInfo.y));
-					}
-				}
-			}
-		}
-		
-		// Mouse Events
-		if (engine.input.pressed(game.mouse[0])) {
-			// Select the shape at the mouse click location
-			// console.log(`Clicked left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
-			game.selectShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-			game.selectStartSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-		}
-		if (engine.input.released(game.mouse[0])) {
-			// Release the shape upon mouse release and move the shape to the release location
-			// console.log(`Released left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
-			game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-			game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-		}
-		
+                        if (game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y))) {
+                            game.releaseSelectedShape(new Vector2D(touchInfo.x, touchInfo.y));
+                        }
+                        game.timeoutOverlay.refreshTimer();
+                    }
+                }
+            }
+        }
+
+        // Mouse Events
+        if (engine.input.pressed(game.mouse[0])) {
+            // Select the shape at the mouse click location
+            // console.log(`Clicked left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
+            if (game.selectShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y))) {
+                game.selectStartSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+            }
+            game.timeoutOverlay.refreshTimer();
+        }
+        if (engine.input.released(game.mouse[0])) {
+            // Release the shape upon mouse release and move the shape to the release location
+            // console.log(`Released left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
+            if (game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y))) {
+                game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
+            }
+            game.timeoutOverlay.refreshTimer();
+        }
+        //}
+
         // DEBUG
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
+                // Clear the initials on the End Scene
+                game.endPlayerInitials.clearInitials();
                 // Update game state to End Scene
                 game.currState = game.gameState[2];
                 // Hide all elements
@@ -165,6 +182,14 @@ game.gameController = {
                 game.drawOnce();
             }
         }
+
+        // Evaluate the board with enforced load balancing
+        if (game.evaluateBoard.evalReady(dt)) {
+            // Updated Regulated Items
+            game.regulators.update();
+            // Evaluate the board
+            game.evaluateBoard.Evaluate();
+        }
     },
     gsEnd: function (dt) {
         // End Scene
@@ -174,17 +199,22 @@ game.gameController = {
 
         //Pause Play Time
         game.playTimeBoard.playTime.paused = true;
+		
+        // Handle the initials animation
+        game.endPlayerInitials.animateInitials(dt);
 
-		// DEBUG TESTER
+        // DEBUG TESTER
         if (game.startShapeTester) {
             game.startShapeTester = false;
         }
-		// DEBUG TESTER
+        // DEBUG TESTER
 
         // DEBUG
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
+                // Clear the initials on the End Scene
+                game.endPlayerInitials.clearInitials();
                 // Update game state to Leaderboard Scene
                 game.currState = game.gameState[3];
                 // Hide all elements
@@ -214,7 +244,7 @@ game.gameController = {
                 game.player.reset();
                 // Reset leaderboard table
                 game.top10players.hideTable();
-				// Update game state to Start Scene
+                // Update game state to Start Scene
                 game.currState = game.gameState[0];
                 // Hide all elements
                 game.hideElements.hideAll();
@@ -232,31 +262,31 @@ game.gameController = {
 // - Limit actions that do not require real-time updates
 // - Executes every frame
 game.update = function (dt) {
-	// Determine frame rate
-	this.frameCount += 1;
-	this.frameTime += dt;
-	
-	// Regulated Updates
-	// - ~1 Second
-	if (this.frameTime >= 1.0) {
-		this.frameTime = 0.00001;
-		this.frameRate = this.frameCount;
-		this.frameCount = 0;
-		this.frameArray.unshift(this.frameRate);
-		if (this.frameArray.length > 5) this.frameArray.pop();
-		let frameSum = 0.0;
-		for (var i = 0; i < this.frameArray.length; i++) { frameSum += this.frameArray[i]; }
-		this.frameAvg = frameSum / this.frameArray.length;
-	}
-	// - ~5 Seconds
-	// Temporarily draw and update sponsors
-	this.frameDraw += dt;
-	if (this.frameDraw >= 5.0) {
-		this.drawOnce();
-		this.frameDraw = 0.00001;
-		this.sponsors.update();
-	}
-	game.frameRateDisplay.update(this.frameAvg);
+    // Determine frame rate
+    this.frameCount += 1;
+    this.frameTime += dt;
+
+    // Regulated Updates
+    // - ~1 Second
+    if (this.frameTime >= 1.0) {
+        this.frameTime = 0.00001;
+        this.frameRate = this.frameCount;
+        this.frameCount = 0;
+        this.frameArray.unshift(this.frameRate);
+        if (this.frameArray.length > 5) this.frameArray.pop();
+        let frameSum = 0.0;
+        for (var i = 0; i < this.frameArray.length; i++) { frameSum += this.frameArray[i]; }
+        this.frameAvg = frameSum / this.frameArray.length;
+    }
+    // - ~5 Seconds
+    // Temporarily draw and update sponsors
+    this.frameDraw += dt;
+    if (this.frameDraw >= 5.0) {
+        this.drawOnce();
+        this.frameDraw = 0.00001;
+        this.sponsors.update();
+    }
+    game.frameRateDisplay.update(this.frameAvg);
     // Monitor game states
     switch (game.currState) {
         case 'start':
@@ -310,7 +340,7 @@ game.update = function (dt) {
 //   - Light performance impact
 //   - Useful during scene transitions and small animations
 game.drawOnce = function () {
-	game.frameRateDisplay.draw();
+    game.frameRateDisplay.draw();
     // Draw based on the GameState
     switch (this.currState) {
         case 'start':
@@ -334,25 +364,25 @@ game.drawOnce = function () {
             // Left Panel Text
             this.playTimeBoard.draw();
             this.playScore.draw();
-            
+
             // Sponsors
             this.playSponsor.draw();
             this.playSponsorLogo.draw();
-			
-			// Gems
-			this.gemTriangle.draw();
-			this.gemStar.draw();
-			this.gemHeart.draw();
-			this.gemSquare.draw();
-			this.gemCircle.draw();
-			this.gemPentagon.draw();
-			this.gemRectangle.draw();
-			this.gemSponsor.draw();
-            
+
+            // Gems
+            this.gemTriangle.draw();
+            this.gemStar.draw();
+            this.gemHeart.draw();
+            this.gemSquare.draw();
+            this.gemCircle.draw();
+            this.gemPentagon.draw();
+            this.gemRectangle.draw();
+            this.gemSponsor.draw();
+
             // Playing Field
-			this.playFieldBackground.draw();
+            this.playFieldBackground.draw();
             this.playFieldGrid.draw();
-			// this.gameEntities.drawEntities();
+            this.gameEntities.drawEntities();
 
             // Display buttons
             this.menuButton.adjustStyle();

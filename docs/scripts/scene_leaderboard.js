@@ -6,7 +6,7 @@
 //   - Images
 game.leaderboardBackground = {
     //Get handle
-    image: document.getElementById("leaderboardBackground"),
+    image: document.getElementById("mainBackground"),
     //Declare object information
     org_width: 1920 * game.scale,
     org_height: 1080 * game.scale,
@@ -393,6 +393,8 @@ game.leaderboardRetryButton = {
     retry: function () {
         // Inform Google the player is starting a new game
         game.google.start();
+        // Clear the initials on the End Scene
+        game.endPlayerInitials.clearInitials();
         // Set the game state to Play Scene
         game.currState = game.gameState[1];
         // Reset the player object
