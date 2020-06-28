@@ -226,10 +226,11 @@ table td:nth-child(3) {
 .Initials {
     position: absolute;
     margin: 0px;
-    text-align: center;
+    text-align: left;
     font-size: 82pt;
     font-family: Roboto-Bold;
     color: #e84e3d;
+	pointer-events: none;
 }
 /* Timeout Overlay */
 #timeoutOverlay {

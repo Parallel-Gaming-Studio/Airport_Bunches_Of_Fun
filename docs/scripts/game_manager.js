@@ -90,6 +90,8 @@ game.gameController = {
             if (engine.input.pressed(game.controls[i])) {
                 // Set the new game state to Play Scene
                 game.currState = game.gameState[1];
+                // Reset the player
+                game.player.reset();
                 // Hide all elements
                 game.hideElements.hideAll();
                 // Refresh timeout
@@ -206,6 +208,12 @@ game.gameController = {
 
         //Pause Play Time
         game.playTimeBoard.playTime.paused = true;
+		
+		// Handle the initials animation
+		game.endPlayerInitials.animateInitials(dt);
+
+        // Handle the initials animation
+        game.endPlayerInitials.animateInitials(dt);
 
         // DEBUG TESTER
         if (game.startShapeTester) {
