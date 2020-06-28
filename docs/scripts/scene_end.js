@@ -338,9 +338,11 @@ game.endPlayerInitials = {
         // Add event listener to the button
         this.div.addEventListener("click", game.endPlayerInitials.clickMe);
 		// Empty the initials
-		this.initialsValue = "";
+        this.initialsValue = "";
+        // Display the empty initials
+        this.div.innerHTML = this.initialsValue;
 		// Reset the last update
-		this.lastUpdate = 0;
+        this.lastUpdate = 0;
     },
     // Adjust the object's transform
     resize: function () {
