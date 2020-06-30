@@ -332,9 +332,12 @@ table td:nth-child(3) {
 
 .playGrid {
     margin: 0;
+    padding: 0px;
     position: absolute;
     width: 100%;
     height: 100%;
+    font-size: 0px;
+    line-height: 0px;
 	pointer-events: none;
 }
 

@@ -52,20 +52,25 @@ class GridSquare {
     }
     draw() {
         // Draw the background
-        engine.context.fillStyle = "rgb(232,247,248)";
-        engine.context.fillStyle = "rgba(232,247,248,0.40)";
-        engine.context.fillRect(this.left, this.top, this.width, this.height);
+        // engine.context.fillStyle = "rgb(232,247,248)";
+        
         // Draw the border
         engine.context.beginPath();
+        engine.context.fillStyle = "rgb(232,247,248)";
+        engine.context.fillStyle = "rgba(232,247,248,0.30)";
+        engine.context.fillRect(this.left, this.top, this.width, this.height);
         engine.context.strokeStyle = "rgb(111, 192, 203)";
-        engine.context.strokeStyle = "rgba(111, 192, 203, 0.99)";
-        engine.context.lineWidth = 1;
-        engine.context.moveTo(this.left, this.top);
+        engine.context.strokeStyle = "rgba(111, 192, 203, 0.40)";
+        engine.context.lineWidth = 2.5;
+        engine.context.lineJoin = "round";
+        engine.context.rect(this.left, this.top, this.width, this.height);
+        engine.context.stroke();
+        /*engine.context.moveTo(this.left, this.top);
         engine.context.lineTo(this.right, this.top);
         engine.context.lineTo(this.right, this.bottom);
         engine.context.lineTo(this.left, this.bottom);
         engine.context.lineTo(this.left, this.top);
-        engine.context.stroke();
+        engine.context.stroke();*/
         // Draw the center point
         /* engine.context.beginPath();
         engine.context.strokeStyle = "#FF0000";
@@ -403,18 +408,18 @@ class SpawnSquare {
     draw() {
         // Draw the background
         // engine.context.fillStyle = "rgb(232,247,248)";
-        engine.context.fillStyle = "rgba(10,62,66,0.40)";
-        engine.context.fillRect(this.left, this.top, this.width, this.height);
+        // engine.context.fillStyle = "rgba(10,62,66,0.40)";
+        // engine.context.fillRect(this.left, this.top, this.width, this.height);
         // Draw the border
         // engine.context.strokeStyle = "rgb(111, 192, 203)";
-        engine.context.strokeStyle = "rgba(203,111,185,0.99)";
-        engine.context.lineWidth = 1;
-        engine.context.moveTo(this.left, this.top);
-        engine.context.lineTo(this.right, this.top);
-        engine.context.lineTo(this.right, this.bottom);
-        engine.context.lineTo(this.left, this.bottom);
-        engine.context.lineTo(this.left, this.top);
-        engine.context.stroke();
+        // engine.context.strokeStyle = "rgba(203,111,185,0.99)";
+        // engine.context.lineWidth = 1;
+        // engine.context.moveTo(this.left, this.top);
+        // engine.context.lineTo(this.right, this.top);
+        // engine.context.lineTo(this.right, this.bottom);
+        // engine.context.lineTo(this.left, this.bottom);
+        // engine.context.lineTo(this.left, this.top);
+        // engine.context.stroke();
         // Draw the center point
         /* engine.context.beginPath();
         engine.context.strokeStyle = "#00FFBB";
@@ -797,8 +802,8 @@ game.playFieldGrid = {
         this.posY = game.playFieldBackground.posY;
 		
 		// Update grid square dimensions
-		this.gridWidth = Math.floor(game.playFieldGrid.width / 9 - 2);
-		this.gridHeight = Math.floor(game.playFieldGrid.height / 9 - 2);
+		this.gridWidth = Math.floor(game.playFieldGrid.width / 9 - 4);
+		this.gridHeight = Math.floor(game.playFieldGrid.height / 9 - 4);
 		
 		// Update bounding box information
 		this.top = this.posY;
@@ -834,15 +839,15 @@ game.playFieldGrid = {
         this.div.style.top = this.posY.toString() + "px";
         this.div.style.width = this.width + "px";
         this.div.style.height = this.height + "px";
-        this.div.style.zIndex = 3;
+        this.div.style.zIndex = 0;
 		// Spawn Area
 		this.spawnDiv.style.position = "absolute";
         this.spawnDiv.style.display = "block";
         this.spawnDiv.style.left = this.posX.toString() + "px";
-        this.spawnDiv.style.top = (-this.gridHeight - 15 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) + "px";
+        this.spawnDiv.style.top = (-this.gridHeight - 55 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) + "px";
         this.spawnDiv.style.width = this.width + "px";
         this.spawnDiv.style.height = this.gridHeight + 2 + "px";
-        this.spawnDiv.style.zIndex = 3;
+        this.spawnDiv.style.zIndex = 0;
     },
 	resizeArrayElements: function() {
 		// Temporary DOM reference
