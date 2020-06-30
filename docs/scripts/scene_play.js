@@ -806,8 +806,8 @@ game.playFieldGrid = {
         this.posY = game.playFieldBackground.posY;
 		
 		// Update grid square dimensions
-		this.gridWidth = Math.floor(game.playFieldGrid.width / 9 - 4);
-		this.gridHeight = Math.floor(game.playFieldGrid.height / 9 - 4);
+		this.gridWidth = Math.floor(game.playFieldGrid.width / 9 - 2);
+		this.gridHeight = Math.floor(game.playFieldGrid.height / 9 - 2);
 		
 		// Update bounding box information
 		this.top = this.posY;
