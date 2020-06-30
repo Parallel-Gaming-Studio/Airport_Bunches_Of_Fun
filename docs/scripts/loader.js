@@ -11,70 +11,70 @@ $.cachedScript = function (url, options) {
 
 async function loadTimerScript() {
     // Load scripts synchronously in dependent order
-    const scrUtilities = await $.cachedScript("scripts/utils.js").done((script, textStatus) => {
+    const scrUtilities = await $.cachedScript("scripts/utils.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Utilities:Cache] ${textStatus}`);
     });
-    const scrObjectEnumerations = await $.cachedScript("scripts/objectEnumerations.js").done((script, textStatus) => {
+    const scrObjectEnumerations = await $.cachedScript("scripts/objectEnumerations.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[ObjectEnumerations:Cache] ${textStatus}`);
     });
-	const scrRegulator = await $.cachedScript("scripts/regulator.js").done((script, textStatus) => {
+	const scrRegulator = await $.cachedScript("scripts/regulator.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Regulator:Cache] ${textStatus}`);
     });
-    const scrPoints = await $.cachedScript("scripts/point.js").done((script, textStatus) => {
+    const scrPoints = await $.cachedScript("scripts/point.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Points:Cache] ${textStatus}`);
     });
-    const scrVector2D = await $.cachedScript("scripts/vector2d.js").done((script, textStatus) => {
+    const scrVector2D = await $.cachedScript("scripts/vector2d.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Vector2D:Cache] ${textStatus}`);
     });
-    const scrC2DMatrix = await $.cachedScript("scripts/c2dmatrix.js").done((script, textStatus) => {
+    const scrC2DMatrix = await $.cachedScript("scripts/c2dmatrix.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[C2DMatrix:Cache] ${textStatus}`);
     });
-    const scrTransformations = await $.cachedScript("scripts/transformations.js").done((script, textStatus) => {
+    const scrTransformations = await $.cachedScript("scripts/transformations.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Transformations:Cache] ${textStatus}`);
     });
-	const scrGeometry = await $.cachedScript("scripts/geometry.js").done((script, textStatus) => {
+	const scrGeometry = await $.cachedScript("scripts/geometry.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Geometry:Cache] ${textStatus}`);
     });
-	const scrEntityFunctionTemplates = await $.cachedScript("scripts/entityFunctionTemplates.js").done((script, textStatus) => {
+	const scrEntityFunctionTemplates = await $.cachedScript("scripts/entityFunctionTemplates.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[EntityFunctionTemplates:Cache] ${textStatus}`);
     });
-    const scrBaseGameEntity = await $.cachedScript("scripts/baseGameEntity.js").done((script, textStatus) => {
+    const scrBaseGameEntity = await $.cachedScript("scripts/baseGameEntity.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[BaseGameEntity:Cache] ${textStatus}`);
     });
-    const scrMovingEntity = await $.cachedScript("scripts/movingEntity.js").done((script, textStatus) => {
+    const scrMovingEntity = await $.cachedScript("scripts/movingEntity.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[MovingEntity:Cache] ${textStatus}`);
     });
-	const scrSteeringBehaviors = await $.cachedScript("scripts/steeringBehaviors.js").done((script, textStatus) => {
+	const scrSteeringBehaviors = await $.cachedScript("scripts/steeringBehaviors.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[SteeringBehaviors:Cache] ${textStatus}`);
     });
-    const scrTimer = await $.cachedScript("scripts/timer.js").done((script, textStatus) => {
+    const scrTimer = await $.cachedScript("scripts/timer.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Timer:Cache] ${textStatus}`);
     });
-    const scrShape = await $.cachedScript("scripts/shape.js").done((script, textStatus) => {
+    const scrShape = await $.cachedScript("scripts/shape.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Shape:Cache] ${textStatus}`);
     });
-    const scrCircle = await $.cachedScript("scripts/circle.js").done((script, textStatus) => {
+    const scrCircle = await $.cachedScript("scripts/circle.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Circle:Cache] ${textStatus}`);
     });
-    const scrHeart = await $.cachedScript("scripts/heart.js").done((script, textStatus) => {
+    const scrHeart = await $.cachedScript("scripts/heart.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Heart:Cache] ${textStatus}`);
     });
-    const scrPentagon = await $.cachedScript("scripts/pentagon.js").done((script, textStatus) => {
+    const scrPentagon = await $.cachedScript("scripts/pentagon.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Pentagon:Cache] ${textStatus}`);
     });
-    const scrRect = await $.cachedScript("scripts/rectangle.js").done((script, textStatus) => {
+    const scrRect = await $.cachedScript("scripts/rectangle.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Rectangle:Cache] ${textStatus}`);
     });
-    const scrSquare = await $.cachedScript("scripts/square.js").done((script, textStatus) => {
+    const scrSquare = await $.cachedScript("scripts/square.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Square:Cache] ${textStatus}`);
     });
-    const scrStar = await $.cachedScript("scripts/star.js").done((script, textStatus) => {
+    const scrStar = await $.cachedScript("scripts/star.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Star:Cache] ${textStatus}`);
     });
-    const scrTriangle = await $.cachedScript("scripts/triangle.js").done((script, textStatus) => {
+    const scrTriangle = await $.cachedScript("scripts/triangle.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Triangle:Cache] ${textStatus}`);
     });
-	const scrSponsored = await $.cachedScript("scripts/sponsored.js").done((script, textStatus) => {
+	const scrSponsored = await $.cachedScript("scripts/sponsored.js?v=0.0.1").done((script, textStatus) => {
         // console.log(`<Loader>[Sponsored:Cache] ${textStatus}`);
     });
 };
@@ -102,39 +102,39 @@ function awaitScripts() {
 // Construct the page elements
 function buildPage() {
     // Load Reusables
-    $.get('includes/reusables.html', (reusables) => {
+    $.get('includes/reusables.html?v=0.0.1', (reusables) => {
         $("br").before(reusables);
     }).promise().done(() => {
         // console.log("<Loader> Reusables loaded");
         
         // Load Start Scene
-        $.get('includes/start_scene.html', (start_scene) => {
+        $.get('includes/start_scene.html?v=0.0.1', (start_scene) => {
             $("br").before(start_scene);
         }).promise().done(() => {
             // console.log("<Loader> Start scene loaded");
             
             // Load Play Scene
-            $.get('includes/play_scene.html', (play_scene) => {
+            $.get('includes/play_scene.html?v=0.0.1', (play_scene) => {
                 $("br").before(play_scene);
             }).promise().done(() => {
                 // console.log("<Loader> Play scene loaded");
                 
                 // Load Leaderboard Scene
-                $.get('includes/leaderboard_scene.html', (leaderboard_scene) => {
+                $.get('includes/leaderboard_scene.html?v=0.0.1', (leaderboard_scene) => {
                     $("br").before(leaderboard_scene);
                 }).promise().done(() => {
                     // console.log("<Loader> Leaderboard scene loaded");
 
                     // Load End Scene
-                    $.get('includes/end_scene.html', (end_scene) => {
+                    $.get('includes/end_scene.html?v=0.0.1', (end_scene) => {
                         $("br").before(end_scene);
                     }).promise().done(() => {
                         // console.log("<Loader> End scene loaded");
 						
                         // Load Game Scripts
-                        $("#abofScripts").html('<script src="scripts/engine.js"></script>').promise().done(() => {
-                            $("#abofScripts script").after('<script src="scripts/game.js"></script>').promise().done(() => {
-								$("#abofScripts script").after('<script src="scripts/gameplay.js"></script>').promise().done(() => {
+                        $("#abofScripts").html('<script src="scripts/engine.js?v=0.0.1"></script>').promise().done(() => {
+                            $("#abofScripts script").after('<script src="scripts/game.js?v=0.0.1"></script>').promise().done(() => {
+								$("#abofScripts script").after('<script src="scripts/gameplay.js?v=0.0.1"></script>').promise().done(() => {
 									$.when("#abofScripts").done(() => {
 										// console.log("<Loader> Executing scripts...");
 										// Remove the <br> tag placeholder
