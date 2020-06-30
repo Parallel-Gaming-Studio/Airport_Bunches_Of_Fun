@@ -29,7 +29,7 @@ class GridSquare {
 		// Occupying shape
 		this.attachedShape = "undefined";
 		// Regulator
-		this.regulator = new Regulator(15, this);
+		this.regulator = new Regulator(12, this);
 		// Store the matching shapes
 		this.matchesVertical = [];
         this.matchesHorizontal = [];

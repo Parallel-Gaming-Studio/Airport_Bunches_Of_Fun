@@ -179,6 +179,8 @@ game.gameController = {
 
         // Evaluate the board with enforced load balancing
         if (game.evaluateBoard.evalReady(dt)) {
+            // Fix shape selectors
+            if (game.startSquare == null && game.destinationSquare != null) game.destinationSquare = null;
             // Updated Regulated Items
             game.regulators.update();
             // Evaluate the board

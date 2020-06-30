@@ -262,7 +262,7 @@ game.destinationSquare = null;
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
 game.selectShape = function (pos) {
-	if (!game.evaluateCursor(pos)) return false;
+	if (!game.evaluateCursor(pos) || !game.playGrid.readiness()) return false;
 	if (game.startSquare != null || game.destinationSquare != null) return false;
 	try {
 		game.selectedShape = game.getShapeAtPosition(pos);
@@ -299,7 +299,7 @@ game.selectStartSquare = function (pos) {
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
 game.selectDestinationSquare = function (pos) {
-	if (!game.evaluateCursor(pos)) return false;
+	if (!game.evaluateCursor(pos)  || !game.playGrid.readiness()) return false;
 	if (game.startSquare == null && game.destinationSquare != null) {
 		game.destinationSquare = null;
 		return false;
