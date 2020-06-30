@@ -1,217 +1,5 @@
 // JavaScript Document
 
-// Testing function
-game.startShapeTester = false;
-game.shapeTester = {
-	isReady: false,
-	counter: 0,
-	myEntity: null,
-	myMover: null,
-	myShape: null,
-	myTriangle: null,
-	id: null,		// int
-	pos: null,		// Vector2D
-	radius: null,	// double
-	scale: null,	// Vector2D
-	type: null,		// typeEnum
-	tag: null,		// boolean
-	velocity: null,	// Vector2D
-	maxSpeed: null,	// double
-	heading: null,	// Vector2D
-	mass: null,		// double
-	turnRate: null,	// double
-	maxForce: null,	// double
-	width: null,	// double
-	height: null,	// double
-	init: function () {
-		this.id = 0;						// int
-		this.pos = new Vector2D(317, 600);	// Vector2D
-		this.radius = 20;					// double
-		this.scale = new Vector2D(1, 1);		// Vector2D
-		this.type = typeEnum.type_entity;	// typeEnum
-		this.tag = false;					// boolean
-		this.velocity = new Vector2D();		// Vector2D
-		this.maxSpeed = 10.0;				// double
-		this.heading = new Vector2D(0, 1);	// Vector2D
-		this.mass = 1.0;					// double
-		this.turnRate = 2.5;				// double
-		this.maxForce = 5.0;				// double
-		this.width = 20.0;					// double
-		this.height = 20.0;					// double
-	},
-	testReady: function () {
-		/* // NULL values
-		console.log(`<ShapeTester>[TestReady(NULL):Entity]`);
-		this.testEntity();
-		console.log(`<ShapeTester>[TestReady(NULL):Mover]`);
-		this.testMover();
-		console.log(`<ShapeTester>[TestReady(NULL):Shape]`);
-		this.testShape();
-		// - Draw shapes
-		console.log(`<ShapeTester>[TestReady(NULL):Triangle]`);
-		this.testTriangle();
-		console.log(`<ShapeTester>[TestReady(NULL):Circle]`);
-		this.testCircle();
-		console.log(`<ShapeTester>[TestReady(NULL):Heart]`);
-		this.testHeart();
-		console.log(`<ShapeTester>[TestReady(NULL):Pentagon]`);
-		this.testPentagon();
-		console.log(`<ShapeTester>[TestReady(NULL):Rectangle]`);
-		this.testRectangle();
-		console.log(`<ShapeTester>[TestReady(NULL):Square]`);
-		this.testSquare();
-		console.log(`<ShapeTester>[TestReady(NULL):Star]`);
-		this.testStar();
-		// Initialized values
-		this.init();
-		this.toString();
-		console.log(`<ShapeTester>[TestReady(INIT):Entity]`);
-		this.testEntity();
-		console.log(`<ShapeTester>[TestReady(INIT):Mover]`);
-		this.testMover();
-		console.log(`<ShapeTester>[TestReady(INIT):Shape]`);
-		this.testShape();
-		// - Draw shapes
-		console.log(`<ShapeTester>[TestReady(INIT):Triangle]`);
-		this.testTriangle();
-		console.log(`<ShapeTester>[TestReady(INIT):Circle]`);
-		this.testCircle();
-		console.log(`<ShapeTester>[TestReady(INIT):Heart]`);
-		this.testHeart();
-		console.log(`<ShapeTester>[TestReady(INIT):Pentagon]`);
-		this.testPentagon();
-		console.log(`<ShapeTester>[TestReady(INIT):Rectangle]`);
-		this.testRectangle();
-		console.log(`<ShapeTester>[TestReady(INIT):Square]`);
-		this.testSquare();
-		console.log(`<ShapeTester>[TestReady(INIT):Star]`);
-		this.testStar();
-		// Display information for each entity
-		game.gameEntities.toString();*/
-	},
-	testEntity: function () {
-		// constructor(_id, boundingRadius, position, scale, type, tag)
-		// console.log(`<ShapeTester>[TestEntity]`);
-		if (this.id == null) {
-			this.myEntity = new baseGameEntity();
-		} else {
-			this.myEntity = new baseGameEntity(this.id, this.radius, this.pos, this.scale, this.type, this.tag);
-		}
-	},
-	testMover: function () {
-		// constructor(position, radius, velocity, maxSpeed, heading, mass, scale, turnRate, maxForce, type)
-		// console.log(`<ShapeTester>[TestMover]`);
-		if (this.id == null) {
-			this.myMover = new movingEntity();
-		} else {
-			this.myMover = new movingEntity(this.pos, this.radius, this.velocity, this.maxSpeed, this.heading, this.mass, this.scale, this.turnRate, this.maxForce, typeEnum.type_moving_entity);
-		}
-	},
-	testShape: function () {
-		// constructor(pos, type, width, height)
-		// console.log(`<ShapeTester>[TestShape]`);
-		if (this.id == null) {
-			this.myShape = new Shape();
-		} else {
-			this.myShape = new Shape(this.pos, typeEnum.type_shape, this.width, this.height);
-		}
-	},
-	testTriangle: function () {
-		// constructor(pos)
-		// console.log(`<ShapeTester>[TestTriangle]`);
-		if (this.id == null) {
-			this.myTriangle = new triangle();
-		} else {
-			// console.log(`Spawner ${this.counter}'s center at ${game.playSpawnSquares[this.counter].center}`)
-			this.myTriangle = new triangle(game.playSpawnSquares[this.counter].center);
-			this.counter++;
-		}
-	},
-	testCircle: function () {
-		// constructor(pos)
-		// console.log(`<ShapeTester>[TestCircle]`);
-		if (this.id == null) {
-			this.myCircle = new circle();
-		} else {
-			// console.log(`Spawner ${this.counter}'s center at ${game.playSpawnSquares[this.counter].center}`)
-			this.myCircle = new circle(game.playSpawnSquares[this.counter].center);
-			this.counter++;
-		}
-	},
-	testHeart: function () {
-		// constructor(pos)
-		// console.log(`<ShapeTester>[TestHeart]`);
-		if (this.id == null) {
-			this.myHeart = new heart();
-		} else {
-			// console.log(`Spawner ${this.counter}'s center at ${game.playSpawnSquares[this.counter].center}`)
-			this.myHeart = new heart(game.playSpawnSquares[this.counter].center);
-			this.counter++;
-		}
-	},
-	testPentagon: function () {
-		// constructor(pos)
-		// console.log(`<ShapeTester>[TestPentagon]`);
-		if (this.id == null) {
-			this.myPentagon = new pentagon();
-		} else {
-			// console.log(`Spawner ${this.counter}'s center at ${game.playSpawnSquares[this.counter].center}`)
-			this.myPentagon = new pentagon(game.playSpawnSquares[this.counter].center);
-			this.counter++;
-		}
-	},
-	testRectangle: function () {
-		// constructor(pos)
-		// console.log(`<ShapeTester>[TestTriangle]`);
-		if (this.id == null) {
-			this.myRectangle = new rectangle();
-		} else {
-			// console.log(`Spawner ${this.counter}'s center at ${game.playSpawnSquares[this.counter].center}`)
-			this.myRectangle = new rectangle(game.playSpawnSquares[this.counter].center);
-			this.counter++;
-		}
-	},
-	testSquare: function () {
-		// constructor(pos)
-		// console.log(`<ShapeTester>[TestSquare]`);
-		if (this.id == null) {
-			this.mySquare = new square();
-		} else {
-			// console.log(`Spawner ${this.counter}'s center at ${game.playSpawnSquares[this.counter].center}`)
-			this.mySquare = new square(game.playSpawnSquares[this.counter].center);
-			this.counter++;
-		}
-	},
-	testStar: function () {
-		// constructor(pos)
-		// console.log(`<ShapeTester>[TestStar]`);
-		if (this.id == null) {
-			this.myStar = new star();
-		} else {
-			// console.log(`Spawner ${this.counter}'s center at ${game.playSpawnSquares[this.counter].center}`)
-			this.myStar = new star(game.playSpawnSquares[this.counter].center);
-			this.counter++;
-		}
-	},
-	toString: function () {
-		console.log(`Test Attributes
-		ID: ${this.id}
-		Pos: ${this.pos}
-		Radius: ${this.radius}
-		Scale: ${this.scale}
-		Type: ${this.type}
-		Tag: ${this.tag}
-		Velocity: ${this.velocity}
-		MaxSpeed: ${this.maxSpeed}
-		Heading: ${this.heading}
-		Mass: ${this.mass}
-		TurnRate: ${this.turnRate}
-		MaxForce: ${this.maxForce}
-		Width: ${this.width}
-		Height: ${this.height}`);
-	}
-};
-
 game.evaluateBoard = {
 	openSquares: [],
 	initialUpdate: true,
@@ -245,9 +33,7 @@ game.evaluateBoard = {
 			if (!game.playGrid.squares[i].occupied) {
 				this.openSquares.unshift(game.playGrid.squares[i]);
 			}
-		}/*
-		this.openSquares.unshift(game.playGrid.squares[42]);
-		this.openSquares.unshift(game.playGrid.squares[43]);*/
+		}
 	},
 
 	FillOpenSquares: function () {
@@ -358,6 +144,13 @@ game.evaluateBoard = {
 	// Perform board evaluation
 	Evaluate: function () {
 
+		// Ensure every grid square is ready for evaluation
+		if (!game.playGrid.readiness()) {
+			// console.log("Readiness: Not Ready");
+			game.regulators.update();
+			return;
+		}
+
 		if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81 && !this.evaluating) {
 			// Evaluate entities
 			if (game.gameEntities.evaluateList.length > 0 && game.destinationSquare == null) {
@@ -388,38 +181,6 @@ game.evaluateBoard = {
 			// Garbage Collector
 			this.RemoveExcess();
 		}
-
-		/* if (this.initialUpdate) {
-			// Wait for all the grids, regulators, and shapes before evaluating
-			if (game.regulators.regList.length == 81 && game.gameEntities.entities.length == 81) {
-				
-				// Evaluate the entire board
-				if (!game.playGrid.evaluateBoard()) {
-					// Pop any shapes registered as matches
-					if (game.playGrid.popList.length > 0) {
-						game.playGrid.popShapes();
-					} else {
-						// Finish the initial update
-						this.initialUpdate = false;
-					}
-				}
-
-				// this.initialUpdate = false;
-
-				//console.log(`<Gameplay>[EvaluateBoard:Evaluate] Initial Updates\nHmm: ${hmm}`);
-			}
-		} else {
-			console.log(`<Gameplay>[EvaluateBoard:Evaluate] Live`);
-			
-			game.playGrid.evaluateBoard();
-			if (game.playGrid.popList.length > 0) {
-				game.playGrid.popShapes();
-			} else if (game.gameEntities.evaluateList.length > 0) {
-				game.gameEntities.updateEntities();
-			} else {
-				
-			}
-		} */
 	}
 };
 

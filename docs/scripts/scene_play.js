@@ -34,6 +34,8 @@ class GridSquare {
 		this.matchesVertical = [];
         this.matchesHorizontal = [];
         this.matchesCombined = [];
+        // Flag when ready to evaluate
+        this.readyForEval = false;
 		// Reference div
 		this.divReference = _div;
 		// Push reference to this square
@@ -112,6 +114,9 @@ class GridSquare {
 
 		// Check if this grid is attached with a shape
 		if (this.getShape() == "undefined") {
+            // Flag this grid as not ready for evaluation
+            this.readyForEval = false;
+
 			// console.log(`Grid ${this.id} (${this.gridRow},${this.gridColumn}) is empty. Requesting new shape.`);
 			// Search top links for the next available shape
 			var current = this;
@@ -155,9 +160,17 @@ class GridSquare {
             game.evaluateBoard.gridShifted = true;
 		} else {
             // If the distance to the shape is too far
-            if (vec2DDistanceSq(this.center, this.getShape().center) > 1.0) {
-                // Request the shape move into the proper position
-                this.getShape().forceMoveToLocation(this.center);
+            if (vec2DDistanceSq(this.center, this.getShape().center) > 0.35) {
+                // Flag as not ready for evaluation
+                this.readyForEval = false;
+                // And the shape isn't already in motion
+                if (!this.getShape().isMoving) {
+                    // Request the shape move into the proper position
+                    this.getShape().forceMoveToLocation(this.center);
+                }
+            } else {
+                // Flag as ready for evaluation
+                this.readyForEval = true;
             }
         }
 	}

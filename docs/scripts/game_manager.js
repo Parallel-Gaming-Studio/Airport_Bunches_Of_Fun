@@ -120,11 +120,6 @@ game.gameController = {
             game.drawOnce();
         }
 
-        // Evaluate the playing field for open spaces
-        // game.evaluateBoard.Evaluate();
-        // game.gameEntities.updateEntities(dt);
-
-        //if (!game.evaluateBoard.evaluating) {
         // Touch Events
         for (var i = 0; i < game.touch.length; i++) {
             if (engine.input.pressed(game.touch[i])) {
@@ -164,7 +159,6 @@ game.gameController = {
             }
             game.timeoutOverlay.refreshTimer();
         }
-        //}
 
         // DEBUG
         // Toggle next state

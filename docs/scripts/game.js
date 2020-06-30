@@ -109,6 +109,13 @@ game.playGrid = {
             game.regulators.removeRegulator(this.squares.pop().regulator);
         }
     },
+    readiness: function() {
+        for (var i = 0; i < this.squares.length; i++) {
+            // console.log(`Grid ${this.squares[i].id} readiness: ${this.squares[i].readyForEval}`);
+            if (!this.squares[i].readyForEval) return false;
+        }
+        return true;
+    },
     evaluateBoard: function () {
         // Container to hold the grid being tested
         var gridTest;
@@ -134,101 +141,10 @@ game.playGrid = {
 
         this.popList = [...matchesSet];
 
-        /* if (updateList.length > 0) {
-            for (let item of matchesSet) {
-                // console.log(`Matches found: ${item.id}`);
-                item.attachedShape.lastAttachedSquare = "undefined";
-            }
-        } */
-
         // console.log(`Evaluating\nPop List Size: ${this.popList.length}\n`);
 
         game.evaluateBoard.evaluating = false;
 
-    },
-    evaluateSelected: function () { },
-    evaluate: function () {
-        var updateList = [];
-
-        // console.log(`<Game>[PlayGrid:Evaluate:Outer]\nIn Progress: ${this.evalInProgress}\nEval List: ${this.evaluateList.length}\nEnti List: ${game.gameEntities.evaluateList.length}`);
-        if (!this.evalInProgress) {
-
-
-
-
-
-
-            // THIS LOOP HAS THE ISSUE - RE-EVALUATE
-
-
-
-
-
-            for (var i = this.evaluateList.length - 1; i > 0; i--) {
-                // game.gameEntities.evaluateList.length == 0 && 
-                if (game.gameEntities.evaluateList.length == 0) {
-                    /*var tempArray = [];
-                    console.log(`<Game>[PlayGrid:Evaluate]\nTempArray Size: ${tempArray.length}\nValues: ${tempArray}`);
-                    
-                    this.evaluateList[i].testMatches();
-                    
-                    tempArray = [this.evaluateList[i].matchesCombined];
-                    console.log(`<Game>[PlayGrid:Evaluate]\nTempArray Size: ${tempArray.length}\nValues: ${tempArray}`); */
-                    updateList = [...this.evaluateList[i].testMatches()];
-                    //updateList.concat(this.evaluateList[i].testMatches());
-
-                    // console.log(`<Game>[PlayGrid:Evaluate]\nUpdate List: ${updateList.length}`);
-
-                    if (updateList.length > 1) {
-
-                        // Notify of an evaluation in progress
-                        this.evalInProgress = true;
-                        // Remove duplicate values
-                        const updateSet = new Set(updateList);
-                        // Fill the pop list
-                        this.popList = [...updateSet];
-                        // Return, since the whole grid is about to update
-                        return;
-                    } else {
-                        // Clear the update list
-                        updateList = [];
-                    }
-
-                    //console.log(`<Game>[PlayGrid:Evaluate:Inner]\nIn Progress: ${this.evalInProgress}\nEval List: ${this.evaluateList.length}\nEnti List: ${game.gameEntities.evaluateList.length}`);
-                    // return;
-                } else {
-                    game.gameEntities.updateEntities();
-                }
-            }
-        } else {
-            // Check for shapes ready to be popped
-            if (this.popList.length > 0) {
-                for (var i = this.popList.length - 1; i >= 0; i--) {
-                    // If a shape was set to pop, but has not finished its pop animation
-                    if (!this.popList[i].attachedShape.popped) {
-                        try {
-                            // Pop the shape and remove from the entities list
-                            this.popList[i].attachedShape.popShape(() => { game.gameEntities.removeEntity(this.popList[i]); });
-                        } catch (e) {
-                            // Skip
-                        }
-                    } else {
-                        game.gameEntities.removeEntity(this.popList[i]);
-                    }
-                }
-
-                this.popList = [];
-                // Since the list is not empty, return
-                return;
-            }
-        }
-
-        console.log(`\n\n\n<Game>[PlayGrid:Evaluate:Final]\nCHECK HERE\n\n\nInitial Update Complete`);
-        // Cancel the initial update flag
-        if (game.evaluateBoard.initialUpdate) game.evaluateBoard.initialUpdate = false;
-
-        // Cancel the evalInProgress flag
-        this.evalInProgress = false;
     },
     popShapes: function () {
         // Container to hold 
@@ -236,14 +152,6 @@ game.playGrid = {
         if (this.popList.length > 0 && this.evaluateList.length < 1) {
 
             // console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
-            /*
-            var tempScore;
-
-            for (var i = 0; i < this.popList.length; i++) {
-                try { tempScore += this.popList[i].points; } catch (e) {}
-            }
-
-            game.player.score += tempScore * this.popList.length; */
 
             for (var i = this.popList.length - 1; i >= 0; i--) {
                 try {
@@ -282,15 +190,10 @@ game.gameEntities = {
         for (var i = 0; i < this.entities.length; i++) {
             if (delEntity != this.entities[i]) {
                 tempList.push(this.entities[i]);
-                //this.entities.splice(i, 1);
-                //break;
             } else {
                 this.entities[i].destroyDiv();
             }
         }
-
-        // Remove the div element
-        // try { setTimeout(delEntity.destroyDiv(),600); } catch(e) {}
 
         this.entities = [...tempList];
 
@@ -300,7 +203,6 @@ game.gameEntities = {
     drawEntities: function () {
         for (var i = 0; i < this.entities.length; i++) {
             // console.log(`${this.entities[i].isAlive()} ${this.entities.length}`);
-            //if (this.entities[i].isAlive())
             this.entities[i].draw();
         }
     },
@@ -326,8 +228,6 @@ game.gameEntities = {
                 this.evaluateList = [];
             }
         } catch (e) {}
-
-        // this.evaluateList = [];
     },
 
     toString: function () { for (var i = this.entities.length - 1; i >= 0; i--) { console.log(`Entity Info:\nID: ${this.entities[i].ID()}\nType: ${this.entities[i].entityType()}\nTagged: ${this.entities[i].isTagged()}`); } }
@@ -343,14 +243,6 @@ game.shapeMaxForce = 2.0;
 game.shapeFOV = degsToRads(360.0);
 game.shapes = [];
 game.shapesList = ["circle", "heart", "pentagon", "rectangle", "square", "star", "triangle", "sponsored"];
-
-/* << TIMER EXAMPLE USAGE >>
-var myTime = new Timer();
-console.log(`Time: ${myTime.startTime}\nTime Left: ${myTime.timeLeft}`);
-myTime.setup(2, false, "Test");
-console.log(`Time: ${myTime.startTime}\nTime Left: ${myTime.timeLeft}`);
-game.timers.push(myTime);
-<< TIMER EXAMPLE USAGE >> */
 
 // - Player object information (persists through scenes)
 game.player = {
