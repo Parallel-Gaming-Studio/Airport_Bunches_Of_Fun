@@ -51,10 +51,7 @@ class GridSquare {
         this.draw();
     }
     draw() {
-        // Draw the background
-        // engine.context.fillStyle = "rgb(232,247,248)";
-        
-        // Draw the border
+        // Draw the grid square
         engine.context.beginPath();
         engine.context.fillStyle = "rgb(232,247,248)";
         engine.context.fillStyle = "rgba(232,247,248,0.30)";
@@ -65,18 +62,6 @@ class GridSquare {
         engine.context.lineJoin = "round";
         engine.context.rect(this.left, this.top, this.width, this.height);
         engine.context.stroke();
-        /*engine.context.moveTo(this.left, this.top);
-        engine.context.lineTo(this.right, this.top);
-        engine.context.lineTo(this.right, this.bottom);
-        engine.context.lineTo(this.left, this.bottom);
-        engine.context.lineTo(this.left, this.top);
-        engine.context.stroke();*/
-        // Draw the center point
-        /* engine.context.beginPath();
-        engine.context.strokeStyle = "#FF0000";
-        engine.context.lineWidth = 2.5;
-        engine.context.arc(this.center.x, this.center.y, 5, 0, degsToRads(360));
-        engine.context.stroke(); */
     }
 	// Check or set the square's occupation
 	occupiedOn() { this.occupied = true; }
@@ -168,7 +153,13 @@ class GridSquare {
             this.attachedShape.forceMoveToLocation(this.center);
             // Notify the board evaluator that the grid has changed
             game.evaluateBoard.gridShifted = true;
-		}
+		} else {
+            // If the distance to the shape is too far
+            if (vec2DDistanceSq(this.center, this.getShape().center) > 1.0) {
+                // Request the shape move into the proper position
+                this.getShape().forceMoveToLocation(this.center);
+            }
+        }
 	}
 	// Determine if the target equals any neighboring grid squares
 	compareLinks(target) {
