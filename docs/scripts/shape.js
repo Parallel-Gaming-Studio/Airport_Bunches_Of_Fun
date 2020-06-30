@@ -189,17 +189,17 @@ class Shape extends movingEntity {
 			this.isMoving = true;
 
 			// Move this shape to a higher z-index, then animate to its destination
-			$(`#${this.domElement.id}`).css("z-index", "21").animate({
-				top: `${myDestination.y - this.toCenter.y}px`,
-				left: `${myDestination.x - this.toCenter.x}px`
-			},400, "swing", ()=>{
+			//$(`#${this.domElement.id}`).css("z-index", "21").animate({
+			//	top: `${myDestination.y - this.toCenter.y}px`,
+			//	left: `${myDestination.x - this.toCenter.x}px`
+			//},400, "swing", ()=>{
 				// console.log(`<Shape>[MoveShapeToLocation]\nFinished moving ${this.domElement.id}`);
 				// this.updateAttributes();
 
 				// If an invalid move is made, move the shape back to its starting position
 				if (!myStartSquare.compareLinks(myDestinationSquare)) {
 					// console.log(`<Shape>[MoveShapeToLocation]\nInvalid destination. Returning ${this.domElement.id} to its origin square ${game.startSquare.id}.`);
-					$(`#${this.domElement.id}`).animate({
+					$(`#${this.domElement.id}`).css("z-index", "21").animate({
 						top: `${myStartSquare.top + Math.abs(this.toCenter.y - myStartSquare.toCenter.y)}px`,
 						left: `${myStartSquare.left + Math.abs(this.toCenter.x - myStartSquare.toCenter.x)}px`
 					}, 300, "swing", ()=>{
@@ -212,7 +212,7 @@ class Shape extends movingEntity {
 				} else {
 					// Otherwise, center the shape on the new, valid square
 					// console.log(`<Shape>[MoveShapeToLocation]\nValid destination. Adjusting ${this.domElement.id}'s position to square ${game.destinationSquare.id}.`);
-					$(`#${this.domElement.id}`).animate({
+					$(`#${this.domElement.id}`).css("z-index", "21").animate({
 						top: `${myDestinationSquare.top + Math.abs(this.toCenter.y - myDestinationSquare.toCenter.y)}px`,
 						left: `${myDestinationSquare.left + Math.abs(this.toCenter.x - myDestinationSquare.toCenter.x)}px`
 					}, 400, "swing", () => {
@@ -288,7 +288,7 @@ class Shape extends movingEntity {
 
 				// TODO : find a home for game.releaseSelectedSquare();
 				// console.log(`<Shape>[MoveShapeToLocation]\nFinished moving ${this.domElement.id} to ${this.center}`);
-			});
+			//});
 		} catch (e) {
 			// console.log(`<Shape>[MoveShapeToLocation]\nNo shape, no move.`);
 		}
