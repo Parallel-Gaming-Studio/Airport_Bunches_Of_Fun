@@ -160,7 +160,7 @@ class GridSquare {
             game.evaluateBoard.gridShifted = true;
 		} else {
             // If the distance to the shape is too far
-            if (vec2DDistanceSq(this.center, this.getShape().center) > 0.35) {
+            if (vec2DDistanceSq(this.center, this.getShape().center) > 163 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) {
                 // Flag as not ready for evaluation
                 this.readyForEval = false;
                 // And the shape isn't already in motion
