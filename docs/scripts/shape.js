@@ -137,7 +137,7 @@ class Shape extends movingEntity {
 		if (this.attachedSquare !== "undefined") {
 			/*this.domElement.style.top = (this.attachedSquare.top + Math.abs(this.toCenter.y - this.attachedSquare.toCenter.y)) + "px";
 			this.domElement.style.left = (this.attachedSquare.left + Math.abs(this.toCenter.x - this.attachedSquare.toCenter.x)) + "px";*/
-			this.forceMoveToLocation(this.attachedSquare.center);
+			// this.forceMoveToLocation(this.attachedSquare.center);
 		}
 		
 		// console.log(`Width: ${this.domElement.style.width} | Height: ${this.domElement.style.height} | Src: ${this.image.src}`);
@@ -148,7 +148,12 @@ class Shape extends movingEntity {
 	| - arg types: Vector2D
 	\--------------------------------------------------------------------*/
 	forceMoveToLocation(pos) {
-		try {
+		// Flag this shape as moving
+		this.isMoving = true;
+		// Add to the list of animating entities
+		game.gameEntities.animatingList.push(this);
+
+		/* try { */
 			// console.log(`<Shape>[forceMoveToLocation]\nMoving ${this.domElement.id} to square ${this.attachedSquare.id}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
 
 			// Move this shape to a higher z-index, then animate to its destination
@@ -156,14 +161,21 @@ class Shape extends movingEntity {
 				top: `${pos.y - this.toCenter.y}px`,
 				left: `${pos.x - this.toCenter.x}px`
 			},1000, "swing", ()=>{
+				// Clear moving flag
+				this.isMoving = false;
+
+				// Remove from animating list
+				game.gameEntities.removeAnimating(this);
+
 				// Return to original z-index
 				$(`#${this.domElement.id}`).css("z-index", "20");
+				
 				// Update the shape's attributes after each move
 				this.updateAttributes();
 			});
-		} catch (e) {
+		/* } catch (e) {
 			// console.log(`<Shape>[forceMoveToLocation]\nNo shape, no move.`);
-		}
+		} */
 	}
 	
 	/*---------------------moveShapeToLocation----------------------------\
@@ -172,7 +184,7 @@ class Shape extends movingEntity {
 	| - arg types: Vector2D
 	\--------------------------------------------------------------------*/
 	moveShapeToLocation(myDestination) {
-		try {
+		/* try {
 			if (game.startSquare == null || game.destinationSquare == null) {
 				console.log(`<Shape>[MoveShapeToLocation]\nOne of the selected squares is invalid:\nStart is ${game.startSquare == null ? "null" : game.startSquare.id}\nDestination is ${game.destinationSquare == null ? "null" : game.destinationSquare.id}`);
 				game.startSquare = null;
@@ -291,14 +303,14 @@ class Shape extends movingEntity {
 			//});
 		} catch (e) {
 			// console.log(`<Shape>[MoveShapeToLocation]\nNo shape, no move.`);
-		}
+		} */
 	}
 
 	/*---------------------returnToLastLocation---------------------------\
 	| - Return the shape to its original location
 	\--------------------------------------------------------------------*/
 	returnToLastPosition(Callback) {
-		try {
+		/* try {
 			// console.log(`<Shape>[ReturnToLastLocation]\nMoving ${this.domElement.id} from square ${this.attachedSquare.id} to square ${this.lastAttachedSquare.id}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
 
 			// Set this shape as moving
@@ -333,7 +345,7 @@ class Shape extends movingEntity {
 			});
 		} catch (e) {
 			// console.log(`<Shape>[ReturnToLastLocation]\nNo shape to move...`)
-		}
+		} */
 	}
 
 	/*---------------------popShape---------------------------------------\
@@ -341,9 +353,14 @@ class Shape extends movingEntity {
 	| - arg types: Vector2D
 	\--------------------------------------------------------------------*/
 	popShape(Callback) {
+		
+		
 		// console.log(`<Shape>[PopShape]\nID: ${this.id}`);
 		// Set this shape as moving
 		this.isMoving = true;
+
+		// Add to the list of animating entities
+		game.gameEntities.animatingList.push(this);
 
 		// Pop animation
 		// Update the z-index, placing it on the top-most layer, then animate
@@ -351,27 +368,30 @@ class Shape extends movingEntity {
 			top: "0px",
 			left: "0px",
 			opacity: "0.0"
-		}, 500, ()=>{
+		}, 1000, ()=>{
+
+			// Clear this shape's moving flag, enabling it for deletion
+			this.isMoving = false;
+
+			// Remove from animating list
+			game.gameEntities.removeAnimating(this);
 
 			// Update player score
 			game.player.score += this.points;
 
 			// Clear previous attachments, if any - Prevents swapping back to old position
-			if (this.lastAttachedSquare !== "undefined") {
+			// if (this.lastAttachedSquare !== "undefined") {
 				// Check neighboring, swapped shape
-				if (this.lastAttachedSquare.attachedShape !== "undefined") {
-					this.lastAttachedSquare.attachedShape.lastAttachedSquare = "undefined";
-				}
+				// if (this.lastAttachedSquare.attachedShape !== "undefined") {
+					// this.lastAttachedSquare.attachedShape.lastAttachedSquare = "undefined";
+				// }
 
 				// Clear this shape's last attachment
-				this.lastAttachedSquare = "undefined";
-			}
+				// this.lastAttachedSquare = "undefined";
+			// }
 
 			// Remove from the square's shape attachment
 			this.attachedSquare.removeShape();
-
-			// Clear this shape's moving flag, enabling it for deletion
-			this.isMoving = false;
 
 			// Enable the popped flag
 			this.popped = true;

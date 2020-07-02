@@ -10,6 +10,251 @@
 game.gameState = ['start', 'play', 'end', 'leaderboard'];
 game.currState = game.gameState[0];
 
+/* Play States
+** (Animations) - Flag
+** Truncate
+** Empty Squares
+** (Animations) - Flag
+** Evaluate
+** Pop Shapes
+** (Animations) - Flag
+** Return Shapes
+** (Animations) - Flag
+** User Input
+                        0              1              2           3              4             5            6  */
+game.playStates = ['emptySquares', 'fillSquares', 'truncate', 'evaluate', 'popShapes', 'returnShapes', 'userInput'];
+game.currPlayState = game.playStates[0];
+game.animations = false;
+
+game.playLoop = function(dt) {
+    // Limit update attempts to reduce overhead
+    if (!game.evaluateBoard.evalReady(dt)) return;
+
+    // Animations check - Standby if true
+    if (game.gameEntities.entityAnimations()) { console.log("Animating"); return; }
+
+    // console.log(`Play State: ${game.currPlayState}`);
+
+    // State Switch
+    switch(game.currPlayState) {
+        case 'emptySquares':
+
+            let checkEmpty;
+
+            // Prevent propagation
+            if (!game.playGrid.checkEmptyStarted) {
+                game.playGrid.checkEmptyStarted = true;
+                // If any squares are empty, wait until they're all filled
+                checkEmpty = game.playGrid.checkEmptySquares();
+            } else {
+                if (game.playGrid.checkEmptyFinished) {
+                    // Clear propagation flag
+                    game.playGrid.checkEmptyStarted = false;
+                    // Determine which state to move to
+                    if (!checkEmpty) {
+                        // Some squares are empty - Move to fillSquares
+                        game.currPlayState = game.playStates[1];
+                    } else {
+                        // All shapes are occupied - Move to truncate
+                        game.currPlayState = game.playStates[2];
+                    }
+                }
+            }
+
+            break;
+        case 'fillSquares':
+
+            // Prevent propagation
+            if (!game.playGrid.checkFillStarted) {
+                game.playGrid.checkFillStarted = true;
+                // Fill the squares
+                game.playGrid.checkFillSquares();
+            } else {
+                if (game.playGrid.checkFillFinished) {
+                    // Clear propagation flag
+                    game.playGrid.checkFillStarted = false;
+                    // Move to Truncate
+                    game.currPlayState = game.playStates[2];
+                }
+            }
+
+            break;
+        case 'truncate':
+
+            // Remove excess shapes and DOMs, beyond the number of squares
+            if (game.regulators.regList.length == 81 && game.gameEntities.entities.length > 81) {
+                // Prevent propagation
+                if (!game.playGrid.checkTruncateStarted) {
+                    game.playGrid.checkTruncateStarted = true;
+                    // Remove excess entities and shape DOMs
+                    game.evaluateBoard.RemoveExcess();
+                } else {
+                    if (game.playGrid.checkTruncateFinished) {
+                        // Clear the propagation flag
+                        game.playGrid.checkTruncateStarted = false;
+                        // Move to Evaluate
+                        game.currPlayState = game.playStates[3];
+                    }
+                }
+            } else {
+                // No truncating required
+                // Move to Evaluate
+                game.currPlayState = game.playStates[3];
+            }
+            
+            break;
+        case 'evaluate':
+
+            // Prevent propagation
+            if (!game.playGrid.checkEvaluateStarted) {
+                game.playGrid.checkEvaluateStarted = true;
+                // Evaluate the squares that have changed
+                game.playGrid.evaluateBoard();
+            } else {
+                if (game.playGrid.checkEvaluateFinished) {
+                    // Clear the propagation flag
+                    game.playGrid.checkEvaluateStarted = false;
+                    // Move to Pop Shapes
+                    game.currPlayState = game.playStates[4];
+                }
+            }
+
+            break;
+        case 'popShapes':
+
+            // Prevent propagation
+            if (!game.playGrid.checkPopStarted) {
+                game.playGrid.checkPopStarted = true;
+                // Pop the selected shapes
+                game.playGrid.popShapes();
+            } else {
+                if (game.playGrid.checkPopFinished) {
+                    // Clear the propagation flag
+                    game.playGrid.checkPopStarted = false;
+                    // Move to Return Shapes
+                    game.currPlayState = game.playStates[5];
+                }
+            }
+
+            break;
+        case 'returnShapes':
+
+            // Prevent propagation
+            if (!game.playGrid.checkReturnStarted) {
+                game.playGrid.checkReturnStarted = true;
+                // Return moved shapes that failed evaluation
+                game.playGrid.returnShapes();
+            } else {
+                if (game.playGrid.checkReturnFinished) {
+                    // Clear the propagation flag
+                    game.playGrid.checkReturnStarted = false;
+                    // Move to User Input
+                    game.currPlayState = game.playStates[6];
+                }
+            }
+
+            break;
+        case 'userInput':
+
+            
+            // Check if the user selected a valid square
+            if (game.startSquare != null) {
+                // Check if the user also selected a valid destination
+                if (game.destinationSquare != null) {
+                    // Check if the user released on the same square that was pressed
+                    if (game.startSquare == game.destinationSquare) {
+                        // Set click type to 'clicks
+                        game.currClickType = game.clickTypes[0];
+                    } else {
+                        // Set click type to 'drags'
+                        game.currClickType = game.clickTypes[1];
+                    }
+
+                    switch(game.currClickType) {
+                        case 'clicks':
+                            // Check if another square was already selected
+                            if (game.previousSquare != null) {
+                                // Do nothing the destination and previous squares are the same
+                                if (game.previousSquare != game.destinationSquare) {
+                                    // Second click, so assign to the testing array
+                                    game.playGrid.checkInputList = [game.startSquare, game.previousSquare];
+                                }
+                            } else {
+                                // Assign this first selection to the "memory" previous square
+                                game.previousSquare = game.startSquare;
+                            }
+                            break;
+                        case 'drags':
+                            // Clear any previous square selections
+                            game.previousSquare = null;
+                            // Set both input list test squares
+                            game.playGrid.checkInputList = [game.startSquare, game.destinationSquare];
+                            break;
+                    }
+
+                    
+                } else {
+                    // Clear both start and destination selections
+                    game.releaseSelectedSquare();
+                    // Reset the previous selection, as well
+                    game.previousSquare = null;
+                }
+            } else {
+                // Clear erroneous clicks with a destination, but no starting point
+                if (game.destinationSquare != null) {
+                    game.releaseSelectedSquare();
+                }
+            }
+
+            // Ensure the check input list is filled in
+            if (game.playGrid.checkInputList.length > 1) {
+                // Prevent propagation
+                if (!game.playGrid.checkInputStarted) {
+
+                    switch(game.currClickType) {
+                        case 'clicks':
+                            // If this is the second square selected, test it
+                            if (game.previousSquare != null) {
+                                game.playGrid.checkInputStarted = true;
+                                // Act on the user's input
+                                game.playGrid.checkInput();
+                            } else {
+                                // Otherwise, wait until the user makes a valid selection
+                                game.playGrid.checkInputStarted = false;
+                                game.playGrid.checkInputFinished = true;
+                            }
+                            break;
+                        case 'drags':
+                            game.playGrid.checkInputStarted = true;
+                            // Act on the user's input
+                            game.playGrid.checkInput();
+                            break;
+                        default:
+                            break;
+                    }
+
+                } else {
+                    if (game.playGrid.checkInputFinished) {
+                        // Clear the propagation flag
+                        game.playGrid.checkInputStarted = false;
+                        // Clear the input list
+                        game.playGrid.checkInputList = [];
+                        // Restart Play States
+                        game.currPlayState = game.playStates[0];
+                    }
+                }
+            }
+
+            // Restart Play States
+            game.currPlayState = game.playStates[0];
+            break;
+        default:
+            // Reset Play States
+            game.currPlayState = game.playStates[0];
+            break;
+    }
+};
+
 // Clear the screen of all elements
 game.hideElements = {
     // Hide images
@@ -52,6 +297,8 @@ game.hideElements = {
         game.playFieldGrid.hideGrid();
         // Reset all entities
         game.gameEntities.clearEntities();
+        // Reset current play state
+        game.currPlayState = game.playStates[0];
     }
 };
 
@@ -120,6 +367,9 @@ game.gameController = {
             game.drawOnce();
         }
 
+        // Perform play state actions
+        game.playLoop(dt);
+
         // Touch Events
         for (var i = 0; i < game.touch.length; i++) {
             if (engine.input.pressed(game.touch[i])) {
@@ -127,15 +377,17 @@ game.gameController = {
                     var touchInfo = engine.input.getTouch(j);
                     if (touchInfo.type == "START") {
                         // Perform actions when start is pressed
-                        if (game.selectShape(new Vector2D(touchInfo.x, touchInfo.y))) {
+                        game.selectStartSquare(new Vector2D(touchInfo.x, touchInfo.y));
+                        /* if (game.selectShape(new Vector2D(touchInfo.x, touchInfo.y))) {
                             game.selectStartSquare(new Vector2D(touchInfo.x, touchInfo.y));
-                        }
+                        } */
                         game.timeoutOverlay.refreshTimer();
                     } else if (touchInfo.type == "END") {
                         // Perform actions when end is pressed
-                        if (game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y))) {
+                        game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y));
+                        /* if (game.selectDestinationSquare(new Vector2D(touchInfo.x, touchInfo.y))) {
                             game.releaseSelectedShape(new Vector2D(touchInfo.x, touchInfo.y));
-                        }
+                        } */
                         game.timeoutOverlay.refreshTimer();
                     }
                 }
@@ -145,18 +397,20 @@ game.gameController = {
         // Mouse Events
         if (engine.input.pressed(game.mouse[0])) {
             // Select the shape at the mouse click location
+            game.selectStartSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
             // console.log(`Clicked left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
-            if (game.selectShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y))) {
+            /* if (game.selectShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y))) {
                 game.selectStartSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-            }
+            } */
             game.timeoutOverlay.refreshTimer();
         }
         if (engine.input.released(game.mouse[0])) {
             // Release the shape upon mouse release and move the shape to the release location
+            game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
             // console.log(`Released left mouse at ${new Vector2D(engine.input.mouse.x, engine.input.mouse.y)}`);
-            if (game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y))) {
+            /* if (game.selectDestinationSquare(new Vector2D(engine.input.mouse.x, engine.input.mouse.y))) {
                 game.releaseSelectedShape(new Vector2D(engine.input.mouse.x, engine.input.mouse.y));
-            }
+            } */
             game.timeoutOverlay.refreshTimer();
         }
 
@@ -178,14 +432,14 @@ game.gameController = {
         }
 
         // Evaluate the board with enforced load balancing
-        if (game.evaluateBoard.evalReady(dt)) {
+        /* if (game.evaluateBoard.evalReady(dt)) {
             // Fix shape selectors
             if (game.startSquare == null && game.destinationSquare != null) game.destinationSquare = null;
             // Updated Regulated Items
             game.regulators.update();
             // Evaluate the board
             game.evaluateBoard.Evaluate();
-        }
+        } */
     },
     gsEnd: function (dt) {
         // End Scene

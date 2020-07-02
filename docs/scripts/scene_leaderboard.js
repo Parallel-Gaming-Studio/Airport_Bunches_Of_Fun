@@ -395,6 +395,8 @@ game.leaderboardRetryButton = {
         game.google.start();
         // Clear the initials on the End Scene
         game.endPlayerInitials.clearInitials();
+        // Hide all elements
+        game.hideElements.hideAll();
         // Set the game state to Play Scene
         game.currState = game.gameState[1];
         // Reset the player object
@@ -403,8 +405,6 @@ game.leaderboardRetryButton = {
         game.top10players.hideTable();
         // Refresh the timeout timer
         game.timeoutOverlay.refreshTimer();
-        // Hide all elements
-        game.hideElements.hideAll();
         // Redraw all elements
         game.drawOnce();
     }
