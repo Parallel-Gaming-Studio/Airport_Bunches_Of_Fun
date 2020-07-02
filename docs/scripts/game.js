@@ -116,13 +116,60 @@ game.playGrid = {
         }
         return true;
     },
+    // Returns the square's index
+    getIndexOf: function(arg) {
+        for (var i = 0; i < this.squares.length; i++) {
+            if (parseInt(arg.id) == parseInt(this.squares.id)) return i;
+        }
+        return -1;
+    },
+    // FSM - Play loop actions
+    // Empty square methods and variables
+    emptySquaresList: [],
+    checkEmptyStarted: false,
+    checkEmptyFinished: true,
+    checkEmptySquares: function() {
+        var testEmpty = true;
+        this.checkEmptyFinished = false;
+        for (var i = this.squares.length - 1; i >= 0; i--) {
+            /*if (this.squares[i].getShape() == "undefined") {
+                this.emptySquaresList.push(this.squares[i]);
+                if (testEmpty) testEmpty = false;
+            }*/
+            this.squares[i].update();
+        }
+        this.checkEmptyFinished = true;
+        return testEmpty;
+    },
+    // Fill the empty squares
+    checkFillStarted: false,
+    checkFillFinished: true,
+    checkFillSquares: function() {
+        this.checkFillFinished = false;
+        // console.log(`Filling ${this.emptySquaresList.length} squares`);
+        while (this.emptySquaresList.length > 0) {
+            let x = this.emptySquaresList.pop().update();
+            // x.update();
+        }
+        this.checkFillFinished = true;
+    },
+
+    // Truncate extra shapes and DOMs
+    checkTruncateStarted: false,
+    checkTruncateFinished: true,
+
+    // Evaluate the board
+    checkEvaluateStarted: false,
+    checkEvaluateFinished: true,
     evaluateBoard: function () {
+        this.checkEvaluateFinished = false;
         // Container to hold the grid being tested
         var gridTest;
         // Container to store all the positive matches
         var updateList = [];
 
         // console.log(`Evaluating\nEvaluate List Size: ${this.evaluateList.length}\n`);
+        // this.evaluateList.push(...this.squares);
 
         for (var i = 0; i < this.evaluateList.length; i++) {
             // Store matches
@@ -145,36 +192,151 @@ game.playGrid = {
 
         game.evaluateBoard.evaluating = false;
 
+        this.checkEvaluateFinished = true;
     },
+
+    // Pop evaluated shapes from the board
+    checkPopStarted: false,
+    checkPopFinished: true,
     popShapes: function () {
-        // Container to hold 
-        // Check for shapes ready to be popped, ensuring the evaluate list is empty
-        if (this.popList.length > 0 && this.evaluateList.length < 1) {
+        this.checkPopFinished = false;
 
-            // console.log(`\n\nBefore\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
+        // console.log(`Popping\nPop List Size: ${this.popList.length}\n`);
 
-            for (var i = this.popList.length - 1; i >= 0; i--) {
-                try {
-                    // If a shape was set to pop, but has not finished its pop animation
-                    if (!this.popList[i].attachedShape.popped) {
-
-                        //try {
-                            // Pop the shape and remove from the entities list
-                            // this.popList[i].attachedShape.popShape(()=>{game.gameEntities.removeEntity(this.popList[i]);});
-                            this.popList[i].attachedShape.popShape();
-                        // } catch (e) {
-                            // Skip
-                        //}
-                    } else {
-                        game.gameEntities.removeEntity(this.popList[i]);
-                    }
-                } catch (e) {}
+        while (this.popList.length > 0) {
+            let x = this.popList.pop().attachedShape;
+            if (x !== "undefined") {
+                x.popShape();
+                this.popReturnable(x);
             }
-
-            // console.log(`\n\nAfter\nPopList: ${this.popList.length}\n\nPopping ${this.popList[this.popList.length - 1].attachedShape}\n\n`);
-
-            this.popList = [];
         }
+
+        this.checkPopFinished = true;
+    },
+
+    // Return moved shapes that failed evaluation
+    checkReturnStarted: false,
+    checkReturnFinished: true,
+    checkReturnList: [],
+    returnShapes: function() {
+        this.checkReturnFinished = false;
+
+        // Ensure the check return list is exactly two elements long
+        if (this.checkReturnList.length > 1) {
+            // Ensure the first element is NOT null
+            if (this.checkReturnList[0] != null) {
+                // Ensure the second element also is NOT null
+                if (this.checkReturnList[1] != null) {
+                    // Return the shapes to their original positions
+                    let tempShapeStart = this.checkReturnList[0];
+                    let tempShapeDest = this.checkReturnList[1];
+                    let tempSquareStart = tempShapeStart.lastAttachedSquare;
+                    let tempSquareDest = tempShapeDest.lastAttachedSquare;
+
+                    // Assign both shapes' previous squares
+                    tempShapeStart.attachedSquare = tempShapeStart.lastAttachedSquare;
+                    tempShapeDest.attachedSquare = tempShapeDest.lastAttachedSquare;
+
+                    // Assign both shapes' new squares
+                    tempShapeStart.attachedSquare = tempSquareStart;
+                    tempShapeDest.attachedSquare = tempSquareDest;
+
+                    // Assign both squares' their new shapes
+                    tempSquareStart.attachedShape = tempShapeStart;
+                    tempSquareDest.attachedShape = tempShapeDest;
+
+                    // Move both shapes to their new positions
+                    tempShapeStart.forceMoveToLocation(tempShapeStart.attachedSquare.center);
+                    tempShapeDest.forceMoveToLocation(tempShapeDest.attachedSquare.center);
+
+                    // Remove the last attached square from each shape
+                    tempShapeStart.lastAttachedSquare = "undefined";
+                    tempShapeDest.lastAttachedSquare = "undefined";
+
+                    // Clear the return list
+                    this.checkReturnList = [];
+                    
+                } else {
+                    // Shapes past evaluation, so clear the list
+                    this.checkReturnList = [];
+                }
+            } else {
+                // Shapes past evaluation, so clear the list
+                this.checkReturnList = [];
+            }
+        } else {
+            //console.log(`Too few elements in the return list: ${this.checkReturnList.length}`);
+        }
+
+        // Since the operation is complete, clear the selectors
+        this.checkReturnList = [];
+
+        this.checkReturnFinished = true;
+    },
+    popReturnable: function(arg) {
+        for (var i = 0; i < this.checkReturnList.length; i++) {
+            // console.log(`Pop Returnable : Comparing...\n${arg} <> ${this.checkReturnList[i]}`);
+            if (arg === this.checkReturnList[i]) {
+                this.checkReturnList = [];
+                // console.log(`Pop Returnable Found`);
+                break;
+            }
+        }
+    },
+
+    // Act on the user's input
+    checkInputStarted: false,
+    checkInputFinished: true,
+    checkInputList: [],
+    checkInput: function() {
+        this.checkInputFinished = false;
+
+        // Ensure the check input list is exactly two elements long
+        if (this.checkInputList.length == 2) {
+            // Ensure the first element is NOT null
+            if (this.checkInputList[0] != null) {
+                // Ensure the second element also is NOT null
+                if (this.checkInputList[1] != null) {
+                    // Temporarily store the selected shapes and their attachments, reducing the risk of items leaving scope
+                    let tempSquareStart = this.checkInputList[0];
+                    let tempSquareDest = this.checkInputList[1];
+                    let tempShapeStart = tempSquareStart.attachedShape;
+                    let tempShapeDest = tempSquareDest.attachedShape;
+
+                    // Ensure the requested move is valid
+                    if (tempSquareStart.compareLinks(tempSquareDest)) {
+                        // Assign both shapes' previous squares
+                        tempShapeStart.lastAttachedSquare = tempShapeStart.attachedSquare;
+                        tempShapeDest.lastAttachedSquare = tempShapeDest.attachedSquare;
+
+                        // Assign both shapes' new squares
+                        tempShapeStart.attachedSquare = tempSquareDest;
+                        tempShapeDest.attachedSquare = tempSquareStart;
+
+                        // Assign both squares' their new shapes
+                        tempSquareStart.attachedShape = tempShapeDest;
+                        tempSquareDest.attachedShape = tempShapeStart;
+
+                        // Move both shapes to their new positions
+                        tempShapeStart.forceMoveToLocation(tempShapeStart.attachedSquare.center);
+                        tempShapeDest.forceMoveToLocation(tempShapeDest.attachedSquare.center);
+
+                        // Add both shapes to the potential return list
+                        this.checkReturnList.push(tempShapeStart, tempShapeDest);
+
+                        // Add both squares to the evaluate list
+                        this.evaluateList.push(tempSquareStart, tempSquareDest);
+                    }
+                }
+            }
+        }
+
+        // Since the input completed, clear all the selections
+        game.previousSquare = null;
+        game.releaseSelectedSquare();
+        this.checkInputList = [];
+
+        this.checkInputFinished = true;
     }
 };
 // Spawn Squares
@@ -183,6 +345,8 @@ game.playSpawnSquares = [];
 game.gameEntities = {
     entities: [],
     evaluateList: [],
+    animatingList: [],
+    playerMovesList: [],
     addEntity: function (newEntity) { this.entities.unshift(newEntity); },
     removeEntity: function (delEntity) {
         // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nBefore ${this.entities.length}\nRemoving ${delEntity.id}`);
@@ -205,6 +369,36 @@ game.gameEntities = {
             // console.log(`${this.entities[i].isAlive()} ${this.entities.length}`);
             this.entities[i].draw();
         }
+    },
+    // Check if any shapes are moving
+    entityAnimations: function() {
+        return this.animatingList.length > 0;
+    },
+    removeAnimating: function(delEntity) {
+        let tempList = [];
+        for (var i = 0; i < this.animatingList.length; i++) {
+            if (delEntity != this.animatingList[i]) {
+                tempList.push(this.animatingList[i]);
+            }
+        }
+
+        this.animatingList = [...tempList];
+    },
+    removePlayerMoves: function(delEntity) {
+        let tempList = [];
+        for (var i = 0; i < this.playerMovesList.length; i++) {
+            if (delEntity != this.playerMovesList[i]) {
+                tempList.push(this.playerMovesList[i]);
+            }
+        }
+        this.player
+    },
+    // Returns the entity's index
+    getIndexOf: function(arg) {
+        for (var i = 0; i < this.entities.length; i++) {
+            if (parseInt(arg.id) == parseInt(this.entities.id)) return i;
+        }
+        return -1;
     },
     updateEntities: function (dt) {
         var movingFound = false;

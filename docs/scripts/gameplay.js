@@ -2,7 +2,7 @@
 
 game.evaluateBoard = {
 	openSquares: [],
-	initialUpdate: true,
+	initialUpdate: false,
 	evaluating: false,
 	gridShifted: false,
 	timeSinceUpdate: 0.0,
@@ -106,6 +106,7 @@ game.evaluateBoard = {
 
 	// Remove excess entities
 	RemoveExcess: function () {
+		game.playGrid.checkTruncateFinished = false;
 
 		if (game.gameEntities.entities.length > 81) {
 			// console.log(`Something broke`);
@@ -139,6 +140,8 @@ game.evaluateBoard = {
 				tempArray.pop().remove();
 			}
 		}
+
+		game.playGrid.checkTruncateFinished = true;
 	},
 
 	// Perform board evaluation
@@ -201,6 +204,28 @@ game.evaluateCursor = function (pos) {
 	return false;
 }
 
+/*---------------------selectType-------------------------------------\
+| - Used to determine if the user is currently using click-and-drag or
+|   selecting squares individually
+\--------------------------------------------------------------------*/
+game.clickTypes = ['clicks', 'drags'];
+game.currClickType = null;
+
+/*---------------------selectedShape----------------------------------\
+| - Maintains a reference to the currently selected shape
+\--------------------------------------------------------------------*/
+game.selectedShape = null;
+
+/*---------------------selectedSquare---------------------------------\
+| - Maintains a reference to the currently selected square
+\--------------------------------------------------------------------*/
+// Origin Square
+game.startSquare = null;
+// Destination Square
+game.destinationSquare = null;
+// Previous Square (tap-to-move only)
+game.previousSquare = null;
+
 /*---------------------getShapeAtPosition-----------------------------\
 | - Given a position on the screen when the mouse is clicked, this
 |   method returns the shape found with its bounding radius over that
@@ -214,9 +239,7 @@ game.getShapeAtPosition = function (cursorPos) {
 	for (var i = 0; i < game.gameEntities.entities.length; i++) {
 		testEntity = game.gameEntities.entities[i];
 		if (vec2DDistance(testEntity.center, cursorPos) < testEntity.bRadius()) {
-			//if (testEntity.isAlive()) {
 			return testEntity;
-			//}
 		}
 	}
 	return null;
@@ -243,27 +266,14 @@ game.getSquareAtPosition = function (cursorPos) {
 	return null;
 }
 
-/*---------------------selectedShape----------------------------------\
-| - Maintains a reference to the currently selected shape
-\--------------------------------------------------------------------*/
-game.selectedShape = null;
-
-/*---------------------selectedSquare---------------------------------\
-| - Maintains a reference to the currently selected square
-\--------------------------------------------------------------------*/
-// Origin Square
-game.startSquare = null;
-// Destination Square
-game.destinationSquare = null;
-
 /*---------------------selectShape------------------------------------\
 | - Attempt to select a shape at the location of the provided mouse
 |   click.
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
 game.selectShape = function (pos) {
-	if (!game.evaluateCursor(pos) || !game.playGrid.readiness()) return false;
-	if (game.startSquare != null || game.destinationSquare != null) return false;
+	if (!game.evaluateCursor(pos)) return false;
+	// if (game.startSquare != null || game.destinationSquare != null) return false;
 	try {
 		game.selectedShape = game.getShapeAtPosition(pos);
 		// console.log(`Selected shape ${game.selectedShape.entityType()}`);
@@ -283,7 +293,6 @@ game.selectShape = function (pos) {
 \--------------------------------------------------------------------*/
 game.selectStartSquare = function (pos) {
 	if (!game.evaluateCursor(pos)) return;
-	if (game.startSquare != null || game.destinationSquare != null) return;
 	try {
 		game.startSquare = game.getSquareAtPosition(pos);
 		// console.log(`Selected square ${game.startSquare.id}`);
@@ -299,28 +308,14 @@ game.selectStartSquare = function (pos) {
 | - arg types: Vector2D
 \--------------------------------------------------------------------*/
 game.selectDestinationSquare = function (pos) {
-	if (!game.evaluateCursor(pos)  || !game.playGrid.readiness()) return false;
-	if (game.startSquare == null && game.destinationSquare != null) {
-		game.destinationSquare = null;
-		return false;
-	} else if (game.startSquare != null && game.destinationSquare != null) {
-		game.destinationSquare = null;
-	}
+	if (!game.evaluateCursor(pos)) return false;
+
 	try {
 		game.destinationSquare = game.getSquareAtPosition(pos);
 		// console.log(`Selected square ${game.destinationSquare.id}`);
-
-		// Check if the destination square is the same as the start square - SPONSORS test
-		if (game.destinationSquare == game.startSquare) {
-			// console.log(`Same Square! No action taken.`);
-			// game.destinationSquare.checkForSponsor(game.destinationSquare);
-			game.startSquare = null;
-			game.destinationSquare = null;
-			return false;
-		}
 		return true;
 	} catch (e) {
-		console.log("No square selected");
+		// console.log("No square selected");
 		game.startSquare = null;
 		game.destinationSquare = null;
 	}
@@ -334,8 +329,8 @@ game.selectDestinationSquare = function (pos) {
 \--------------------------------------------------------------------*/
 game.releaseSelectedShape = function (pos) {
 	if (game.selectedShape) {
-		game.selectedShape.moveShapeToLocation(pos);
-		// game.selectedShape = null;
+		// game.selectedShape.moveShapeToLocation(pos);
+		game.selectedShape = null;
 	}
 }
 
@@ -344,6 +339,6 @@ game.releaseSelectedShape = function (pos) {
 |   actions are complete.
 \--------------------------------------------------------------------*/
 game.releaseSelectedSquare = function () {
-	if (game.startSquare) game.startSquare = null;	// TODO : Add attachments updates
-	if (game.destinationSquare) game.destinationSquare = null;
+	game.startSquare = null;
+	game.destinationSquare = null;
 }

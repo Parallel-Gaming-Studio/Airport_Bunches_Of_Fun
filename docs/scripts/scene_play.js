@@ -115,10 +115,11 @@ class GridSquare {
 		// Check if this grid is attached with a shape
 		if (this.getShape() == "undefined") {
             // Flag this grid as not ready for evaluation
-            this.readyForEval = false;
+            // this.readyForEval = false;
 
 			// console.log(`Grid ${this.id} (${this.gridRow},${this.gridColumn}) is empty. Requesting new shape.`);
-			// Search top links for the next available shape
+            
+            // Search top links for the next available shape
 			var current = this;
 			while (current.linkTop !== "undefined") {
                 if (current.linkTop.getShape() !== "undefined") {
@@ -128,7 +129,8 @@ class GridSquare {
                 } else {
                     current = current.linkTop;
                 }
-			}
+            }
+            
 			// If no shapes exist, request a shape spawn
 			if (current.attachedShape == "undefined") {
 				// console.log(`No shapes found. Generating a new one in spawn ${game.playSpawnSquares[this.gridColumn].id} at ${game.playSpawnSquares[this.gridColumn].center}...`);
@@ -141,10 +143,11 @@ class GridSquare {
 					this.setShape(spawnShape);
 					// Notify the new shape of the attachment
                     spawnShape.attachedSquare = this;
+                    // console.log(`New shape assigned to grid ${spawnShape.attachedSquare.id}`);
 				} else {
 					// Wait
                     console.log(`Grid ${this.id} shape request failed. Requesting cleanup...`);
-                    game.evaluateBoard.RemoveExcess();
+                    // game.evaluateBoard.RemoveExcess();
 				}
 			} else {
 				// Assign the shape to this square
@@ -154,23 +157,28 @@ class GridSquare {
 				// Notify the shape of the new attachment
 				this.attachedShape.attachedSquare = this;
             }
+
             // Move the assigned shape to this square
             this.attachedShape.forceMoveToLocation(this.center);
             // Notify the board evaluator that the grid has changed
-            game.evaluateBoard.gridShifted = true;
+            // game.evaluateBoard.gridShifted = true;
+            // Add this grid to the evaluate list
+            game.playGrid.evaluateList.push(this);
 		} else {
             // If the distance to the shape is too far
             if (vec2DDistanceSq(this.center, this.getShape().center) > 163 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) {
                 // Flag as not ready for evaluation
-                this.readyForEval = false;
+                // this.readyForEval = false;
                 // And the shape isn't already in motion
-                if (!this.getShape().isMoving) {
+                // if (!this.getShape().isMoving) {
                     // Request the shape move into the proper position
-                    this.getShape().forceMoveToLocation(this.center);
-                }
-            } else {
+                    // this.getShape().forceMoveToLocation(this.center);
+                // }
+            // } else {
                 // Flag as ready for evaluation
-                this.readyForEval = true;
+                // this.readyForEval = true;
+                // Add this grid to the evaluate list
+                // game.playGrid.evaluateList.push(this);
             }
         }
 	}
