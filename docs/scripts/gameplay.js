@@ -295,7 +295,7 @@ game.selectStartSquare = function (pos) {
 	if (!game.evaluateCursor(pos)) return;
 	try {
 		game.startSquare = game.getSquareAtPosition(pos);
-		console.log(`Selected square ${game.startSquare.id}`);
+		// console.log(`Selected square ${game.startSquare.id}`);
 	} catch (e) {
 		// console.log("No square selected");
 		game.startSquare = null;
@@ -312,10 +312,10 @@ game.selectDestinationSquare = function (pos) {
 
 	try {
 		game.destinationSquare = game.getSquareAtPosition(pos);
-		console.log(`Selected square ${game.destinationSquare.id}`);
+		// console.log(`Selected square ${game.destinationSquare.id}`);
 		return true;
 	} catch (e) {
-		console.log("No square selected");
+		// console.log("No square selected");
 		game.startSquare = null;
 		game.destinationSquare = null;
 	}

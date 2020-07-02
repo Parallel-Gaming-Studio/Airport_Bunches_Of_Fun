@@ -205,7 +205,10 @@ game.playGrid = {
 
         while (this.popList.length > 0) {
             let x = this.popList.pop().attachedShape;
-            if (x !== "undefined") x.popShape();
+            if (x !== "undefined") {
+                x.popShape();
+                this.popReturnable(x);
+            }
         }
 
         this.checkPopFinished = true;
@@ -269,6 +272,16 @@ game.playGrid = {
         this.checkReturnList = [];
 
         this.checkReturnFinished = true;
+    },
+    popReturnable: function(arg) {
+        for (var i = 0; i < this.checkReturnList.length; i++) {
+            // console.log(`Pop Returnable : Comparing...\n${arg} <> ${this.checkReturnList[i]}`);
+            if (arg === this.checkReturnList[i]) {
+                this.checkReturnList = [];
+                // console.log(`Pop Returnable Found`);
+                break;
+            }
+        }
     },
 
     // Act on the user's input

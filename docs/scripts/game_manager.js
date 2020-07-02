@@ -31,7 +31,7 @@ game.playLoop = function(dt) {
     if (!game.evaluateBoard.evalReady(dt)) return;
 
     // Animations check - Standby if true
-    if (game.gameEntities.entityAnimations()) { console.log("Animating"); return; }
+    if (game.gameEntities.entityAnimations()) { return; }
 
     // console.log(`Play State: ${game.currPlayState}`);
 
@@ -156,6 +156,9 @@ game.playLoop = function(dt) {
             break;
         case 'userInput':
 
+            /*console.log(`Start square: ${game.startSquare}`);
+            console.log(`Destination square: ${game.destinationSquare}`);
+            console.log(`Previous square ${game.previousSquare}`);*/
             
             // Check if the user selected a valid square
             if (game.startSquare != null) {
@@ -165,6 +168,8 @@ game.playLoop = function(dt) {
                     if (game.startSquare == game.destinationSquare) {
                         // Set click type to 'clicks
                         game.currClickType = game.clickTypes[0];
+                        // Clear destination square
+                        // game.destinationSquare = null;
                     } else {
                         // Set click type to 'drags'
                         game.currClickType = game.clickTypes[1];
@@ -175,7 +180,7 @@ game.playLoop = function(dt) {
                             // Check if another square was already selected
                             if (game.previousSquare != null) {
                                 // Do nothing the destination and previous squares are the same
-                                if (game.previousSquare != game.destinationSquare) {
+                                if (game.previousSquare != game.startSquare) {
                                     // Second click, so assign to the testing array
                                     game.playGrid.checkInputList = [game.startSquare, game.previousSquare];
                                 }
@@ -183,6 +188,8 @@ game.playLoop = function(dt) {
                                 // Assign this first selection to the "memory" previous square
                                 game.previousSquare = game.startSquare;
                             }
+                            // Clear start square
+                            // game.startSquare = null;
                             break;
                         case 'drags':
                             // Clear any previous square selections
@@ -195,9 +202,9 @@ game.playLoop = function(dt) {
                     
                 } else {
                     // Clear both start and destination selections
-                    game.releaseSelectedSquare();
+                    // game.releaseSelectedSquare();
                     // Reset the previous selection, as well
-                    game.previousSquare = null;
+                    // game.previousSquare = null;
                 }
             } else {
                 // Clear erroneous clicks with a destination, but no starting point
@@ -205,6 +212,9 @@ game.playLoop = function(dt) {
                     game.releaseSelectedSquare();
                 }
             }
+
+            /*console.log(`Click type: ${game.currClickType}`);
+            console.log(`Input list: ${game.playGrid.checkInputList.length}`);*/
 
             // Ensure the check input list is filled in
             if (game.playGrid.checkInputList.length > 1) {
