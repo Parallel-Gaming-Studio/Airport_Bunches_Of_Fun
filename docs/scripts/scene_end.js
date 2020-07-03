@@ -215,9 +215,20 @@ game.endPlayerScore = {
             // Reduce the font size by 1
             mySpan.css("font-size", this.font_size);
         }
+        mySpan.css("font-size", this.font_size);
+        // Reduce the font size until the span is the correct height
+        if (mySpan.height() > this.height) {
+            while (mySpan.height() > this.height) {
+                // Get the font size as an integer, base 10
+                this.font_size = parseInt(mySpan.css("font-size"), 10);
+                // Reduce the font size by 1
+                mySpan.css("font-size", this.font_size - 1);
+            }
+        }
         
+        mySpan.css("font-size", this.font_size);
         // Set the player score to the proper size
-        $("#endPlayerScore").css("font-size", this.font_size).html(mySpan.html());
+        myDiv.css("font-size", this.font_size).html(mySpan.html());
     },
     // Adjust the object's transform
     resize: function () {
