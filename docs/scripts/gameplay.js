@@ -6,7 +6,7 @@ game.evaluateBoard = {
 	evaluating: false,
 	gridShifted: false,
 	timeSinceUpdate: 0.0,
-	timeBetweenUpdates: 0.01,
+	timeBetweenUpdates: 0.009,
 
 	evalReady: function (dt) {
 		// During the initial update, return true
