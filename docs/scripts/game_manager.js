@@ -297,6 +297,10 @@ game.hideElements = {
         this.images();
         this.canvas();
         this.wipeShapes();
+        // Clear all player selections
+        game.startSquare = null;
+        game.destinationSquare = null;
+        game.previousSquare = null;
         // Reset leaderboard table
         game.top10players.hideTable();
         // Reset the grid array
