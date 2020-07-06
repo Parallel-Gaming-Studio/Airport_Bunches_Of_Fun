@@ -166,7 +166,7 @@ class GridSquare {
             game.playGrid.evaluateList.push(this);
 		} else {
             // If the distance to the shape is too far
-            if (vec2DDistanceSq(this.center, this.getShape().center) > 163 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) {
+            if (vec2DDistanceSq(this.center, this.getShape().center) > 163 * engine.preserveAspectRatio) {
                 // Flag as not ready for evaluation
                 // this.readyForEval = false;
                 // And the shape isn't already in motion
@@ -477,10 +477,10 @@ game.playTimeBoardBG = {
     org_posY: 50,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
 
-        this.posX = 30 + 10 * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.posX = 30 + 10 * engine.preserveAspectRatio;
         this.posY = Math.max(50, Math.min(40, this.org_posY - engine.heightDifference))
     },
     // Draw the object
@@ -519,14 +519,14 @@ game.playTimeBoard = {
     // Adjust the object's transform
     resize: function () {
 
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_height * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_height * engine.preserveAspectRatio;
 
         this.posX = (game.playTimeBoardBG.posX + game.playTimeBoardBG.width / 2) - this.width / 2;
-        this.posY = game.playTimeBoardBG.posY + game.playTimeBoardBG.height - this.height - 16 * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.posY = game.playTimeBoardBG.posY + game.playTimeBoardBG.height - this.height - 16 * engine.preserveAspectRatio;
 
         // Adjust font size
-        this.font_size = this.org_font_size * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.font_size = this.org_font_size * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -579,10 +579,10 @@ game.playTitle = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
 
-        this.posX = 30 + 10 * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.posX = 30 + 10 * engine.preserveAspectRatio;
         this.posY = game.playTimeBoardBG.posY + game.playTimeBoardBG.height;
     },
     // Draw the object
@@ -605,10 +605,10 @@ game.playScoreBoard = {
     // Adjust the object's transform
     resize: function () {
 
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
 
-        this.posX = 30 + 10 * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.posX = 30 + 10 * engine.preserveAspectRatio;
         this.posY = game.playTitle.posY + game.playTitle.height;
     },
     // Draw the object
@@ -678,7 +678,7 @@ game.playScore = {
     resize: function () {
 
         this.width = game.playScoreBoard.width * 0.8;
-        this.height = this.org_height * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.height = this.org_height * engine.preserveAspectRatio;
 
         this.posX = (game.playScoreBoard.posX + game.playScoreBoard.width / 2) - this.width / 2;
         this.posY = game.playScoreBoard.posY + game.playScoreBoard.height * 0.32;
@@ -726,8 +726,8 @@ game.playFieldBackground = {
     // Adjust the object's transform
     resize: function () {
 
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
 
         this.posX = (((game.playTitle.posX + game.playTitle.width) + game.playSponsor.posX) / 2) - (this.width / 2);
         this.posY = engine.height / 2 - this.height / 2;
@@ -753,8 +753,8 @@ game.playSponsor = {
     posY: 0,
     // Adjust transformation
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_height * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_height * engine.preserveAspectRatio;
         this.posX = engine.width - this.width;
         this.posY = engine.height - this.height;
     },
@@ -785,7 +785,7 @@ game.playSponsorLogo = {
         this.height = this.width;
 
         // Attach Bottom Side
-        this.posX = game.playSponsor.posX + 35 * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.posX = game.playSponsor.posX + 35 * engine.preserveAspectRatio;
         this.posY = game.playSponsor.posY + game.playSponsor.height / 2 - this.height / 3;
     },
     // Draw object
@@ -867,7 +867,7 @@ game.playFieldGrid = {
 		this.spawnDiv.style.position = "absolute";
         this.spawnDiv.style.display = "block";
         this.spawnDiv.style.left = this.posX.toString() + "px";
-        this.spawnDiv.style.top = (-this.gridHeight - 55 * (1 - Math.max(engine.widthProportion, engine.heightProportion))) + "px";
+        this.spawnDiv.style.top = (-this.gridHeight - 55 * engine.preserveAspectRatio) + "px";
         this.spawnDiv.style.width = this.width + "px";
         this.spawnDiv.style.height = this.gridHeight + 2 + "px";
         this.spawnDiv.style.zIndex = 0;
@@ -967,8 +967,8 @@ game.gemTriangle = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -988,8 +988,8 @@ game.gemStar = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -1009,8 +1009,8 @@ game.gemHeart = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -1030,8 +1030,8 @@ game.gemSquare = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -1051,8 +1051,8 @@ game.gemCircle = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -1072,8 +1072,8 @@ game.gemPentagon = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -1093,8 +1093,8 @@ game.gemRectangle = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
@@ -1120,8 +1120,8 @@ game.gemSponsor = {
     posY: 0,
     // Adjust the object's transform
     resize: function () {
-        this.width = this.org_width * (1 - Math.max(engine.widthProportion, engine.heightProportion));
-        this.height = this.org_heigth * (1 - Math.max(engine.widthProportion, engine.heightProportion));
+        this.width = this.org_width * engine.preserveAspectRatio;
+        this.height = this.org_heigth * engine.preserveAspectRatio;
     },
     // Draw the object
     draw: function () {
