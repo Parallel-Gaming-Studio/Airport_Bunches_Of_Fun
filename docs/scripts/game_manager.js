@@ -342,6 +342,20 @@ game.gameController = {
         }
         // DEBUG TESTER
 
+        //Toggle tutorial overlay
+        for (var i = 0; i < game.keys.length; i++) {
+            if (engine.input.pressed(game.keys[i])) {
+                game.tutorialOverlay.tester('Key: ${game.keys[i]}');
+                    if (game.keys[i] == 'O') {
+                        game.tutorialOverlay.open();
+                    } else if (game.keys[i] == 'C') {
+                        game.tutorialOverlay.close();
+                    }
+                //Refresh timeout
+                game.timeoutOverlay.refreshTimer();
+            }
+        }
+
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
@@ -613,6 +627,9 @@ game.drawOnce = function () {
             this.leaderboardButton.adjustStyle();
             this.quitButton.adjustStyle();
             this.menuButton.adjustStyle();
+
+            //Tutorial Overlay
+            this.tutorialOverlay.resize();
             break;
         case 'play':
             // Draw images on the canvas

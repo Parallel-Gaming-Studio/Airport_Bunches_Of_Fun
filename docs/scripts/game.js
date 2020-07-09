@@ -20,7 +20,7 @@
 window.game = Object.create(GameObject.prototype);
 
 // Keybindings
-game.keys = ['A', 'S', 'D', 'F'];
+game.keys = ['A', 'S', 'D', 'F', 'O', 'C'];
 for (var i = 0; i < game.keys.length - 1; i++) {
     engine.input.bind(engine.key[game.keys[i]], game.keys[i]);
 }
@@ -618,6 +618,34 @@ game.timeoutOverlay = {
     }
 };
 game.timeoutOverlay.init(); // Force initialization of the timer during script load
+
+//Tutorial Overlay
+game.tutorialOverlay = {
+    div: document.getElementById("tutorialOverlay"),
+    divContent: document.getElementById("tutorialContent"),
+    closeButton: document.getElementById("tutorialCloseButton"),
+    org_header_size: 90,
+    org_select_size: 53,
+    org_action_size: 80,
+    org_closer_size: 60,
+    open: function () {
+        this.div.style.display = "block";
+        this.divContent.style.display = "block";
+        this.div.style.height = "100%";
+        console.log("<Game:Tutorial> Open");
+    },
+    close: function () {
+        this.div.style.height = "0%";
+        console.log("<Game:Tutorial> Close");
+    },
+    tester: (key) => {
+        console.log('Key: ${key}');
+    },
+    resize: function () {
+        this.divContent.style.fontSize = this.org_select_size * (1 - Math.max(engine.widthProportion, engine.heightProportion)) + "px";
+        this.closeButton.style.fontSize = this.org_closer_size * (1 - Math.max(engine.widthProportion, engine.heightProportion)) + "px";
+    }
+};
 
 // Sponsor control
 game.sponsors = {
