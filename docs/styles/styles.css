@@ -341,7 +341,7 @@ table td:nth-child(3) {
     }
 }
 
-/* Tutorial Overlay */
+// Tutorial Overlay 
 #tutorialOverlay {
     height: 0px;
     width: 100%;
@@ -360,58 +360,79 @@ table td:nth-child(3) {
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
 }
-/* NOTED OUT SECTION
+
 #tutorialOverlay .image-container {
     background-image: url("ABoF_tutorialOverlay.png");
     background-size: cover;
     position: relative;
     height: 300px;
 }
-#tutorialOverlay .score {
-    background-color: rgb(120, 120, 120);
-    color: black;
+#tutorialOverlay .score-highlight {
+    background-color: black;
+    color: rgb(100, 100, 100);
+    font-size: 100vw;
+    font-weight: bold;
+    margin: 0 auto;
+    padding: 0px;
+    width: 0%;
+    text-align: center;
+    position: absolute;
+    top: 20%;
+    left: -5%;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+} 
+#tutorialOverlay .score-text{
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    bottom: 68px;
+    left: 10px;
+}
+#tutorialOverlay .sponsor-highlight {
+    background-color: black;
+    color: rgb(100, 100, 100);
     font-size: 125vw;
     font-weight: bold;
     margin: 0 auto;
-    padding: 400px;
-    width: 50%;
+    padding: 0px;
+    width: 0%;
     text-align: center;
     position: absolute;
-    top: 10%;
-    left: 18%;
-    transform: translate(-50%, -50%);
+    top: 20%;
+    left: 75%;
+    transform: translate(50%, -50%);
     mix-blend-mode: screen;
 }
-#tutorialOverlay .sponsor {
-    background-color: rgb(120, 120, 120);
-    color: black;
-    font-size: 125vw;
+#tutorialOverlay .sponsor-text {
+    position:absolute;
+    color: white;
     font-weight: bold;
-    margin: 0 auto;
-    padding: 450px;
-    width: 50%;
-    text-align: center;
-    position: absolute;
-    top: -2%;
-    left: 88%;
-    transform: translate(-50%, -50%);
-    mix-blend-mode: screen;
+    bottom: 95px;
+    left: 10px;
 }
-#tutorialOverlay .gemSwap {
-    background-color: rgb(120, 120, 120);
-    color: black;
-    font-size: 700vw;
+#tutorialOverlay .gemSwap-highlight {
+    background-color: black;
+    color: (100, 100, 100);
+    font-size: 200vw;
     font-weight: bold;
     margin: 0 auto;
-    padding: 450px;
-    width: 50%;
+    padding: 0px;
+    width: 0%;
     text-align: center;
     position: absolute;
-    top: -45%;
-    left: 88%;
-    transform: translate(-50%, -50%);
+    top: -80%;
+    left: 55%;
+    transform: translate(50%, -50%);
     mix-blend-mode: screen;
-}  */
+}  
+#tutorialOverlay .gemSwap-text {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    bottom: 95px;
+    left: 10px;
+}
 #tutorialOverlay .tutorialCloseButton {
     position: absolute;
     top: 40px;

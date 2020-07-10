@@ -637,7 +637,7 @@ game.tutorialOverlay = {
     close: function () {
         this.div.style.height = "0%";
         console.log("<Game:Tutorial> Close");
-    },
+    },  
     tester: (key) => {
         console.log('Key: ${key}');
     },
@@ -645,7 +645,7 @@ game.tutorialOverlay = {
         this.divContent.style.fontSize = this.org_select_size * (1 - Math.max(engine.widthProportion, engine.heightProportion)) + "px";
         this.closeButton.style.fontSize = this.org_closer_size * (1 - Math.max(engine.widthProportion, engine.heightProportion)) + "px";
     }
-};
+};  
 
 // Sponsor control
 game.sponsors = {
