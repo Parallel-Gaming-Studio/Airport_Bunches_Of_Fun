@@ -356,87 +356,188 @@ table td:nth-child(3) {
 }
 #tutorialContent {
     position: relative;
-    width: 100%;
-    transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    transform: translate(5%, 5%);
+    -ms-transform: translate(5%, 5%);
 }
-
+#tutorialOverlay a {
+    padding: 8px;
+    text-decoration: none;
+    font-family: Roboto-Bold;
+    color: #C8C8C8;
+    display: block;
+    transition: 0.3s;
+}
+#tutorialOverlay a:hover, #tutorialOverlay a:focus, #tutorialOverlay a.active {
+    color: #f41c63;
+}
 #tutorialOverlay .image-container {
-    background-image: url("ABoF_tutorialOverlay.png");
-    background-size: cover;
+    background-image: url("../images/ABoF_tutorialOverlay.png");
+    background-repeat: no-repeat;
+    background-size: contain;
     position: relative;
-    height: 300px;
+    height: 100px;
+    width: 100%;
+}
+#tutorialOverlay .image-container:active {
+    display: block;
+}
+#tutorialOverlay .image-container:not(active) {
+    display: none;
 }
 #tutorialOverlay .score-highlight {
-    background-color: black;
-    color: rgb(100, 100, 100);
+    background-color: rgb(25, 25, 25);
+    color: rgb(255, 255, 255);
     font-size: 100vw;
     font-weight: bold;
-    margin: 0 auto;
+    margin: 0px;
     padding: 0px;
-    width: 0%;
+    width: 1000%;
     text-align: center;
     position: absolute;
-    top: 20%;
-    left: -5%;
-    transform: translate(-50%, -50%);
-    mix-blend-mode: screen;
+    transform: translate(-48.1%, -46%);
+    mix-blend-mode: multiply;
+    transition: 1.0s;
 } 
 #tutorialOverlay .score-text{
     position: absolute;
     color: white;
     font-weight: bold;
-    bottom: 68px;
+    bottom: 128px;
     left: 10px;
 }
-#tutorialOverlay .sponsor-highlight {
-    background-color: black;
-    color: rgb(100, 100, 100);
-    font-size: 125vw;
+#tutorialOverlay .strSponsor-highlight {
+    background-color: rgb(25, 25, 25);
+    color: rgb(255, 255, 255);
+    font-size: 80vw;
     font-weight: bold;
-    margin: 0 auto;
+    margin: 0px;
     padding: 0px;
-    width: 0%;
+    width: 1000%;
     text-align: center;
     position: absolute;
-    top: 20%;
-    left: 75%;
-    transform: translate(50%, -50%);
-    mix-blend-mode: screen;
+    transform: translate(-40.9%, -33.2%);
+    mix-blend-mode: multiply;
+    transition: 1.0s;
 }
-#tutorialOverlay .sponsor-text {
+#tutorialOverlay .strSponsor-text {
     position:absolute;
     color: white;
     font-weight: bold;
     bottom: 95px;
     left: 10px;
+    right: 15%;
 }
 #tutorialOverlay .gemSwap-highlight {
-    background-color: black;
-    color: (100, 100, 100);
+    background-color: rgb(25, 25, 25);
+    color: (255, 255, 255);
     font-size: 200vw;
     font-weight: bold;
-    margin: 0 auto;
+    margin: 0px;
     padding: 0px;
-    width: 0%;
+    width: 1000%;
     text-align: center;
     position: absolute;
-    top: -80%;
-    left: 55%;
-    transform: translate(50%, -50%);
-    mix-blend-mode: screen;
+    transform: translate(-41.85%, -66.5%);
+    mix-blend-mode: multiply;
+    transition: 1.0s;
 }  
 #tutorialOverlay .gemSwap-text {
     position: absolute;
     color: white;
     font-weight: bold;
-    bottom: 95px;
+    bottom: 135px;
     left: 10px;
 }
 #tutorialOverlay .tutorialCloseButton {
     position: absolute;
+    color: white;
     top: 40px;
     right: 45px;
+    z-index: 1001;
+}
+#tutorialPages {
+    position: relative;
+    display: inline-block;
+    font-size: 4vw;
+    margin: 0px;
+    padding: 0px;
+    bottom: calc(4vh + 20px);
+    width: 50%;
+    text-align: center;
+    transform: translate(50%, 0);
+}
+#tutorialPages a {
+    display: inherit;
+    position: relative;
+    background-color: rgb(104, 47, 122);
+    background-color: rgba(104, 47, 122, 0.67);
+    margin: 0px;
+    padding: 10px 0px;
+    width: 12.5%;
+}
+/* Tutorial Snackbar */
+#playSnackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position:fixed;
+    z-index: 1;
+    left: 50%;
+    top: 40px;
+    font-size: 24px;
+    font-family: BigShouldersDisplay-SemiBold;
+}
+#playSnackbar .show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 4.5s;
+    animation: fadein 0.5s, fadeout 0.5s 4.5s;
+}
+@-webkit-keyframes fadein {
+    from {
+        top: 0;
+        opacity: 0;
+    }
+    to {
+        top: 40px;
+        opacity: 1;
+    }
+}
+@keyframes fadein {
+    from {
+        top: 0;
+        opacity: 0;
+    }
+    to {
+        top: 40px;
+        opacity: 1;
+    }
+}
+@-webkit-keyframes fadeout {
+    from {
+        top: 40px;
+        opacity: 1;
+    }
+    to {
+        top: 0;
+        opacity: 0;
+    }
+}
+@keyframes fadeout {
+    from {
+        top: 40px;
+        opacity: 1;
+    }
+    to {
+        top: 0;
+        opacity: 0;
+    }
 }
 
 .playGrid {

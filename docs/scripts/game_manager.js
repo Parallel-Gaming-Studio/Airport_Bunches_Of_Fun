@@ -359,6 +359,7 @@ game.gameController = {
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
+                game.playTutorial.play();
                 // Set the new game state to Play Scene
                 game.currState = game.gameState[1];
                 // Reset the player
@@ -663,6 +664,9 @@ game.drawOnce = function () {
 
             // Display buttons
             this.menuButton.adjustStyle();
+
+            // Display Snackbar
+            this.playTutorial.draw();
             break;
         case 'end':
             // Draw images on the canvas

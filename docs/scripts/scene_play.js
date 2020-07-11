@@ -441,6 +441,25 @@ class SpawnSquare {
     }
 };
 
+//   - Tutorial Snackbar
+game.playTutorial = {
+    div: document.getElementById("playSnackbar"),
+    init: function () {
+        game.playTutorial.div.style.display = "block";
+        this.div.addEventListener("click", game.tutorialOverlay.openAlternate)
+    },
+    draw: function () {
+        this.div.style.display = "block";
+    },
+    play: function () {
+        game.playTutorial.div.className = "show";
+        setTimeout(function () {
+            game.playTutorial.div.className = game.playTutorial.div.className.replace("show", "");
+        }, 5000);
+    }
+};
+game.playTutorial.init();  //Force the play tutorial snackbar initialize
+
 //   - Images
 game.playBackground = {
     // Get handle to image
