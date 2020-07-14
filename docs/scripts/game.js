@@ -628,9 +628,9 @@ game.tutorialOverlay = {
     img01: document.getElementsByName("tutImg01"),
     img02: document.getElementsByName("tutImg02"),
     img03: document.getElementsByName("tutImg03"),
-    tutImg1: document.getElementById("tutorialImg01"),
-    tutImg2: document.getElementById("tutorialImg02"),
-    tutImg3: document.getElementById("tutorialImg03"),
+    tutImg01: document.getElementById("tutorialImg01"),
+    tutImg02: document.getElementById("tutorialImg02"),
+    tutImg03: document.getElementById("tutorialImg03"),
     tutTxt1: document.getElementById("tutorialTxt01"),
     tutTxt2: document.getElementById("tutorialTxt02"),
     tutTxt3: document.getElementById("tutorialTxt03"),
@@ -644,9 +644,9 @@ game.tutorialOverlay = {
     orgTimeStart: null,
     init: function () {
         //Images
-        this.tutImg1.addEventListener("click", this.nextSlide);
-        this.tutImg2.addEventListener("click", this.nextSlide);
-        this.tutImg3.addEventListener("click", this.nextSlide);
+        this.tutImg01.addEventListener("click", this.nextSlide);
+        this.tutImg02.addEventListener("click", this.nextSlide);
+        this.tutImg03.addEventListener("click", this.nextSlide);
         //Text
         this.tutTxt1.addEventListener("click", this.nextSlide);
         this.tutTxt2.addEventListener("click", this.nextSlide);
@@ -714,7 +714,7 @@ game.tutorialOverlay = {
         game.timeoutOverlay.refreshTimer();
         //Get the active slide
         game.tutorialOverlay.activeE += 1;
-        console.log('Active: ${game.tutorialOverlay.activeE}');
+        console.log(`Active: ${game.tutorialOverlay.activeE}`);
         //Update the slide
         switch (game.tutorialOverlay.activeE) {
             case 0:
@@ -771,7 +771,7 @@ game.tutorialOverlay = {
                 break;
         }
     },
-    sceneTransition: function () {
+    /* sceneTransition: function () {
         console.log("<Game:Tutorial> Transition Scenes");
         //Display the tutorial overlay if this is the first playthrough
         if (game.firstPlayThrough) {
@@ -799,9 +799,10 @@ game.tutorialOverlay = {
             game.hideElements.hideAll();
             //Redraw all elements
             game.drawOnce();
-
+            //Close tutorial overlay to maintain proper functionality
+            game.tutorialOverlay.close();
         }
-    },
+    }, */
     clickMe: () => {
         console.log("Clicked!")
     },
@@ -839,8 +840,8 @@ game.tutorialOverlay = {
             game.drawOnce();
         }
     },
-     tester: (key) => {
-        console.log('Key: ${key}');
+    tester: (key) => {
+        console.log(`Key: ${key}`);
     }
 };
 game.tutorialOverlay.init();  //Force initialize all event listeners

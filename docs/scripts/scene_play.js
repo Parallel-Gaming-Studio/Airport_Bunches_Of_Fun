@@ -453,7 +453,7 @@ game.playTutorial = {
     },
     play: function () {
         game.playTutorial.div.className = "show";
-        setTimeout(function () {
+        setTimeout(function (){
             game.playTutorial.div.className = game.playTutorial.div.className.replace("show", "");
         }, 5000);
     }

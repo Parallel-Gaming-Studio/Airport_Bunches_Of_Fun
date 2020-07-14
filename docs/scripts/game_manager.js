@@ -345,14 +345,14 @@ game.gameController = {
         //Toggle tutorial overlay
         for (var i = 0; i < game.keys.length; i++) {
             if (engine.input.pressed(game.keys[i])) {
-                game.tutorialOverlay.tester('Key: ${game.keys[i]}');
+                game.tutorialOverlay.tester(`Key: ${game.keys[i]}`);
                     if (game.keys[i] == 'O') {
                         game.tutorialOverlay.open();
                     } else if (game.keys[i] == 'C') {
                         game.tutorialOverlay.close();
                     }
-                //Refresh timeout
-                game.timeoutOverlay.refreshTimer();
+                    //Refresh timeout
+                    game.timeoutOverlay.refreshTimer();
             }
         }
 

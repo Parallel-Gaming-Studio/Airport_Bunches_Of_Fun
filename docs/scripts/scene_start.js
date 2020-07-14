@@ -170,7 +170,9 @@ game.startButton = {
         // Clear the initials on the End Scene
         game.endPlayerInitials.clearInitials();
         // Refresh the timeout timer
-		game.timeoutOverlay.refreshTimer();
+        game.timeoutOverlay.refreshTimer();
+        //Show the game tutorial before starting
+        game.tutorialOverlay.open();
         // Set the new game state to Play Scene
         game.currState = game.gameState[1];
         // Hide all elements
