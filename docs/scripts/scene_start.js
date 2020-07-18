@@ -161,24 +161,10 @@ game.startButton = {
     },
 	// Handle user interaction based on game state
     clickMe: function () {
-		// Inform Google the user started playing a game
-        game.google.start();
-        // Set game score to zero
-        game.score = 0;
-        // Reset the player object
-        game.player.reset();
-        // Clear the initials on the End Scene
-        game.endPlayerInitials.clearInitials();
         // Refresh the timeout timer
         game.timeoutOverlay.refreshTimer();
-        //Show the game tutorial before starting
-        game.tutorialOverlay.open();
-        // Set the new game state to Play Scene
-        game.currState = game.gameState[1];
-        // Hide all elements
-        game.hideElements.hideAll();
-        // Redraw all elements
-        game.drawOnce();
+        // Show the game tutorial before starting
+        game.tutorialOverlay.sceneTransition();
     }
 };
 game.startButton.init(); // Force object initialization on first script load

@@ -341,12 +341,12 @@ table td:nth-child(3) {
     }
 }
 
-// Tutorial Overlay 
+/* Tutorial Overlay */
 #tutorialOverlay {
     height: 0px;
     width: 100%;
     position: fixed;
-    z-index: 1001;
+    z-index: 1000;
     top: 0;
     left: 0;
     background-color: rgb(0,0,0);
@@ -374,8 +374,7 @@ table td:nth-child(3) {
 }
 #tutorialOverlay .image-container {
     position: relative;
-    height: 100px;
-    width: 100%;
+    height: 100%;
 }
 #tutorialOverlay .image-container:active {
     display: block;
@@ -395,6 +394,7 @@ table td:nth-child(3) {
     color: white;
     font-weight: bold;
     bottom: 15%;
+    left: 35%;
     font-family: Roboto-Bold;
 }
 #tutorialOverlay .strSponsor-highlight {
@@ -408,8 +408,8 @@ table td:nth-child(3) {
     position:absolute;
     color: white;
     font-weight: bold;
-    bottom: 20%;
-    right: 15%;
+    bottom: 17%;
+    right: 18%;
     font-family: Roboto-Bold;
 }
 #tutorialOverlay .gemSwap-highlight {
@@ -423,8 +423,9 @@ table td:nth-child(3) {
     position: absolute;
     color: white;
     font-weight: bold;
-    top: 20%;
-    right: 40%;
+    bottom: 40%;
+    left: 5%;
+    right: 5%;
     font-family: Roboto-Bold;
 }
 #tutorialOverlay .tutorialCloseButton {
@@ -466,13 +467,13 @@ table td:nth-child(3) {
     border-radius: 2px;
     padding: 16px;
     position:fixed;
-    z-index: 1;
+    z-index: 999;
     left: 50%;
     top: 40px;
     font-size: 24px;
     font-family: BigShouldersDisplay-SemiBold;
 }
-#playSnackbar .show {
+#playSnackbar.show {
     visibility: visible;
     -webkit-animation: fadein 0.5s, fadeout 0.5s 4.5s;
     animation: fadein 0.5s, fadeout 0.5s 4.5s;

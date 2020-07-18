@@ -723,7 +723,7 @@ game.playScore = {
     },
     // Update the score with the player's score
     updateScore: function () {
-        this.div.innerHTML = Math.max(0, game.player.score);
+        this.div.innerHTML = game.player.score;
     },
     // Handle user interaction
     clickMe: function () {

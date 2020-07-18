@@ -26,7 +26,7 @@ game.playStates = ['emptySquares', 'fillSquares', 'truncate', 'evaluate', 'popSh
 game.currPlayState = game.playStates[0];
 game.animations = false;
 
-game.playLoop = function(dt) {
+game.playLoop = function (dt) {
     // Limit update attempts to reduce overhead
     if (!game.evaluateBoard.evalReady(dt)) return;
 
@@ -36,7 +36,7 @@ game.playLoop = function(dt) {
     // console.log(`Play State: ${game.currPlayState}`);
 
     // State Switch
-    switch(game.currPlayState) {
+    switch (game.currPlayState) {
         case 'emptySquares':
 
             let checkEmpty;
@@ -101,7 +101,7 @@ game.playLoop = function(dt) {
                 // Move to Evaluate
                 game.currPlayState = game.playStates[3];
             }
-            
+
             break;
         case 'evaluate':
 
@@ -159,7 +159,7 @@ game.playLoop = function(dt) {
             /*console.log(`Start square: ${game.startSquare}`);
             console.log(`Destination square: ${game.destinationSquare}`);
             console.log(`Previous square ${game.previousSquare}`);*/
-            
+
             // Check if the user selected a valid square
             if (game.startSquare != null) {
                 // Check if the user also selected a valid destination
@@ -175,7 +175,7 @@ game.playLoop = function(dt) {
                         game.currClickType = game.clickTypes[1];
                     }
 
-                    switch(game.currClickType) {
+                    switch (game.currClickType) {
                         case 'clicks':
                             // Check if another square was already selected
                             if (game.previousSquare != null) {
@@ -199,7 +199,7 @@ game.playLoop = function(dt) {
                             break;
                     }
 
-                    
+
                 } else {
                     // Clear both start and destination selections
                     // game.releaseSelectedSquare();
@@ -221,7 +221,7 @@ game.playLoop = function(dt) {
                 // Prevent propagation
                 if (!game.playGrid.checkInputStarted) {
 
-                    switch(game.currClickType) {
+                    switch (game.currClickType) {
                         case 'clicks':
                             // If this is the second square selected, test it
                             if (game.previousSquare != null) {
@@ -281,7 +281,7 @@ game.hideElements = {
         }
     },
     // Erase all shape divs
-    wipeShapes: function() {
+    wipeShapes: function () {
         var z = document.getElementsByClassName("gems");
         var tempArray = [...z];
         while (tempArray.length > 0) {
@@ -334,10 +334,10 @@ game.gameController = {
     gsStart: function (dt) {
         // Start Scene
 
-        //Reset Game Timer
+        // Reset Game Timer
         game.playTimeBoard.resetTimer();
 
-        //Reset Play time
+        // Reset Play time
         game.endPlayerTimeBoard.resetTimer();
 
         // DEBUG TESTER
@@ -346,34 +346,11 @@ game.gameController = {
         }
         // DEBUG TESTER
 
-        //Toggle tutorial overlay
-        for (var i = 0; i < game.keys.length; i++) {
-            if (engine.input.pressed(game.keys[i])) {
-                game.tutorialOverlay.tester(`Key: ${game.keys[i]}`);
-                    if (game.keys[i] == 'O') {
-                        game.tutorialOverlay.open();
-                    } else if (game.keys[i] == 'C') {
-                        game.tutorialOverlay.close();
-                    }
-                    //Refresh timeout
-                    game.timeoutOverlay.refreshTimer();
-            }
-        }
-
         // Toggle next state
         for (var i = 0; i < game.controls.length; i++) {
             if (engine.input.pressed(game.controls[i])) {
-                game.playTutorial.play();
-                // Set the new game state to Play Scene
-                game.currState = game.gameState[1];
-                // Reset the player
-                game.player.reset();
-                // Hide all elements
-                game.hideElements.hideAll();
-                // Refresh timeout
-                game.timeoutOverlay.refreshTimer();
-                // Redraw all elements
-                game.drawOnce();
+                // Transition to the play scene
+                game.tutorialOverlay.sceneTransition();
             }
         }
     },
@@ -478,7 +455,7 @@ game.gameController = {
 
         //Pause Play Time
         game.playTimeBoard.playTime.paused = true;
-		
+
         // Handle the initials animation
         game.endPlayerInitials.animateInitials(dt);
 
@@ -633,7 +610,7 @@ game.drawOnce = function () {
             this.quitButton.adjustStyle();
             this.menuButton.adjustStyle();
 
-            //Tutorial Overlay
+            // Tutorial Overlay
             this.tutorialOverlay.resize();
             break;
         case 'play':

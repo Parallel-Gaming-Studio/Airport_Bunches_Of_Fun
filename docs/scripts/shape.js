@@ -204,6 +204,9 @@ class Shape extends movingEntity {
 			// Update player score
 			game.player.score += this.points;
 
+			// Update the scoreboard
+			game.playScore.updateScore();
+
 			// Remove from the square's shape attachment
 			this.attachedSquare.removeShape();
 

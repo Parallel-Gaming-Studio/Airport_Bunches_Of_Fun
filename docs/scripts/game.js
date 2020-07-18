@@ -56,7 +56,7 @@ game.scale = 1.0;
 game.timeoutTime = 120;					// Timeout time before returning to landing page
 game.lastTimeSized = new Date();        // Used to track window resizing without window events
 game.timers = [];                       // Array for all timers
-game.firstPlayThrough = true;           //Flag for the first play through
+game.firstPlayThrough = true;           // Flag for the first play through
 // Sponsors
 game.lastSponsor = ""; // Previously used sponsor
 game.sponsor = ""; // Current sponsor
@@ -629,7 +629,7 @@ game.timeoutOverlay = {
 };
 game.timeoutOverlay.init(); // Force initialization of the timer during script load
 
-//Tutorial Overlay
+// Tutorial Overlay
 game.tutorialOverlay = {
     div: document.getElementById("tutorialOverlay"),
     divContent: document.getElementById("tutorialContent"),
@@ -652,24 +652,24 @@ game.tutorialOverlay = {
     altOpen: false,
     orgTimeStart: null,
     init: function () {
-        //Images
+        // Images
         this.tutImg01.addEventListener("click", this.nextSlide);
         this.tutImg02.addEventListener("click", this.nextSlide);
         this.tutImg03.addEventListener("click", this.nextSlide);
-        //Text
+        // Text
         this.tutTxt1.addEventListener("click", this.nextSlide);
         this.tutTxt2.addEventListener("click", this.nextSlide);
         this.tutTxt3.addEventListener("click", this.nextSlide);
-        //Pagination
+        // Pagination
         $("#tutorialPages a:nth-child(1)").on("click", function () { game.tutorialOverlay.pagesUpdate(0); });
         $("#tutorialPages a:nth-child(2)").on("click", function () { game.tutorialOverlay.pagesUpdate(1); });
         $("#tutorialPages a:nth-child(3)").on("click", function () { game.tutorialOverlay.pagesUpdate(2); });
-        //Close Button
+        // Close Button
         this.closeButton.addEventListener("click", this.close);
     },
-    //Open the tutorial overlay
+    // Open the tutorial overlay
     open: function () {
-        //Reset the height
+        // Reset the height
         this.div.style.height = "0%";
         game.tutorialOverlay.div.style.display = "block";
         game.tutorialOverlay.divContent.style.display = "block";
@@ -690,41 +690,42 @@ game.tutorialOverlay = {
         console.log("<Game:Tutorial> Open");
     },
     openAlternate: function () {
-        //Reset the overlay
+        // Reset the overlay
         game.tutorialOverlay.tutorialPages.childNodes[1].classList.add("active");
         game.tutorialOverlay.tutorialPages.childNodes[3].classList.remove("active");
         game.tutorialOverlay.tutorialPages.childNodes[5].classList.remove("active");
-        //Reset the counter
+        // Reset the counter
         game.tutorialOverlay.activeE = 0;
-        //Open the overlay
+        // Open the overlay
         game.tutorialOverlay.open();
-        console.log("<Game:Tutorial> Open Alternate");
-        //Notify of alternate opening
+        // console.log("<Game:Tutorial> Open Alternate");
+        // Notify of alternate opening
         game.tutorialOverlay.altOpen = true;
-        //Get the player's current play time
-        game.tutorialOverlay.orgTimeStart = Date.now() - game.playTimerBox.timeStart;
+        // Get the player's current play time
+        // game.tutorialOverlay.orgTimeStart = Date.now() - game.playTimerBox.timeStart;
+        game.playTimeBoard.timer.pauseTimer();
+        game.playTimeBoard.playTime.pauseTimer();
     },
-    //Close the tutorial overlay
+    // Close the tutorial overlay
     close: function () {
         game.tutorialOverlay.div.style.height = "0%";
-        console.log("<Game:Tutorial> Close");
+        // console.log("<Game:Tutorial> Close");
         game.tutorialOverlay.startGame();
     },  
     resize: function () {
-        this.divContent.style.fontSize = this.org_select_size * (1 - Math.max(engine.widthProportion, engine.heightProportion)) + "px";
-        this.closeButton.style.fontSize = this.org_closer_size * (1 - Math.max(engine.widthProportion, engine.heightProportion)) + "px";
+        this.divContent.style.fontSize = this.org_select_size * engine.preserveAspectRatio + "px";
+        this.closeButton.style.fontSize = this.org_closer_size * engine.preserveAspectRatio + "px";
     },
     pagesUpdate: (key) => {
         game.tutorialOverlay.activeE = key - 1;
         game.tutorialOverlay.nextSlide();
     },
     nextSlide: function () {
-        //Refresh the timeout timer
+        // Refresh the timeout timer
         game.timeoutOverlay.refreshTimer();
-        //Get the active slide
+        // Get the active slide
         game.tutorialOverlay.activeE += 1;
-        console.log(`Active: ${game.tutorialOverlay.activeE}`);
-        //Update the slide
+        // Update the slide
         switch (game.tutorialOverlay.activeE) {
             case 0:
                 game.tutorialOverlay.tutorialPages.childNodes[1].classList.add("active");
@@ -769,88 +770,84 @@ game.tutorialOverlay = {
                 }
                 break;
             default:
-                //Exit tutorial (aka start game)
+                // Exit tutorial (aka start game)
                 game.tutorialOverlay.close();
-                //Start the game
-                game.tutorialOverlay.startGame();
-                //Reset the overlay
+                // Start the game
+                // game.tutorialOverlay.startGame();
+                // Reset the overlay
                 game.tutorialOverlay.tutorialPages.childNodes[1].classList.add("active");
                 game.tutorialOverlay.tutorialPages.childNodes[3].classList.remove("active");
                 game.tutorialOverlay.tutorialPages.childNodes[5].classList.remove("active");
                 break;
         }
     },
-    /* sceneTransition: function () {
-        console.log("<Game:Tutorial> Transition Scenes");
-        //Display the tutorial overlay if this is the first playthrough
+    clickMe: () => {
+        // console.log("Clicked!");
+    },
+    sceneTransition: function () {
+        console.log("<Game:TutorialOverlay> Transition Scenes");
+        // Display the tutorial overlay if this is the first playthrough
         if (game.firstPlayThrough) {
-            console.log("<Game:Tutorial> Display the tutorial")
-            //open tutorial overlay
+            // Open tutorial overlay
             game.tutorialOverlay.open();
         } else {
-            //Otherwise start the game
-            console.log("<Game:Tutorial> Transition to the Play Scene");
-            //Activate tutorial helper
+            // Otherwise, start the game
+            // console.log("<Game:TutorialOverlay> Transition to the Play Scene");
+            // Activate tutorial helper
             game.playTutorial.play();
-            //Inform Google the user started playing a game
+            // Inform Google the user started playing a game
             game.google.start();
-            //Set game score to zero
-            game.score = 0;
-            //Reset the player
+            // Reset the player object
             game.player.reset();
-            //Get the current sponsor
-            game.getSponsor();
-            //Refresh the timeout timer
+            // Get the current sponsor
+            game.sponsors.getSponsor();
+            // Refresh the timeout timer
             game.timeoutOverlay.refreshTimer();
-            //Set the new game state to Play Scene
+            // Set the new game state to Play Scene
             game.currState = game.gameState[1];
-            //Hide all elements
+            // Hide all elements
             game.hideElements.hideAll();
-            //Redraw all elements
+            // Redraw all elements
             game.drawOnce();
-            //Close tutorial overlay to maintain proper functionality
-            game.tutorialOverlay.close();
         }
-    }, */
-    clickMe: () => {
-        console.log("Clicked!")
     },
-    startGame: () => {
-        //If tutorial opened from the play scene
+    startGame: function() {
+        // If tutorial opened from the play scene
         if (game.tutorialOverlay.altOpen) {
-            //Set the new end time based on time within the tutorial
-            game.playTimerBox.startTimerAlternate(Date.now() + (game.playTime - game.tutorialOverlay.orgTimeStart));
-            //Reset altOpen
+            // Set the new end time based on time within the tutorial
+            // game.playTimerBox.startTimerAlternate(Date.now() + (game.playTime - game.tutorialOverlay.orgTimeStart));
+            game.playTimeBoard.timer.unpauseTimer();
+            game.playTimeBoard.playTime.unpauseTimer();
+            // Reset altOpen
             game.tutorialOverlay.altOpen = false;
-            //Refresh the timeout timer
+            // Refresh the timeout timer
             game.timeoutOverlay.refreshTimer();
-            //Redraw all elements
-            game.drawOnce();
+            // Redraw all elements
+            // game.drawOnce();
         } else {
-            //Otherwise, start the game
-            console.log("<Game:TutorialOverlay> Transition to the Play Scene");
-            //No longer the first play through
+            // Otherwise, start the game
+            // No longer the first play through
             game.firstPlayThrough = false;
-            //Inform Google the user started playing a game
+            // Inform Google the user started playing a game
             game.google.start();
-            //Set the game score to zero
+            // Set the game score to zero
             game.score = 0;
-            //Reset the player object
+            // Reset the player object
             game.player.reset();
-            //Get the current sponsor
-            game.getSponsor();
-            //Refresh the timeout timer
+            // Get the current sponsor
+            game.sponsors.getSponsor();
+            // Refresh the timeout timer
             game.timeoutOverlay.refreshTimer();
-            //Set the new game state to Play Scene
+            // Set the new game state to Play Scene
             game.currState = game.gameState[1];
-            //Hide all elements
+            // Hide all elements
             game.hideElements.hideAll();
-            //Redraw all elements
+            // Redraw all elements
             game.drawOnce();
         }
     },
     tester: (key) => {
-        console.log(`Key: ${key}`);
+        // console.log(`Key: ${key}`);
     }
 };
 game.tutorialOverlay.init();  //Force initialize all event listeners
