@@ -270,7 +270,7 @@ game.playGrid = {
                 this.checkReturnList = [];
             }
         } else {
-            //console.log(`Too few elements in the return list: ${this.checkReturnList.length}`);
+            // console.log(`Too few elements in the return list: ${this.checkReturnList.length}`);
         }
 
         // Since the operation is complete, clear the selectors
@@ -687,7 +687,7 @@ game.tutorialOverlay = {
 
         $("#tutorialPages").css("display", "inline-block");
 
-        console.log("<Game:Tutorial> Open");
+        // console.log("<Game:Tutorial> Open");
     },
     openAlternate: function () {
         // Reset the overlay
@@ -785,7 +785,7 @@ game.tutorialOverlay = {
         // console.log("Clicked!");
     },
     sceneTransition: function () {
-        console.log("<Game:TutorialOverlay> Transition Scenes");
+        // console.log("<Game:TutorialOverlay> Transition Scenes");
         // Display the tutorial overlay if this is the first playthrough
         if (game.firstPlayThrough) {
             // Open tutorial overlay

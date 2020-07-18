@@ -686,7 +686,7 @@ game.drawOnce = function () {
             break;
     }
     // DEBUG
-    console.log("<GAME> Loaded Scene: " + this.currState);
+    // console.log("<GAME> Loaded Scene: " + this.currState);
 };
 //   - First draw event
 window.onload = function () {
