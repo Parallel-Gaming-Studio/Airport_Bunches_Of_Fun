@@ -596,7 +596,7 @@ game.update = function (dt) {
 //   - Light performance impact
 //   - Useful during scene transitions and small animations
 game.drawOnce = function () {
-    game.frameRateDisplay.draw();
+    // game.frameRateDisplay.draw();
     // Draw based on the GameState
     switch (this.currState) {
         case 'start':
