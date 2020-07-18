@@ -109,6 +109,10 @@ game.playGrid = {
             // console.log(`<Game>[PlayGrid:ClearGrid] Reg Count\nBefore ${game.regulators.regList.length}`);
             game.regulators.removeRegulator(this.squares.pop().regulator);
         }
+        game.regulators.regList = [];
+        this.squares = [];
+        this.evaluateList = [];
+        this.popList = [];
     },
     readiness: function() {
         for (var i = 0; i < this.squares.length; i++) {
@@ -364,7 +368,12 @@ game.gameEntities = {
 
         // console.log(`<Game>[GameEntities:RemoveEntity] Ent Count\nAfter ${this.entities.length}`);
     },
-    clearEntities: function () { this.entities = []; },
+    clearEntities: function () {
+        this.entities = [];
+        this.evaluateList = [];
+        this.animatingList = [];
+        this.playerMovesList = [];
+    },
     drawEntities: function () {
         for (var i = 0; i < this.entities.length; i++) {
             // console.log(`${this.entities[i].isAlive()} ${this.entities.length}`);

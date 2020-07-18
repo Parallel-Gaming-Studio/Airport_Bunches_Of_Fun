@@ -135,8 +135,6 @@ class Shape extends movingEntity {
 		this.domElement.style.width = this.getOrigin().width + "px";
         this.domElement.style.height = this.getOrigin().height + "px";
 		if (this.attachedSquare !== "undefined") {
-			/*this.domElement.style.top = (this.attachedSquare.top + Math.abs(this.toCenter.y - this.attachedSquare.toCenter.y)) + "px";
-			this.domElement.style.left = (this.attachedSquare.left + Math.abs(this.toCenter.x - this.attachedSquare.toCenter.x)) + "px";*/
 			this.updateAttributes();
 			this.forceMoveToLocation(this.attachedSquare.center);
 		}
@@ -154,199 +152,26 @@ class Shape extends movingEntity {
 		// Add to the list of animating entities
 		game.gameEntities.animatingList.push(this);
 
-		/* try { */
-			// console.log(`<Shape>[forceMoveToLocation]\nMoving ${this.domElement.id} to square ${this.attachedSquare.id}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
+		// console.log(`<Shape>[forceMoveToLocation]\nMoving ${this.domElement.id} to square ${this.attachedSquare.id}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
 
-			// Move this shape to a higher z-index, then animate to its destination
-			$(`#${this.domElement.id}`).css("z-index", "21").animate({
-				top: `${pos.y - this.toCenter.y}px`,
-				left: `${pos.x - this.toCenter.x}px`
-			},750, "swing", ()=>{
-				// Clear moving flag
-				this.isMoving = false;
+		// Move this shape to a higher z-index, then animate to its destination
+		$(`#${this.domElement.id}`).css("z-index", "21").animate({
+			top: `${pos.y - this.toCenter.y}px`,
+			left: `${pos.x - this.toCenter.x}px`
+		},700, "swing", ()=>{
+			// Clear moving flag
+			this.isMoving = false;
 
-				// Remove from animating list
-				game.gameEntities.removeAnimating(this);
+			// Remove from animating list
+			game.gameEntities.removeAnimating(this);
 
-				// Return to original z-index
-				$(`#${this.domElement.id}`).css("z-index", "20");
-				
-				// Update the shape's attributes after each move
-				this.updateAttributes();
-			});
-		/* } catch (e) {
-			// console.log(`<Shape>[forceMoveToLocation]\nNo shape, no move.`);
-		} */
-	}
-	
-	/*---------------------moveShapeToLocation----------------------------\
-	| - Move the supplied shape to the specified destination, limited by
-	|   the distance between adjacent squares' center points
-	| - arg types: Vector2D
-	\--------------------------------------------------------------------*/
-	moveShapeToLocation(myDestination) {
-		/* try {
-			if (game.startSquare == null || game.destinationSquare == null) {
-				console.log(`<Shape>[MoveShapeToLocation]\nOne of the selected squares is invalid:\nStart is ${game.startSquare == null ? "null" : game.startSquare.id}\nDestination is ${game.destinationSquare == null ? "null" : game.destinationSquare.id}`);
-				game.startSquare = null;
-				game.destinationSquare = null;
-				return;
-			}
-
-			let myStartSquare = game.startSquare;
-			let myDestinationSquare = game.destinationSquare;
-
-			// console.log(`<Shape>[MoveShapeToLocation]\nMoving ${this.domElement.id} from square ${game.startSquare.id} to square ${game.destinationSquare.id}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
-
-			// Set this shape as moving
-			this.isMoving = true;
-
-			// Move this shape to a higher z-index, then animate to its destination
-			//$(`#${this.domElement.id}`).css("z-index", "21").animate({
-			//	top: `${myDestination.y - this.toCenter.y}px`,
-			//	left: `${myDestination.x - this.toCenter.x}px`
-			//},400, "swing", ()=>{
-				// console.log(`<Shape>[MoveShapeToLocation]\nFinished moving ${this.domElement.id}`);
-				// this.updateAttributes();
-
-				// If an invalid move is made, move the shape back to its starting position
-				if (!myStartSquare.compareLinks(myDestinationSquare)) {
-					// console.log(`<Shape>[MoveShapeToLocation]\nInvalid destination. Returning ${this.domElement.id} to its origin square ${game.startSquare.id}.`);
-					$(`#${this.domElement.id}`).css("z-index", "21").animate({
-						top: `${myStartSquare.top + Math.abs(this.toCenter.y - myStartSquare.toCenter.y)}px`,
-						left: `${myStartSquare.left + Math.abs(this.toCenter.x - myStartSquare.toCenter.x)}px`
-					}, 300, "swing", ()=>{
-
-						// Release the selected shape
-						game.selectedShape = null;
-						// Release any selected squares
-						game.releaseSelectedSquare();
-					});
-				} else {
-					// Otherwise, center the shape on the new, valid square
-					// console.log(`<Shape>[MoveShapeToLocation]\nValid destination. Adjusting ${this.domElement.id}'s position to square ${game.destinationSquare.id}.`);
-					$(`#${this.domElement.id}`).css("z-index", "21").animate({
-						top: `${myDestinationSquare.top + Math.abs(this.toCenter.y - myDestinationSquare.toCenter.y)}px`,
-						left: `${myDestinationSquare.left + Math.abs(this.toCenter.x - myDestinationSquare.toCenter.x)}px`
-					}, 400, "swing", () => {
-
-						// Set the previously attached square (gives to swapping shape)
-						this.lastAttachedSquare = this.attachedSquare;
-						
-						// Attach the target square to this shape
-						this.attachedSquare = myDestinationSquare;
-
-						// Check if the destination square has a valid shape
-						if (myDestinationSquare.attachedShape !== "undefined") {
-							// Set the destination square's shape as moving
-							myDestinationSquare.attachedShape.isMoving = true;
-							// Set the destination square's shape's last attached square
-							myDestinationSquare.attachedShape.lastAttachedSquare = myDestinationSquare;
-							// Attach this shape's previous square to the destination square's shape
-							myDestinationSquare.attachedShape.attachedSquare = this.lastAttachedSquare;
-							// Attach the last square's shape to the destination square's shape
-							this.lastAttachedSquare.attachedShape = myDestinationSquare.attachedShape;
-							
-							// Move the destination shape to its new home
-							$(`#${myDestinationSquare.attachedShape.domElement.id}`).animate({
-								top: `${myStartSquare.top + Math.abs(myStartSquare.attachedShape.toCenter.y - myStartSquare.toCenter.y)}px`,
-								left: `${myStartSquare.left + Math.abs(myStartSquare.attachedShape.toCenter.x - myStartSquare.toCenter.x)}px`
-							}, 400, "swing", ()=>{
-
-
-								// TODO : Evaluate the grid. False? Return to previous positions.
-								// True? Attach the shapes to their new squares and pop the matches.
-
-								// Add both squares to the evaluate list
-								game.playGrid.evaluateList.push(this.attachedSquare, this.lastAttachedSquare);
-
-								// Add both shapes to the entities evaluate list
-								game.gameEntities.evaluateList.push(this, this.lastAttachedSquare.attachedShape);
-
-								// console.log(`\n\n\n<Shape>[MoveShapeToLocation]\nCHECK HERE\n\n\nEval List Length: ${game.playGrid.evaluateList.length}`);
-
-								// Update swapped shape's attributes
-								myStartSquare.attachedShape.updateAttributes();
-								// Set the destination square's attached shape to this shape
-								myDestinationSquare.attachedShape = this;
-								// Release the selected shape
-								game.selectedShape = null;
-								// Release any selected squares
-								game.releaseSelectedSquare();
-								// Clear the swapped shape's moving flag
-								try{ this.lastAttachedSquare.attachedShape.isMoving = false; } catch(e) {}
-							});
-						} else {
-							// Set the destination square's attached shape to this shape
-							myDestinationSquare.attachedShape = this;
-							// Release the selected shape
-							game.selectedShape = null;
-							// Release any selected squares
-							game.releaseSelectedSquare();
-						}
-
-						// Clear this shape's last attached square
-						// this.lastAttachedSquare = "undefined";
-
-						// Return the shape to its original z-index
-						$(`#${this.domElement.id}`).css("z-index", "20");
-						
-						// Update the shape's attributes
-						this.updateAttributes();
-
-						// Clear this shape's moving flag
-						this.isMoving = false;
-					});
-				}
-
-				// TODO : find a home for game.releaseSelectedSquare();
-				// console.log(`<Shape>[MoveShapeToLocation]\nFinished moving ${this.domElement.id} to ${this.center}`);
-			//});
-		} catch (e) {
-			// console.log(`<Shape>[MoveShapeToLocation]\nNo shape, no move.`);
-		} */
-	}
-
-	/*---------------------returnToLastLocation---------------------------\
-	| - Return the shape to its original location
-	\--------------------------------------------------------------------*/
-	returnToLastPosition(Callback) {
-		/* try {
-			// console.log(`<Shape>[ReturnToLastLocation]\nMoving ${this.domElement.id} from square ${this.attachedSquare.id} to square ${this.lastAttachedSquare.id}\n X: ${this.toCenter.x} | ${this.domElement.style.left}\n Y: ${this.toCenter.y} | ${this.domElement.style.top}`);
-
-			// Set this shape as moving
-			this.isMoving = true;
-
-			// Move this shape to a higher z-index, then animate to its destination
-			$(`#${this.domElement.id}`).css("z-index", "21").animate({
-				top: `${this.lastAttachedSquare.top + Math.abs(this.toCenter.y - this.lastAttachedSquare.toCenter.y)}px`,
-				left: `${this.lastAttachedSquare.left + Math.abs(this.toCenter.x - this.lastAttachedSquare.toCenter.x)}px`
-			},500, "swing", ()=>{
-
-				// Update the attached square
-				this.attachedSquare = this.lastAttachedSquare;
-
-				// Since it's moved to its original position, clear the last attached square
-				this.lastAttachedSquare = "undefined";
-
-				// Inform the new square of the change
-				this.attachedSquare.attachedShape = this;
-				
-				// Return this shape to its original z-index
-				$(`#${this.domElement.id}`).css("z-index", "20");
-
-				// Update this shape's attributes
-				this.updateAttributes();
-
-				// Remove this shape's moving flag
-				this.isMoving = false;
-
-				// Return the Callback if it's requested
-				if (Callback !== "undefined") return Callback;
-			});
-		} catch (e) {
-			// console.log(`<Shape>[ReturnToLastLocation]\nNo shape to move...`)
-		} */
+			// Return to original z-index
+			$(`#${this.domElement.id}`).css("z-index", "20");
+			
+			// Update the shape's attributes after each move
+			this.updateAttributes();
+		});
+		
 	}
 
 	/*---------------------popShape---------------------------------------\
@@ -354,7 +179,6 @@ class Shape extends movingEntity {
 	| - arg types: Vector2D
 	\--------------------------------------------------------------------*/
 	popShape(Callback) {
-		
 		
 		// console.log(`<Shape>[PopShape]\nID: ${this.id}`);
 		// Set this shape as moving
@@ -369,7 +193,7 @@ class Shape extends movingEntity {
 			top: "0px",
 			left: "0px",
 			opacity: "0.0"
-		}, 750, ()=>{
+		}, 700, ()=>{
 
 			// Clear this shape's moving flag, enabling it for deletion
 			this.isMoving = false;
@@ -379,17 +203,6 @@ class Shape extends movingEntity {
 
 			// Update player score
 			game.player.score += this.points;
-
-			// Clear previous attachments, if any - Prevents swapping back to old position
-			// if (this.lastAttachedSquare !== "undefined") {
-				// Check neighboring, swapped shape
-				// if (this.lastAttachedSquare.attachedShape !== "undefined") {
-					// this.lastAttachedSquare.attachedShape.lastAttachedSquare = "undefined";
-				// }
-
-				// Clear this shape's last attachment
-				// this.lastAttachedSquare = "undefined";
-			// }
 
 			// Remove from the square's shape attachment
 			this.attachedSquare.removeShape();

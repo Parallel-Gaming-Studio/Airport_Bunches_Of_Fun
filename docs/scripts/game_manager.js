@@ -297,6 +297,10 @@ game.hideElements = {
         this.images();
         this.canvas();
         this.wipeShapes();
+        // Clear all player selections
+        game.startSquare = null;
+        game.destinationSquare = null;
+        game.previousSquare = null;
         // Reset leaderboard table
         game.top10players.hideTable();
         // Reset the grid array
@@ -680,11 +684,12 @@ game.drawOnce = function () {
             this.endInitialsBG.draw();
             this.endPlayerInitials.draw();
 
-            // Display buttons
-            this.endSubmitButton.adjustStyle();
+            // Menu buttons
             this.menuButton.adjustStyle();
             // Keypad
             this.endKeyboardKeys.draw();
+            // Submit button
+            this.endSubmitButton.adjustStyle();
             // Time
             this.endPlayerTimeBoard.draw();
             break;
