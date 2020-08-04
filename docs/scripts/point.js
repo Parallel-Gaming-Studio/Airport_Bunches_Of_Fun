@@ -27,3 +27,39 @@ class POINTS {
         const $this = this;
     }
 }
+
+// Returns if two POINT(s) are equal
+function equalPOINT(a, b) {
+    var test = false;
+
+    if (a.x == b.x) {
+        if (a.y == b.y) {
+            test = true;
+        }
+    }
+
+    return test;
+}
+
+// Returns if two POINTS(s) are equal
+function equalPOINTS(a, b) {
+    var test = false;
+
+    if (a.x == b.x) {
+        if (a.y == b.y) {
+            test = true;
+        }
+    }
+
+    return test;
+}
+
+// Returns if the POINT is zero
+function isZeroPOINT(a) {
+    return (a.x == 0 && a.y == 0);
+}
+
+// Returns if the POINTS is zero
+function isZeroPOINTS(a) {
+    return (a.x == 0 && a.y == 0);
+}
